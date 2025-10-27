@@ -1,0 +1,2690 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课程订阅信息 - LightCourseCRM</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-green: #2ecc71;
+            --light-green: #98FB98;
+            --dark-green: #27ae60;
+            --hover-green: #229954;
+            --bg-green: #F0FFF0;
+            
+            /* 字体层级变量 */
+            --font-size-xl: 20px;      /* 大标题 */
+            --font-size-lg: 16px;      /* 小节标题 */
+            --font-size-base: 14px;    /* 基础字体 */
+            --font-size-md: 14px;      /* 表单标签/正文 */
+            --font-size-sm: 12px;      /* 辅助说明 */
+            
+            --font-weight-bold: 700;     /* 粗体 */
+            --font-weight-semibold: 600; /* 半粗体 */
+            --font-weight-medium: 500;   /* 中等字重 */
+            --font-weight-regular: 400;  /* 常规字重 */
+            
+            /* 颜色变量 */
+            --text-primary: #2c3e50;   /* 主要文本 */
+            --text-secondary: #495057; /* 次要文本 */
+            --text-muted: #6c757d;     /* 静音文本 */
+            --text-hint: #909399;      /* 提示文本 */
+            
+            /* 蓝色主题变量 */
+            --primary-blue: #007bff;
+            --primary-blue-dark: #0056b3;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+        }
+        
+        body {
+            font-family: "Noto Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        .header {
+            background: white;
+            color: var(--text-primary);
+            padding: 15px 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            border-bottom: 1px solid #f1f3f5;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0;
+            color: var(--primary-green);
+            text-shadow: none;
+        }
+        
+        .breadcrumb {
+            font-size: 14px;
+            margin-top: 5px;
+            color: var(--primary-green);
+            opacity: 0.8;
+        }
+        
+        .main-layout {
+            display: flex;
+            margin-top: 80px;
+            min-height: calc(100vh - 80px);
+        }
+        
+        .student-layout {
+            display: flex;
+            min-height: calc(100vh - 160px);
+        }
+        
+        .student-sidebar {
+            width: 220px;
+            background: white;
+            border-right: 1px solid #ddd;
+            padding: 20px;
+        }
+        
+        .student-content {
+            flex: 1;
+        }
+        
+        .sidebar-section {
+            margin-bottom: 30px;
+        }
+        
+        .sidebar-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 6px;
+        }
+        
+        .sidebar-title:hover {
+            background: #f8f9fa;
+            color: #007bff;
+            padding-left: 8px;
+        }
+        
+        .sidebar-title.active {
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            color: white;
+            border-radius: 6px;
+            padding-left: 8px;
+            box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+        }
+        
+        .function-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px 0;
+        }
+        
+        .function-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .home-subscribe-btn {
+            background: #007bff;
+            color: white;
+        }
+        
+        .home-subscribe-btn:hover {
+            background: #0056b3;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+        }
+        
+        .product-subscribe-btn {
+            background: var(--primary-green);
+            color: white;
+        }
+        
+        .product-subscribe-btn:hover {
+            background: var(--hover-green);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(50, 205, 50, 0.3);
+        }
+        
+        .function-btn .btn-icon {
+            font-size: 16px;
+        }
+        
+        .course-checkbox {
+            cursor: pointer;
+            transform: scale(1.2);
+        }
+        
+        .student-table td[rowspan] {
+            border-right: 2px solid #ddd;
+            background-color: #f9f9f9;
+        }
+        
+        /* 模态框样式 */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            width: 95%;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            border-bottom: 1px solid #e9ecef;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+        
+        .modal-header h3 {
+            margin: 0;
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--text-primary);
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.8);
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s ease;
+        }
+        
+        .modal-close:hover {
+            color: white;
+        }
+        
+        .modal-body {
+            padding: 24px;
+        }
+        
+        /* 顶部信息区样式 */
+        .info-header {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            border: 1px solid #e3e6ea;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+        }
+        
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        
+        .info-label {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .info-value {
+            font-size: var(--font-size-md);
+            font-weight: var(--font-weight-regular);
+            color: var(--text-primary);
+            padding: 10px 14px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #e3e6ea;
+            min-height: 20px;
+            line-height: 1.5;
+        }
+        
+        /* 表单区域样式 */
+        .form-section {
+            margin-top: 16px;
+        }
+        
+        .section-title {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-bold);
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .form-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .form-field {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+            padding: 12px 16px;
+            background: #fafbfc;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .field-left {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .field-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 4px;
+        }
+        
+        .field-title-group {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+        }
+        
+        .field-label {
+            font-size: var(--font-size-md);
+            font-weight: var(--font-weight-bold);
+            color: var(--text-primary);
+            margin: 0;
+        }
+        
+        .field-hint {
+            font-size: var(--font-size-sm);
+            color: var(--text-hint);
+            margin: 0;
+            line-height: 1.4;
+        }
+        
+        .field-control {
+            min-width: 240px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        
+        .field-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 0;
+        }
+        
+        /* 表单控件样式 */
+        .form-input, .form-select {
+            padding: 10px 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            font-size: var(--font-size-md);
+            font-weight: var(--font-weight-regular);
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+            background: white;
+            line-height: 1.4;
+        }
+        
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+        }
+        
+        .form-input:hover, .form-select:hover {
+            border-color: #007bff;
+        }
+        
+        /* 日期范围输入 */
+        .date-range-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .date-input {
+            flex: 1;
+        }
+        
+        .date-separator {
+            color: #6c757d;
+            font-weight: 500;
+            padding: 0 2px;
+            font-size: var(--font-size-sm);
+        }
+        
+        /* 组合输入框 */
+        .combo-input {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: #f8f9fa;
+            padding: 2px;
+            border-radius: 6px;
+            border: 2px solid #e9ecef;
+            transition: border-color 0.2s ease;
+        }
+        
+        .combo-input:focus-within {
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+        }
+        
+        .combo-label, .combo-unit {
+            color: var(--text-secondary);
+            font-weight: var(--font-weight-medium);
+            font-size: var(--font-size-md);
+            white-space: nowrap;
+            padding: 0 8px;
+        }
+        
+        .combo-select, .combo-number {
+            border: none;
+            background: white;
+            padding: 8px 10px;
+            border-radius: 4px;
+            font-size: var(--font-size-md);
+            font-weight: var(--font-weight-regular);
+            color: var(--text-primary);
+            min-width: 80px;
+        }
+        
+        .combo-select:focus, .combo-number:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        }
+        
+        /* 开关样式 */
+        .switch-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .switch-label {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--text-secondary);
+            user-select: none;
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 26px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .3s;
+            border-radius: 26px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        input:checked + .slider {
+            background-color: var(--primary-green);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+        
+        .slider:hover {
+            box-shadow: 0 0 8px rgba(46, 204, 113, 0.3);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .info-header {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            
+            .form-grid {
+                gap: 16px;
+            }
+            
+            .date-range-wrapper {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .date-separator {
+                display: none;
+            }
+            
+            .combo-input {
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+            
+            .modal-footer {
+                flex-direction: column-reverse;
+                gap: 12px;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+        
+        @media (min-width: 769px) {
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 24px 20px;
+            }
+            
+            .form-field:nth-child(2) {
+                grid-column: 1 / -1;
+            }
+        }
+        
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            padding: 20px 24px;
+            border-top: 1px solid #e9ecef;
+            background-color: #f8f9fa;
+        }
+        
+        /* 通用按钮样式 */
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: var(--font-size-md);
+            font-weight: var(--font-weight-medium);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 110px;
+            line-height: 1.5;
+        }
+        
+        .btn-cancel:hover {
+            background: #e9ecef;
+            color: var(--text-primary);
+            border-color: #dee2e6;
+        }
+        
+        /* 保存按钮 */
+        .btn-save {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--hover-green) 100%);
+            color: white;
+            font-weight: var(--font-weight-medium);
+            box-shadow: 0 2px 4px rgba(50, 205, 50, 0.2);
+        }
+        
+        .btn-save:hover {
+            background: linear-gradient(135deg, var(--hover-green) 0%, var(--dark-green) 100%);
+            box-shadow: 0 4px 8px rgba(50, 205, 50, 0.3);
+            transform: translateY(-1px);
+        }
+        
+        .btn-save:active {
+            transform: translateY(0);
+        }
+        
+        /* 批量设置样式 */
+        .batch-info-header {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            border: 1px solid #e3e6ea;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 16px;
+        }
+        
+        /* 课程列表样式 */
+        .course-list-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        
+        .course-list-container {
+            background: white;
+            border: 1px solid #e3e6ea;
+            border-radius: 6px;
+            padding: 0;
+            min-height: 40px;
+            max-height: 120px;
+            overflow: hidden;
+        }
+        
+        .course-list-scroll {
+            max-height: 120px;
+            overflow-y: auto;
+            padding: 8px 12px;
+        }
+        
+        .course-item-row {
+            padding: 4px 0;
+            border-bottom: 1px solid #f1f3f5;
+            font-size: var(--font-size-sm);
+            color: var(--text-primary);
+            line-height: 1.4;
+        }
+        
+        .course-item-row:last-child {
+            border-bottom: none;
+        }
+        
+        .course-count-title {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+        
+        /* 滚动条样式 */
+        .course-list-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .course-list-scroll::-webkit-scrollbar-track {
+            background: #f1f3f5;
+            border-radius: 2px;
+        }
+        
+        .course-list-scroll::-webkit-scrollbar-thumb {
+            background: #c1c7cd;
+            border-radius: 2px;
+        }
+        
+        .course-list-scroll::-webkit-scrollbar-thumb:hover {
+            background: #a8b2ba;
+        }
+        
+        /* 学生跟进表格样式 */
+        .student-follow-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .student-follow-table th {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: var(--font-weight-semibold);
+            color: var(--text-primary);
+            border-bottom: 2px solid #dee2e6;
+            font-size: var(--font-size-sm);
+            white-space: nowrap;
+        }
+        
+        .student-follow-table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #f1f3f5;
+            font-size: var(--font-size-sm);
+            color: var(--text-primary);
+            vertical-align: middle;
+        }
+        
+        .student-row:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .student-row:nth-child(even) {
+            background-color: #fdfdfd;
+        }
+        
+        .student-row:nth-child(even):hover {
+            background-color: #f8f9fa;
+        }
+        
+        /* 表格列宽设置 */
+        .checkbox-col { width: 40px; text-align: center; }
+        .student-name-col { width: 100px; }
+        .school-col { width: 120px; }
+        .entry-time-col { width: 140px; }
+        .next-follow-col { width: 140px; }
+        .status-col { width: 90px; }
+        .wechat-col { width: 100px; }
+        .report-col { width: 80px; text-align: center; }
+        .subscription-col { width: 180px; }
+        .action-col { width: 120px; text-align: center; }
+        
+        /* 状态标签样式 */
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: var(--font-weight-medium);
+            white-space: nowrap;
+        }
+        
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .status-following {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        /* 操作按钮样式 */
+        .btn-edit, .btn-follow, .btn-delete {
+            background: none;
+            border: none;
+            padding: 4px 6px;
+            margin: 0 2px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-edit:hover {
+            background: #e3f2fd;
+        }
+        
+        .btn-follow:hover {
+            background: #f3e5f5;
+        }
+        
+        .btn-delete:hover {
+            background: #ffebee;
+        }
+        
+        .btn-link {
+            background: none;
+            border: none;
+            color: var(--primary-blue);
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: var(--font-size-sm);
+            padding: 2px 4px;
+        }
+        
+        .btn-link:hover {
+            color: var(--primary-blue-dark);
+        }
+        
+        /* 学生姓名高亮 */
+        .student-name {
+            font-weight: var(--font-weight-medium);
+            color: var(--text-primary);
+        }
+        
+        /* 课程订阅信息样式 */
+        .subscription-info {
+            max-width: 180px;
+            word-wrap: break-word;
+            line-height: 1.4;
+        }
+        
+        /* 学生选课分析页面样式 */
+        .page-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: white;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        
+        .page-header {
+            padding: 20px 0 24px 0;
+            border-bottom: 1px solid #e1e5e9;
+            margin-bottom: 24px;
+        }
+        
+        .page-header h1 {
+            margin: 0 0 8px 0;
+            font-size: 28px;
+            font-weight: var(--font-weight-bold);
+            color: var(--text-primary);
+        }
+        
+        .page-subtitle {
+            margin: 0;
+            font-size: var(--font-size-base);
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid #e1e5e9;
+            border-radius: 6px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: var(--font-size-sm);
+        }
+        
+        .back-btn:hover {
+            background: var(--bg-secondary);
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
+        }
+        
+        /* Tab导航样式 */
+        .analysis-tab-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+        
+        .analysis-tab-nav {
+            display: flex;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-bottom: 1px solid #e1e5e9;
+        }
+        
+        .analysis-tab-btn {
+            flex: 1;
+            padding: 16px 20px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-medium);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .analysis-tab-btn:hover {
+            background: rgba(0, 123, 255, 0.1);
+            color: var(--primary-blue);
+        }
+        
+        .analysis-tab-btn.active {
+            background: white;
+            color: var(--primary-blue);
+            border-bottom-color: var(--primary-blue);
+            box-shadow: 0 -2px 8px rgba(0, 123, 255, 0.2);
+        }
+        
+        .analysis-tab-btn:not(:last-child) {
+            border-right: 1px solid #e1e5e9;
+        }
+        
+        /* Tab内容区域样式 */
+        .analysis-content-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            min-height: 500px;
+        }
+        
+        .analysis-tab-content {
+            display: none;
+            padding: 32px;
+        }
+        
+        .analysis-tab-content.active {
+            display: block;
+        }
+        
+        .content-placeholder {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--text-secondary);
+        }
+        
+        .content-placeholder h3 {
+            margin-bottom: 16px;
+            color: var(--text-primary);
+            font-size: 24px;
+            font-weight: var(--font-weight-semibold);
+        }
+        
+        .content-placeholder p {
+            font-size: var(--font-size-base);
+            line-height: 1.6;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* 功能栏按钮样式 */
+        .function-left {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        
+        .function-right {
+            display: flex;
+            align-items: center;
+        }
+        
+        .btn-primary, .btn-secondary {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-blue-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+        }
+        
+        .search-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .search-input {
+            padding: 8px 12px;
+            border: 1px solid #e1e5e9;
+            border-radius: 6px;
+            font-size: var(--font-size-sm);
+            min-width: 250px;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+        }
+        
+        .search-btn {
+            padding: 8px 12px;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .search-btn:hover {
+            background: var(--primary-blue-dark);
+        }
+        
+        /* 分页样式 */
+        .pagination-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding: 16px 0;
+            border-top: 1px solid #f1f3f5;
+        }
+        
+        .pagination-info {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+        }
+        
+        .pagination-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .pagination-btn {
+            padding: 6px 12px;
+            background: white;
+            border: 1px solid #e1e5e9;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: var(--font-size-sm);
+            transition: all 0.2s ease;
+        }
+        
+        .pagination-btn:not(:disabled):hover {
+            background: var(--bg-secondary);
+            border-color: var(--primary-blue);
+        }
+        
+        .pagination-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+        
+        .pagination-current {
+            padding: 6px 12px;
+            background: var(--primary-blue);
+            color: white;
+            border-radius: 4px;
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+        }
+        
+        .section-description {
+            font-size: var(--font-size-sm);
+            color: var(--text-hint);
+            margin: 6px 0 16px 0;
+            line-height: 1.4;
+            padding: 10px;
+            background: #e8f5e8;
+            border-left: 4px solid var(--primary-green);
+            border-radius: 4px;
+        }
+        
+        .unified-card, .course-list-card {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .unified-title, .list-title {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-bold);
+            color: var(--text-primary);
+            margin: 0 0 6px 0;
+        }
+        
+        .unified-description {
+            font-size: var(--font-size-sm);
+            color: var(--text-hint);
+            margin: 0 0 12px 0;
+            line-height: 1.4;
+        }
+        
+        /* 课程项目样式 */
+        .course-item {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 8px;
+            transition: all 0.2s ease;
+        }
+        
+        .course-item:hover {
+            border-color: var(--primary-green);
+            box-shadow: 0 2px 4px rgba(50, 205, 50, 0.1);
+        }
+        
+        .course-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .course-name {
+            font-size: var(--font-size-md);
+            font-weight: var(--font-weight-medium);
+            color: var(--text-primary);
+        }
+        
+        .course-status {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .status-label {
+            font-size: var(--font-size-sm);
+            color: var(--text-muted);
+            padding: 4px 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+        }
+        
+        .status-label.active {
+            background: var(--primary-green);
+            color: white;
+        }
+        
+        .toggle-btn {
+            background: var(--primary-green);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: var(--font-size-sm);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .toggle-btn:hover {
+            background: var(--hover-green);
+        }
+        
+        .toggle-btn.secondary {
+            background: #6c757d;
+        }
+        
+        .toggle-btn.secondary:hover {
+            background: #5a6268;
+        }
+        
+        /* 独立设置表单样式 */
+        .individual-form {
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            padding: 16px;
+            margin-top: 12px;
+            border-radius: 0 0 6px 6px;
+            display: none;
+        }
+        
+        .individual-form.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                max-height: 0;
+                padding-top: 0;
+                padding-bottom: 0;
+            }
+            to {
+                opacity: 1;
+                max-height: 800px;
+                padding-top: 16px;
+                padding-bottom: 16px;
+            }
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 98%;
+                margin: 10px auto;
+                max-height: calc(100vh - 20px);
+            }
+            
+            .info-header, .batch-info-header {
+                grid-template-columns: 1fr;
+                gap: 12px;
+                padding: 12px;
+            }
+            
+            .modal-body {
+                padding: 12px;
+            }
+            
+            .form-grid {
+                gap: 12px;
+            }
+            
+            .form-field {
+                padding: 8px 12px;
+                gap: 8px;
+            }
+            
+            .field-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+            }
+            
+            .field-title-group {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
+            
+            .switch-wrapper {
+                align-self: flex-end;
+            }
+            
+            .date-range-wrapper {
+                flex-direction: column;
+                gap: 6px;
+            }
+            
+            .date-separator {
+                align-self: center;
+                display: none;
+            }
+            
+            .combo-input {
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+            
+            .modal-footer {
+                padding: 16px;
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+        
+        .content-area {
+            flex: 1;
+            padding: 0;
+        }
+        
+        .top-navigation {
+            display: flex;
+            background: white;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .nav-tab {
+            flex: 1;
+            padding: 15px 20px;
+            text-align: center;
+            background: white;
+            border-right: 1px solid #ddd;
+            cursor: pointer;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .nav-tab:last-child {
+            border-right: none;
+        }
+        
+        .nav-tab:hover, .nav-tab.active {
+            background: var(--primary-green);
+            color: white;
+        }
+        
+        .container {
+            max-width: none;
+            margin: 0;
+            background-color: white;
+            padding: 30px;
+            border-radius: 0;
+            box-shadow: none;
+        }
+        
+        h1 {
+            color: var(--dark-green);
+            text-align: center;
+            border-bottom: 3px solid var(--primary-green);
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+        }
+        
+        h2 {
+            color: #333;
+            margin: 30px 0 20px 0;
+            font-size: 1.5em;
+        }
+        .table-container {
+            margin: 20px 0;
+            overflow-x: auto;
+            background: white;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .student-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        
+        .student-table th {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            padding: 12px 8px;
+            text-align: center;
+            font-weight: bold;
+            color: #333;
+            white-space: nowrap;
+        }
+        
+        .student-table td {
+            border: 1px solid #ddd;
+            padding: 10px 8px;
+            vertical-align: middle;
+            color: #555;
+            text-align: center;
+        }
+        
+        .student-table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .student-name {
+            font-weight: bold;
+            color: #333;
+            white-space: nowrap;
+        }
+        
+        .course-link {
+            color: var(--primary-green);
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        
+        .course-link:hover {
+            color: var(--hover-green);
+            text-decoration: none;
+        }
+        
+        .course-cell {
+            position: relative;
+        }
+        
+        .subscribe-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: var(--primary-green);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            height: 24px;
+            font-size: 11px;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 8px;
+            min-width: 20px;
+            white-space: nowrap;
+        }
+        
+        .subscribe-btn .btn-icon {
+            display: inline-block;
+        }
+        
+        .subscribe-btn .btn-text {
+            display: none;
+            margin-left: 4px;
+            font-size: 10px;
+        }
+        
+        .course-cell:hover .subscribe-btn {
+            opacity: 1;
+        }
+        
+        .course-cell:hover .subscribe-btn .btn-text {
+            display: inline-block;
+        }
+        
+        .subscribe-btn:hover {
+            background: var(--hover-green);
+            transform: scale(1.1);
+        }
+        
+        .subscribe-btn.home-course {
+            background: #007bff;
+        }
+        
+        .subscribe-btn.home-course:hover {
+            background: #0056b3;
+            transform: scale(1.1);
+        }
+        
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .course-card {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .course-card:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        .course-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .course-info {
+            margin: 8px 0;
+            color: #555;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .status.active {
+            background-color: var(--primary-green);
+            color: white;
+        }
+        .status.pending {
+            background-color: #ffc107;
+            color: #333;
+        }
+        .status.completed {
+            background-color: #6c757d;
+            color: white;
+        }
+        .subscription-form {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 4px;
+            margin: 25px 0;
+            border: 1px solid #ddd;
+        }
+        
+
+        
+
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .sub-content {
+            display: block;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-green);
+        }
+        button {
+            background-color: var(--primary-green);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: var(--hover-green);
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            color: #666;
+        }
+        
+        .stats-number {
+            font-size: 2em; 
+            color: var(--primary-green); 
+            text-align: center; 
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">🌱 LightCourseCRM</div>
+        <div class="breadcrumb">客户关系管理系统 > 课程管理 > 课程订阅信息</div>
+    </div>
+    
+    <div class="main-layout">
+        <div class="content-area">
+            <div class="top-navigation">
+                <div class="nav-tab">大学中心</div>
+                <div class="nav-tab">产品中心</div>
+                <div class="nav-tab active">学生中心</div>
+            </div>
+            
+            <div class="container">
+                <div id="content-area">
+                    <!-- 大学中心内容 -->
+                    <div id="university-center" class="tab-content" style="display: none;">
+                        <div style="text-align: center; padding: 100px 0; color: #999;">
+                            <h2>大学中心</h2>
+                            <p>内容开发中...</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 产品中心内容 -->
+                    <div id="product-center" class="tab-content" style="display: none;">
+                        <div style="text-align: center; padding: 100px 0; color: #999;">
+                            <h2>产品中心</h2>
+                            <p>内容开发中...</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 学生中心内容 -->
+                    <div id="student-center" class="tab-content">
+                        <div class="student-layout">
+                            <!-- 学生中心的左侧边栏 -->
+                            <div class="student-sidebar">
+                                <div class="sidebar-section">
+                                    <div class="sidebar-title active" data-target="student-service">学生服务</div>
+                                </div>
+                                
+                                <div class="sidebar-section">
+                                    <div class="sidebar-title" data-target="student-follow">学生跟进LC</div>
+                                </div>
+                            </div>
+                            
+                            <!-- 学生中心的主内容区 -->
+                            <div class="student-content">
+                                
+                                <!-- 学生服务内容 -->
+                                <div id="student-service" class="sub-content">
+                                    <!-- 功能栏 -->
+                                    <div class="function-bar">
+                                        <button class="function-btn home-subscribe-btn">
+                                            <span class="btn-icon">📋</span>
+                                            <span class="btn-text">本校课程订阅</span>
+                                        </button>
+                                        <button class="function-btn product-subscribe-btn">
+                                            <span class="btn-icon">🔔</span>
+                                            <span class="btn-text">产品课程订阅</span>
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="table-container">
+                                        <table class="student-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>选择</th>
+                                                    <th>学生姓名</th>
+                                                    <th>学生学校</th>
+                                                    <th>本校意向课程</th>
+                                                    <th>已选课程</th>
+                                                    <th>上课形式</th>
+                                                    <th>学习周期</th>
+                                                    <th>班级代码</th>
+                                                    <th>状态</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- Baoyan Han - 第一门意向课程的三个产品课程 -->
+                                                <tr>
+                                                    <td><input type="checkbox" class="course-checkbox" /></td>
+                                                    <td class="student-name" rowspan="3">Baoyan Han</td>
+                                                    <td rowspan="3">The Ohio State University</td>
+                                                    <td rowspan="3">
+                                                        <span class="course-link">HTHRHSC 3400</span> (Introduction to Health Promotion and Disease Prevention)
+                                                    </td>
+                                                    <td>
+                                                        <span class="course-link">EXSC 221</span> (Science of Wellness) - Brigham Young University
+                                                    </td>
+                                                    <td>Self-Paced, Asynchronous ⚠️</td>
+                                                    <td>2025-09-18 到 2026-09-18</td>
+                                                    <td>EXSC 22108</td>
+                                                    <td><span class="status completed">认证成功 已确认</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><input type="checkbox" class="course-checkbox" /></td>
+                                                    <td>
+                                                        <span class="course-link">HLTH 2010</span> (Personal Health and Wellness) - Arizona State University
+                                                    </td>
+                                                    <td>Scheduled, Synchronous</td>
+                                                    <td>2025-11-01 到 2026-05-01</td>
+                                                    <td>HLTH 20103</td>
+                                                    <td><span class="status pending">待认证</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><input type="checkbox" class="course-checkbox" /></td>
+                                                    <td>
+                                                        <span class="course-link">KINE 1304</span> (Health and Fitness for Life) - Utah State University
+                                                    </td>
+                                                    <td>Self-Paced, Asynchronous</td>
+                                                    <td>2025-12-01 到 2026-06-01</td>
+                                                    <td>KINE 13042</td>
+                                                    <td><span class="status active">进行中</span></td>
+                                                </tr>
+                                                
+                                                <!-- Sarah Johnson - 第一门意向课程 -->
+                                                <tr>
+                                                    <td><input type="checkbox" class="course-checkbox" /></td>
+                                                    <td class="student-name" rowspan="3">Sarah Johnson</td>
+                                                    <td rowspan="3">University of California, Berkeley</td>
+                                                    <td>
+                                                        <span class="course-link">PSYC 2145</span> (Cognitive Psychology)
+                                                    </td>
+                                                    <td>
+                                                        <span class="course-link">PSYC 111</span> (Introduction to Psychology) - Arizona State University
+                                                    </td>
+                                                    <td>Scheduled, Synchronous</td>
+                                                    <td>2025-08-25 到 2025-12-15</td>
+                                                    <td>PSYC 11103</td>
+                                                    <td><span class="status active">进行中</span></td>
+                                                </tr>
+                                                
+                                                <!-- Sarah Johnson - 第二门意向课程 -->
+                                                <tr>
+                                                    <td><input type="checkbox" class="course-checkbox" /></td>
+                                                    <td>
+                                                        <span class="course-link">STAT 3021</span> (Statistical Methods)
+                                                    </td>
+                                                    <td>
+                                                        <span class="course-link">STAT 1040</span> (Introduction to Statistics) - Brigham Young University
+                                                    </td>
+                                                    <td>Self-Paced, Asynchronous</td>
+                                                    <td>2025-10-15 到 2026-04-15</td>
+                                                    <td>STAT 10401</td>
+                                                    <td><span class="status pending">待认证</span></td>
+                                                </tr>
+                                                
+                                                <!-- Sarah Johnson - 第三门意向课程 -->
+                                                <tr>
+                                                    <td><input type="checkbox" class="course-checkbox" /></td>
+                                                    <td>
+                                                        <span class="course-link">BIOL 1A03</span> (Introductory Biology)
+                                                    </td>
+                                                    <td>
+                                                        <span class="course-link">BIOL 1010</span> (General Biology) - Utah State University
+                                                    </td>
+                                                    <td>Scheduled, Synchronous</td>
+                                                    <td>2025-09-01 到 2025-12-20</td>
+                                                    <td>BIOL 10105</td>
+                                                    <td><span class="status completed">认证成功 已确认</span></td>
+                                                </tr>
+                                                
+                                                <!-- Michael Chen -->
+                                                <tr>
+                                                    <td><input type="checkbox" class="course-checkbox" /></td>
+                                                    <td class="student-name">Michael Chen</td>
+                                                    <td>Massachusetts Institute of Technology</td>
+                                                    <td>
+                                                        <span class="course-link">CS 6.006</span> (Introduction to Algorithms)
+                                                    </td>
+                                                    <td>
+                                                        <span class="course-link">CS 1400</span> (Computer Science I) - Utah State University
+                                                    </td>
+                                                    <td>Self-Paced, Asynchronous</td>
+                                                    <td>2025-10-01 到 2026-04-01</td>
+                                                    <td>CS 140002</td>
+                                                    <td><span class="status pending">待认证</span></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                        
+                                </div>
+                                
+                                <!-- 学生跟进LC内容 -->
+                                <div id="student-follow" class="sub-content" style="display: none;">
+                                    <div class="page-header">
+                                        <h1>学生跟进LC管理</h1>
+                                        <p class="page-subtitle">管理学生跟进状态、查看学生报告和订阅信息</p>
+                                    </div>
+                                    
+                                    <!-- 功能操作栏 -->
+                                    <div class="function-bar">
+                                        <div class="function-left">
+                                            <button class="btn-primary" onclick="addStudent()">
+                                                <span>➕</span>
+                                                <span class="btn-text">新增学生</span>
+                                            </button>
+                                            <button class="btn-secondary" onclick="exportStudents()">
+                                                <span>📊</span>
+                                                <span class="btn-text">导出数据</span>
+                                            </button>
+                                            <button class="btn-secondary" onclick="refreshStudents()">
+                                                <span>🔄</span>
+                                                <span class="btn-text">刷新</span>
+                                            </button>
+                                        </div>
+                                        
+                                        <div class="function-right">
+                                            <div class="search-container">
+                                                <input type="text" id="studentSearch" placeholder="搜索学生姓名、学校或微信..." class="search-input">
+                                                <button class="search-btn" onclick="searchStudents()">🔍</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 学生跟进数据表格 -->
+                                    <div class="table-container">
+                                        <table class="data-table student-follow-table">
+                                            <thead>
+                                                <tr>
+                                                    <th class="checkbox-col">
+                                                        <input type="checkbox" id="selectAllStudents" onchange="toggleAllStudents(this)">
+                                                    </th>
+                                                    <th class="student-name-col">学生姓名</th>
+                                                    <th class="school-col">学生学校</th>
+                                                    <th class="entry-time-col">流量进入时间</th>
+                                                    <th class="next-follow-col">下次跟进时间</th>
+                                                    <th class="status-col">跟进状态</th>
+                                                    <th class="wechat-col">微信名称</th>
+                                                    <th class="report-col">学生报告</th>
+                                                    <th class="subscription-col">课程订阅</th>
+                                                    <th class="action-col">操作</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="studentFollowTableBody">
+                                                <tr class="student-row">
+                                                    <td><input type="checkbox" class="student-checkbox" value="1"></td>
+                                                    <td class="student-name">张明</td>
+                                                    <td class="school-name">北京大学</td>
+                                                    <td class="entry-time">2024-10-15 14:30</td>
+                                                    <td class="next-follow">2024-10-28 10:00</td>
+                                                    <td class="status">
+                                                        <span class="status-badge status-pending">待跟进</span>
+                                                    </td>
+                                                    <td class="wechat-name">明明学习</td>
+                                                    <td class="report-status">
+                                                        <button class="btn-link" onclick="viewReport(1)">查看报告</button>
+                                                    </td>
+                                                    <td class="subscription-info">数学提升班</td>
+                                                    <td class="actions">
+                                                        <button class="btn-edit" onclick="editStudent(1)" title="编辑">✏️</button>
+                                                        <button class="btn-follow" onclick="addFollowRecord(1)" title="跟进">📝</button>
+                                                        <button class="btn-delete" onclick="deleteStudent(1)" title="删除">🗑️</button>
+                                                    </td>
+                                                </tr>
+                                                <tr class="student-row">
+                                                    <td><input type="checkbox" class="student-checkbox" value="2"></td>
+                                                    <td class="student-name">李小雨</td>
+                                                    <td class="school-name">清华大学</td>
+                                                    <td class="entry-time">2024-10-18 09:20</td>
+                                                    <td class="next-follow">2024-10-29 15:30</td>
+                                                    <td class="status">
+                                                        <span class="status-badge status-following">跟进中</span>
+                                                    </td>
+                                                    <td class="wechat-name">雨天学习</td>
+                                                    <td class="report-status">
+                                                        <button class="btn-link" onclick="viewReport(2)">查看报告</button>
+                                                    </td>
+                                                    <td class="subscription-info">英语口语班, 写作提高班</td>
+                                                    <td class="actions">
+                                                        <button class="btn-edit" onclick="editStudent(2)" title="编辑">✏️</button>
+                                                        <button class="btn-follow" onclick="addFollowRecord(2)" title="跟进">📝</button>
+                                                        <button class="btn-delete" onclick="deleteStudent(2)" title="删除">🗑️</button>
+                                                    </td>
+                                                </tr>
+                                                <tr class="student-row">
+                                                    <td><input type="checkbox" class="student-checkbox" value="3"></td>
+                                                    <td class="student-name">王晓华</td>
+                                                    <td class="school-name">上海交通大学</td>
+                                                    <td class="entry-time">2024-10-20 16:45</td>
+                                                    <td class="next-follow">2024-10-30 11:00</td>
+                                                    <td class="status">
+                                                        <span class="status-badge status-completed">已完成</span>
+                                                    </td>
+                                                    <td class="wechat-name">小华同学</td>
+                                                    <td class="report-status">
+                                                        <button class="btn-link" onclick="viewReport(3)">查看报告</button>
+                                                    </td>
+                                                    <td class="subscription-info">物理竞赛班</td>
+                                                    <td class="actions">
+                                                        <button class="btn-edit" onclick="editStudent(3)" title="编辑">✏️</button>
+                                                        <button class="btn-follow" onclick="addFollowRecord(3)" title="跟进">📝</button>
+                                                        <button class="btn-delete" onclick="deleteStudent(3)" title="删除">🗑️</button>
+                                                    </td>
+                                                </tr>
+                                                <tr class="student-row">
+                                                    <td><input type="checkbox" class="student-checkbox" value="4"></td>
+                                                    <td class="student-name">陈思远</td>
+                                                    <td class="school-name">复旦大学</td>
+                                                    <td class="entry-time">2024-10-22 13:15</td>
+                                                    <td class="next-follow">2024-10-31 14:00</td>
+                                                    <td class="status">
+                                                        <span class="status-badge status-pending">待跟进</span>
+                                                    </td>
+                                                    <td class="wechat-name">思远学子</td>
+                                                    <td class="report-status">
+                                                        <button class="btn-link" onclick="viewReport(4)">查看报告</button>
+                                                    </td>
+                                                    <td class="subscription-info">化学实验班, 生物基础班</td>
+                                                    <td class="actions">
+                                                        <button class="btn-edit" onclick="editStudent(4)" title="编辑">✏️</button>
+                                                        <button class="btn-follow" onclick="addFollowRecord(4)" title="跟进">📝</button>
+                                                        <button class="btn-delete" onclick="deleteStudent(4)" title="删除">🗑️</button>
+                                                    </td>
+                                                </tr>
+                                                <tr class="student-row">
+                                                    <td><input type="checkbox" class="student-checkbox" value="5"></td>
+                                                    <td class="student-name">刘佳妮</td>
+                                                    <td class="school-name">浙江大学</td>
+                                                    <td class="entry-time">2024-10-25 10:30</td>
+                                                    <td class="next-follow">2024-11-01 09:30</td>
+                                                    <td class="status">
+                                                        <span class="status-badge status-following">跟进中</span>
+                                                    </td>
+                                                    <td class="wechat-name">佳妮加油</td>
+                                                    <td class="report-status">
+                                                        <button class="btn-link" onclick="viewReport(5)">查看报告</button>
+                                                    </td>
+                                                    <td class="subscription-info">计算机编程班</td>
+                                                    <td class="actions">
+                                                        <button class="btn-edit" onclick="editStudent(5)" title="编辑">✏️</button>
+                                                        <button class="btn-follow" onclick="addFollowRecord(5)" title="跟进">📝</button>
+                                                        <button class="btn-delete" onclick="deleteStudent(5)" title="删除">🗑️</button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    
+                                    <!-- 分页控件 -->
+                                    <div class="pagination-container">
+                                        <div class="pagination-info">
+                                            共 5 条记录，第 1/1 页
+                                        </div>
+                                        <div class="pagination-controls">
+                                            <button class="pagination-btn" disabled>上一页</button>
+                                            <span class="pagination-current">1</span>
+                                            <button class="pagination-btn" disabled>下一页</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 学生选课分析页面 -->
+    <div id="student-analysis-page" class="page-container" style="display: none;">
+        <div class="container">
+            <!-- 页面头部 -->
+            <div class="page-header">
+                <div class="header-left">
+                    <button class="back-btn" onclick="backToStudentFollow()">
+                        <span>←</span>
+                        <span>返回学生跟进</span>
+                    </button>
+                    <h1 id="student-analysis-title">学生选课分析</h1>
+                    <p class="page-subtitle">查看学生详细档案、选课情况和分析报告</p>
+                </div>
+            </div>
+            
+            <!-- Tab导航栏 -->
+            <div class="analysis-tab-container">
+                <div class="analysis-tab-nav">
+                    <button class="analysis-tab-btn active" data-target="student-profile">学生档案</button>
+                    <button class="analysis-tab-btn" data-target="autonomous-selection">自主选课</button>
+                    <button class="analysis-tab-btn" data-target="selected-courses">学生已选课程</button>
+                    <button class="analysis-tab-btn" data-target="report-management">选课报告管理</button>
+                    <button class="analysis-tab-btn" data-target="subscription-info">订阅课程信息</button>
+                </div>
+            </div>
+            
+            <!-- Tab内容区域 -->
+            <div class="analysis-content-container">
+                <!-- 学生档案 -->
+                <div id="student-profile" class="analysis-tab-content active">
+                    <div class="content-placeholder">
+                        <h3>学生档案</h3>
+                        <p>学生基础信息、联系方式、学习背景等详细档案内容</p>
+                    </div>
+                </div>
+                
+                <!-- 自主选课 -->
+                <div id="autonomous-selection" class="analysis-tab-content">
+                    <div class="content-placeholder">
+                        <h3>自主选课</h3>
+                        <p>学生自主选择课程的记录和偏好分析</p>
+                    </div>
+                </div>
+                
+                <!-- 学生已选课程 -->
+                <div id="selected-courses" class="analysis-tab-content">
+                    <div class="content-placeholder">
+                        <h3>学生已选课程</h3>
+                        <p>学生当前已报名的所有课程列表和状态</p>
+                    </div>
+                </div>
+                
+                <!-- 选课报告管理 -->
+                <div id="report-management" class="analysis-tab-content">
+                    <div class="content-placeholder">
+                        <h3>选课报告管理</h3>
+                        <p>生成、查看和管理学生的选课分析报告</p>
+                    </div>
+                </div>
+                
+                <!-- 订阅课程信息 -->
+                <div id="subscription-info" class="analysis-tab-content">
+                    <div class="content-placeholder">
+                        <h3>订阅课程信息</h3>
+                        <p>学生订阅的课程详细信息和订阅状态</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 订阅条件模态框 -->
+    <div id="subscribeModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">课程订阅条件设置</h3>
+                <button class="modal-close" onclick="closeSubscribeModal()">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <!-- 单门课程模式：顶部信息区 -->
+                <div class="info-header" id="singleCourseInfo">
+                    <div class="info-item">
+                        <label class="info-label">学生姓名</label>
+                        <div class="info-value" id="studentNameField">-</div>
+                    </div>
+                    <div class="info-item">
+                        <label class="info-label">订阅课程</label>
+                        <div class="info-value" id="selectedCoursesField">-</div>
+                    </div>
+                </div>
+                
+                <!-- 批量课程模式：信息区和统一设置区 -->
+                <div class="batch-unified-section" id="batchUnifiedSection" style="display: none;">
+                    <!-- 批量模式的顶部信息区 -->
+                    <div class="batch-info-header">
+                        <div class="info-item">
+                            <label class="info-label">学生姓名</label>
+                            <div class="info-value" id="batchStudentNameField">-</div>
+                        </div>
+                        <div class="info-item course-list-item">
+                            <label class="info-label" id="batchCoursesTitle">订阅课程</label>
+                            <div class="info-value course-list-container">
+                                <div class="course-list-scroll" id="batchSelectedCoursesField">
+                                    <!-- 课程列表将通过JavaScript动态生成 -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <form id="subscribeForm">
+                    <!-- 订阅条件设置 -->
+                    <div class="form-section">
+                        <h3 class="section-title" id="formSectionTitle">订阅条件设置</h3>
+                        <p class="section-description" id="formSectionDescription" style="display: none;">为所有选中的课程设置统一的订阅条件，您也可以滑到底部，为单门课程进行个性化调整</p>
+                        
+                        <div class="form-grid">
+                            <!-- 学年季度 -->
+                            <div class="form-field">
+                                <div class="field-left">
+                                    <div class="field-header">
+                                        <div class="field-title-group">
+                                            <label class="field-label">学年季度</label>
+                                            <span class="field-hint">选择您期望上课的学期</span>
+                                        </div>
+                                        <div class="switch-wrapper">
+                                            <span class="switch-label">必须满足</span>
+                                            <label class="switch">
+                                                <input type="checkbox" name="semesterRequired">
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="field-control">
+                                        <select name="semester" class="form-select">
+                                            <option value="">请选择学期</option>
+                                            <option value="2025-2026-Fall">2025-2026 Fall</option>
+                                            <option value="2025-2026-Winter">2025-2026 Winter</option>
+                                            <option value="2025-2026-Summer">2025-2026 Summer</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 开课日期 -->
+                            <div class="form-field">
+                                <div class="field-left">
+                                    <div class="field-header">
+                                        <div class="field-title-group">
+                                            <label class="field-label">开课日期</label>
+                                            <span class="field-hint">课程开始日期的可接受范围</span>
+                                        </div>
+                                        <div class="switch-wrapper">
+                                            <span class="switch-label">必须满足</span>
+                                            <label class="switch">
+                                                <input type="checkbox" name="dateRequired">
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="field-control">
+                                        <div class="date-range-wrapper">
+                                            <input type="date" id="startDate" name="startDate" class="form-input date-input">
+                                            <span class="date-separator">至</span>
+                                            <input type="date" id="endDate" name="endDate" class="form-input date-input">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 上课形式 -->
+                            <div class="form-field">
+                                <div class="field-left">
+                                    <div class="field-header">
+                                        <div class="field-title-group">
+                                            <label class="field-label">上课形式</label>
+                                            <span class="field-hint">选择您偏好的上课形式</span>
+                                        </div>
+                                        <div class="switch-wrapper">
+                                            <span class="switch-label">必须满足</span>
+                                            <label class="switch">
+                                                <input type="checkbox" name="formatRequired">
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="field-control">
+                                        <select name="format" class="form-select">
+                                            <option value="">请选择上课形式</option>
+                                            <option value="online-live">线上直播</option>
+                                            <option value="online-recorded">线上非直播</option>
+                                            <option value="offline">线下</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 课程时长 -->
+                            <div class="form-field">
+                                <div class="field-left">
+                                    <div class="field-header">
+                                        <div class="field-title-group">
+                                            <label class="field-label">课程时长</label>
+                                            <span class="field-hint">课程时长的可接受条件</span>
+                                        </div>
+                                        <div class="switch-wrapper">
+                                            <span class="switch-label">必须满足</span>
+                                            <label class="switch">
+                                                <input type="checkbox" name="durationRequired">
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="field-control">
+                                        <div class="combo-input">
+                                            <select name="durationOperator" class="combo-select">
+                                                <option value="equal">等于</option>
+                                                <option value="gte">大于等于</option>
+                                                <option value="lte">小于等于</option>
+                                            </select>
+                                            <input type="number" id="duration" name="duration" min="1" max="52" class="form-input combo-number">
+                                            <span class="combo-unit">周</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 学分数量 -->
+                            <div class="form-field">
+                                <div class="field-left">
+                                    <div class="field-header">
+                                        <div class="field-title-group">
+                                            <label class="field-label">学分数量</label>
+                                            <span class="field-hint">课程的学分值要求</span>
+                                        </div>
+                                        <div class="switch-wrapper">
+                                            <span class="switch-label">必须满足</span>
+                                            <label class="switch">
+                                                <input type="checkbox" name="creditsRequired">
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="field-control">
+                                        <div class="combo-input">
+                                            <select name="creditsOperator" class="combo-select">
+                                                <option value="equal">等于</option>
+                                                <option value="gte">大于等于</option>
+                                                <option value="lte">小于等于</option>
+                                            </select>
+                                            <input type="number" id="credits" name="credits" min="1" max="10" class="form-input combo-number">
+                                            <span class="combo-unit">学分</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 课程价格 -->
+                            <div class="form-field">
+                                <div class="field-left">
+                                    <div class="field-header">
+                                        <div class="field-title-group">
+                                            <label class="field-label">课程价格</label>
+                                            <span class="field-hint">可接受的最高课程价格</span>
+                                        </div>
+                                        <div class="switch-wrapper">
+                                            <span class="switch-label">必须满足</span>
+                                            <label class="switch">
+                                                <input type="checkbox" name="priceRequired">
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="field-control">
+                                        <div class="combo-input">
+                                            <select name="priceOperator" class="combo-select">
+                                                <option value="lte">小于等于</option>
+                                            </select>
+                                            <input type="number" id="price" name="price" min="0" step="10" class="form-input combo-number">
+                                            <span class="combo-unit">美元</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                
+                <!-- 批量课程模式：课程列表区 -->
+                <div class="batch-course-list" id="batchCourseList" style="display: none;">
+                    <div class="course-list-card">
+                        <h4 class="list-title">课程列表与单独调整</h4>
+                        <div class="course-items" id="courseItems">
+                            <!-- 课程项目将通过JavaScript动态生成 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-cancel" onclick="closeSubscribeModal()">取消</button>
+                <button type="button" class="btn btn-save" onclick="submitSubscribe()">保存设置</button>
+            </div>
+        </div>
+    </div>    <script>
+
+        
+        // 顶部导航标签切换
+        document.querySelectorAll('.nav-tab').forEach((tab, index) => {
+            tab.addEventListener('click', function() {
+                // 移除所有活跃状态
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                // 添加当前标签的活跃状态
+                this.classList.add('active');
+                
+                // 隐藏所有内容
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.style.display = 'none';
+                });
+                
+                // 显示对应内容
+                if (index === 0) { // 大学中心
+                    document.getElementById('university-center').style.display = 'block';
+                } else if (index === 1) { // 产品中心
+                    document.getElementById('product-center').style.display = 'block';
+                } else if (index === 2) { // 学生中心
+                    document.getElementById('student-center').style.display = 'block';
+                }
+            });
+        });
+        
+        // 默认显示学生中心
+        document.getElementById('student-center').style.display = 'block';
+        
+        // 学生中心左侧边栏功能项点击
+        document.querySelectorAll('.student-sidebar .sidebar-title').forEach(item => {
+            item.addEventListener('click', function() {
+                // 移除所有选中状态
+                document.querySelectorAll('.student-sidebar .sidebar-title').forEach(i => i.classList.remove('active'));
+                // 添加当前项的选中状态
+                this.classList.add('active');
+                
+                // 隐藏所有子内容
+                document.querySelectorAll('.sub-content').forEach(content => {
+                    content.style.display = 'none';
+                });
+                
+                // 显示对应子内容
+                const target = this.getAttribute('data-target');
+                document.getElementById(target).style.display = 'block';
+            });
+        });
+        
+        // 订阅按钮点击事件
+        document.querySelector('.home-subscribe-btn').addEventListener('click', function() {
+            openSubscribeModal('本校课程订阅');
+        });
+        
+        document.querySelector('.product-subscribe-btn').addEventListener('click', function() {
+            openSubscribeModal('产品课程订阅');
+        });
+        
+        // 打开订阅模态框
+        function openSubscribeModal(type) {
+            const selectedCourses = getSelectedCourses();
+            if (selectedCourses.length === 0) {
+                alert('请先选择要订阅的课程');
+                return;
+            }
+            
+            if (selectedCourses.length === 1) {
+                // 单门课程订阅
+                document.getElementById('modalTitle').textContent = type + '条件设置';
+                fillModalData(selectedCourses, type);
+                showSingleCourseMode();
+            } else {
+                // 批量课程订阅
+                document.getElementById('modalTitle').textContent = type.replace('订阅', '批量订阅') + '条件设置';
+                fillBatchModalData(selectedCourses, type);
+                showBatchCourseMode();
+            }
+            
+            document.getElementById('subscribeModal').style.display = 'flex';
+        }
+        
+        // 显示单门课程模式
+        function showSingleCourseMode() {
+            document.getElementById('singleCourseInfo').style.display = 'grid';
+            document.getElementById('batchUnifiedSection').style.display = 'none';
+            document.getElementById('batchCourseList').style.display = 'none';
+            
+            // 恢复单门课程的标题和隐藏说明
+            document.getElementById('formSectionTitle').textContent = '订阅条件设置';
+            document.getElementById('formSectionDescription').style.display = 'none';
+        }
+        
+        // 显示批量课程模式
+        function showBatchCourseMode() {
+            document.getElementById('singleCourseInfo').style.display = 'none';
+            document.getElementById('batchUnifiedSection').style.display = 'block';
+            document.getElementById('batchCourseList').style.display = 'block';
+            
+            // 更新表单标题和说明
+            document.getElementById('formSectionTitle').textContent = '统一订阅条件设置';
+            document.getElementById('formSectionDescription').style.display = 'block';
+        }
+        
+        // 关闭订阅模态框
+        function closeSubscribeModal() {
+            document.getElementById('subscribeModal').style.display = 'none';
+            // 清理批量模式的动态内容
+            document.getElementById('courseItems').innerHTML = '';
+        }
+        
+        // 获取选中的课程
+        function getSelectedCourses() {
+            const selectedCourses = [];
+            const checkboxes = document.querySelectorAll('.course-checkbox:checked');
+            
+            checkboxes.forEach(checkbox => {
+                const row = checkbox.closest('tr');
+                const studentName = row.querySelector('.student-name') ? 
+                    row.querySelector('.student-name').textContent : 
+                    row.parentElement.querySelector('.student-name').textContent;
+                
+                const courseCell = row.cells[4]; // 已选课程列
+                const courseName = courseCell.textContent.trim();
+                
+                selectedCourses.push({
+                    student: studentName,
+                    course: courseName
+                });
+            });
+            
+            return selectedCourses;
+        }
+        
+        // 填充模态框数据（单门课程）
+        function fillModalData(selectedCourses, type) {
+            // 填充学生姓名（取第一个学生）
+            document.getElementById('studentNameField').textContent = selectedCourses[0].student;
+            
+            // 填充选中的课程
+            const courseList = selectedCourses.map(item => `${item.course}`).join(', ');
+            document.getElementById('selectedCoursesField').textContent = courseList;
+        }
+        
+        // 填充批量模态框数据
+        function fillBatchModalData(selectedCourses, type) {
+            // 填充批量模式的学生姓名和课程信息
+            document.getElementById('batchStudentNameField').textContent = selectedCourses[0].student;
+            
+            // 填充选中的课程（垂直列表显示）
+            const courseCount = selectedCourses.length;
+            const courseNames = [...new Set(selectedCourses.map(item => item.course))];
+            
+            // 生成垂直课程列表HTML
+            let courseListHTML = `
+                <div class="course-count-title">已选课程 (${courseNames.length}门)</div>
+                <div class="course-list-scroll">
+            `;
+            
+            courseNames.forEach(courseName => {
+                courseListHTML += `<div class="course-item-row">${courseName}</div>`;
+            });
+            
+            courseListHTML += `</div>`;
+            document.getElementById('batchSelectedCoursesField').innerHTML = courseListHTML;
+            
+            // 生成课程列表
+            const courseItemsContainer = document.getElementById('courseItems');
+            courseItemsContainer.innerHTML = '';
+            
+            selectedCourses.forEach((course, index) => {
+                const courseItem = createCourseItem(course, index);
+                courseItemsContainer.appendChild(courseItem);
+            });
+        }
+        
+        // 创建课程项目元素
+        function createCourseItem(course, index) {
+            const courseItem = document.createElement('div');
+            courseItem.className = 'course-item';
+            courseItem.setAttribute('data-course-index', index);
+            
+            courseItem.innerHTML = `
+                <div class="course-header">
+                    <div class="course-name">${course.course}</div>
+                    <div class="course-status">
+                        <span class="status-label" id="status-${index}">默认使用统一设置</span>
+                        <button class="toggle-btn" id="toggle-${index}" onclick="toggleIndividualSetting(${index})">
+                            单独设置
+                        </button>
+                    </div>
+                </div>
+                <div class="individual-form" id="form-${index}">
+                    <!-- 独立设置表单将通过JavaScript克隆生成 -->
+                </div>
+            `;
+            
+            return courseItem;
+        }
+        
+        // 切换独立设置
+        function toggleIndividualSetting(courseIndex) {
+            const statusLabel = document.getElementById(`status-${courseIndex}`);
+            const toggleBtn = document.getElementById(`toggle-${courseIndex}`);
+            const individualForm = document.getElementById(`form-${courseIndex}`);
+            
+            if (individualForm.classList.contains('show')) {
+                // 收起独立设置
+                individualForm.classList.remove('show');
+                statusLabel.textContent = '默认使用统一设置';
+                statusLabel.classList.remove('active');
+                toggleBtn.textContent = '单独设置';
+                toggleBtn.classList.remove('secondary');
+                
+                // 清空独立表单
+                individualForm.innerHTML = '';
+            } else {
+                // 展开独立设置
+                const clonedForm = cloneUnifiedForm();
+                fillClonedFormWithUnifiedData(clonedForm);
+                individualForm.appendChild(clonedForm);
+                
+                individualForm.classList.add('show');
+                statusLabel.textContent = '使用单独设置';
+                statusLabel.classList.add('active');
+                toggleBtn.textContent = '收起并使用统一设置';
+                toggleBtn.classList.add('secondary');
+            }
+        }
+        
+        // 克隆统一设置表单
+        function cloneUnifiedForm() {
+            const originalForm = document.querySelector('#subscribeForm .form-section');
+            const clonedForm = originalForm.cloneNode(true);
+            
+            // 修改克隆表单的标题
+            const title = clonedForm.querySelector('.section-title');
+            title.textContent = '单独设置';
+            
+            // 修改说明文字
+            const description = clonedForm.querySelector('.section-description');
+            if (description) {
+                description.textContent = '您正在为本课程进行个性化设置。此处的条件将优先于统一设置，并仅应用于该门课程。';
+                description.style.display = 'block';
+            }
+            
+            // 为克隆表单的控件添加唯一标识符
+            const inputs = clonedForm.querySelectorAll('input, select');
+            inputs.forEach((input, index) => {
+                if (input.name) {
+                    input.name = input.name + '_individual';
+                }
+                if (input.id) {
+                    input.id = input.id + '_individual';
+                }
+            });
+            
+            return clonedForm;
+        }
+        
+        // 填充克隆表单的数据
+        function fillClonedFormWithUnifiedData(clonedForm) {
+            const unifiedForm = document.querySelector('#subscribeForm');
+            
+            // 复制统一设置的表单数据到克隆表单
+            const unifiedInputs = unifiedForm.querySelectorAll('input, select');
+            const clonedInputs = clonedForm.querySelectorAll('input, select');
+            
+            unifiedInputs.forEach((unifiedInput, index) => {
+                const clonedInput = clonedInputs[index];
+                if (clonedInput) {
+                    if (unifiedInput.type === 'checkbox') {
+                        clonedInput.checked = unifiedInput.checked;
+                    } else {
+                        clonedInput.value = unifiedInput.value;
+                    }
+                }
+            });
+        }
+        
+        // 提交订阅
+        function submitSubscribe() {
+            const selectedCourses = getSelectedCourses();
+            
+            if (selectedCourses.length === 1) {
+                // 单门课程提交
+                submitSingleCourse();
+            } else {
+                // 批量课程提交
+                submitBatchCourses(selectedCourses);
+            }
+        }
+        
+        // 提交单门课程
+        function submitSingleCourse() {
+            alert('订阅条件已保存！系统将根据设置的条件监控课程状态。');
+            closeSubscribeModal();
+        }
+        
+        // 提交批量课程
+        function submitBatchCourses(selectedCourses) {
+            const coursesData = [];
+            
+            selectedCourses.forEach((course, index) => {
+                const individualForm = document.getElementById(`form-${index}`);
+                const useIndividual = individualForm.classList.contains('show');
+                
+                let formData;
+                if (useIndividual) {
+                    // 收集单独设置的数据
+                    formData = collectFormData(individualForm);
+                } else {
+                    // 收集统一设置的数据
+                    formData = collectFormData(document.querySelector('#subscribeForm'));
+                }
+                
+                coursesData.push({
+                    courseIndex: index,
+                    courseName: course.course,
+                    student: course.student,
+                    settings: formData,
+                    useIndividual: useIndividual
+                });
+            });
+            
+            console.log('批量订阅数据:', coursesData);
+            alert(`已为 ${selectedCourses.length} 门课程保存订阅条件！`);
+            closeSubscribeModal();
+        }
+        
+        // 收集表单数据
+        function collectFormData(formContainer) {
+            const data = {};
+            const inputs = formContainer.querySelectorAll('input, select');
+            
+            inputs.forEach(input => {
+                if (input.type === 'checkbox') {
+                    data[input.name] = input.checked;
+                } else {
+                    data[input.name] = input.value;
+                }
+            });
+            
+            return data;
+        }
+        
+        // 点击模态框外部关闭
+        document.getElementById('subscribeModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeSubscribeModal();
+            }
+        });
+        
+        // 学生跟进相关功能函数
+        function toggleAllStudents(checkbox) {
+            const checkboxes = document.querySelectorAll('.student-checkbox');
+            checkboxes.forEach(cb => cb.checked = checkbox.checked);
+        }
+        
+        function addStudent() {
+            alert('新增学生功能开发中...');
+        }
+        
+        function exportStudents() {
+            alert('导出数据功能开发中...');
+        }
+        
+        function refreshStudents() {
+            alert('数据已刷新');
+        }
+        
+        function searchStudents() {
+            const searchValue = document.getElementById('studentSearch').value.toLowerCase();
+            const rows = document.querySelectorAll('.student-row');
+            
+            rows.forEach(row => {
+                const studentName = row.querySelector('.student-name').textContent.toLowerCase();
+                const schoolName = row.querySelector('.school-name').textContent.toLowerCase();
+                const wechatName = row.querySelector('.wechat-name').textContent.toLowerCase();
+                
+                if (studentName.includes(searchValue) || 
+                    schoolName.includes(searchValue) || 
+                    wechatName.includes(searchValue)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+        
+        function editStudent(studentId) {
+            alert(`编辑学生 ID: ${studentId} 功能开发中...`);
+        }
+        
+        function addFollowRecord(studentId) {
+            alert(`添加跟进记录 - 学生 ID: ${studentId} 功能开发中...`);
+        }
+        
+        function deleteStudent(studentId) {
+            if (confirm('确定要删除该学生信息吗？')) {
+                alert(`删除学生 ID: ${studentId} 功能开发中...`);
+            }
+        }
+        
+        function viewReport(studentId) {
+            // 获取学生信息
+            const studentRow = document.querySelector(`input[value="${studentId}"]`).closest('.student-row');
+            const studentName = studentRow.querySelector('.student-name').textContent;
+            
+            // 更新分析页面标题
+            document.getElementById('student-analysis-title').textContent = `${studentName} - 学生选课分析`;
+            
+            // 隐藏主页面，显示分析页面
+            document.querySelector('.main-layout').style.display = 'none';
+            document.getElementById('student-analysis-page').style.display = 'block';
+        }
+        
+        // 搜索框回车事件
+        document.getElementById('studentSearch').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchStudents();
+            }
+        });
+        
+        // 返回学生跟进页面
+        function backToStudentFollow() {
+            document.getElementById('student-analysis-page').style.display = 'none';
+            document.querySelector('.main-layout').style.display = 'block';
+        }
+        
+        // 学生选课分析页面Tab切换功能
+        document.addEventListener('DOMContentLoaded', function() {
+            // 绑定分析页面Tab切换事件
+            const analysisTabBtns = document.querySelectorAll('.analysis-tab-btn');
+            analysisTabBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // 移除所有active状态
+                    analysisTabBtns.forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.analysis-tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    
+                    // 添加当前选中的active状态
+                    this.classList.add('active');
+                    const target = this.getAttribute('data-target');
+                    document.getElementById(target).classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
