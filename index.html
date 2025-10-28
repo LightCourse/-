@@ -1072,6 +1072,357 @@
             overflow-y: auto;
         }
         
+        /* 学生档案表单样式 */
+        .student-profile-form {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .profile-form-field {
+            margin-bottom: 24px;
+        }
+        
+        .profile-form-field label {
+            display: block;
+            font-size: var(--font-size-md);
+            font-weight: var(--font-weight-medium);
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        
+        .profile-form-field input[type="text"],
+        .profile-form-field select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            font-size: var(--font-size-md);
+            color: var(--text-primary);
+            background: white;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+        }
+        
+        .profile-form-field input[type="text"]:focus,
+        .profile-form-field select:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+        }
+        
+        .profile-form-field input[type="text"]:disabled {
+            background-color: #f8f9fa;
+            color: #6c757d;
+            cursor: not-allowed;
+            border-color: #e9ecef;
+        }
+        
+        .profile-radio-group {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        
+        .profile-radio-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .profile-radio-option input[type="radio"] {
+            width: 16px;
+            height: 16px;
+            margin: 0;
+        }
+        
+        .profile-radio-option label {
+            font-size: var(--font-size-md);
+            color: var(--text-primary);
+            margin: 0;
+            cursor: pointer;
+        }
+        
+        .profile-checkbox-group {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        
+        .profile-checkbox-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .profile-checkbox-option input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            margin: 0;
+        }
+        
+        .profile-checkbox-option label {
+            font-size: var(--font-size-md);
+            color: var(--text-primary);
+            margin: 0;
+            cursor: pointer;
+        }
+        
+        .file-upload-area {
+            border: 2px dashed #e9ecef;
+            border-radius: 8px;
+            padding: 40px 20px;
+            text-align: center;
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .file-upload-area:hover {
+            border-color: var(--primary-blue);
+            background: #f0f7ff;
+        }
+        
+        .file-upload-area.dragover {
+            border-color: var(--primary-blue);
+            background: #e6f3ff;
+        }
+        
+        .file-upload-icon {
+            font-size: 48px;
+            color: #6c757d;
+            margin-bottom: 16px;
+        }
+        
+        .file-upload-text {
+            font-size: var(--font-size-md);
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+        
+        .file-upload-hint {
+            font-size: var(--font-size-sm);
+            color: var(--text-muted);
+        }
+        
+        .uploaded-files {
+            margin-top: 16px;
+        }
+        
+        .uploaded-file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+        
+        .uploaded-file-name {
+            font-size: var(--font-size-sm);
+            color: var(--text-primary);
+        }
+        
+        .uploaded-file-remove {
+            background: none;
+            border: none;
+            color: #dc3545;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 4px;
+        }
+        
+        .uploaded-file-remove:hover {
+            color: #c82333;
+        }
+        
+        .profile-submit-btn {
+            width: 100%;
+            padding: 14px 24px;
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--hover-green) 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: var(--font-size-md);
+            font-weight: var(--font-weight-medium);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 32px;
+        }
+        
+        .profile-submit-btn:hover {
+            background: linear-gradient(135deg, var(--hover-green) 0%, var(--dark-green) 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
+        }
+        
+        /* 自主选课Excel表格样式 */
+        .autonomous-course-container {
+            padding: 20px;
+            max-width: 100%;
+            overflow-x: auto;
+        }
+        
+        .course-table-excel {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 13px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        .course-table-excel th {
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+            color: white;
+            padding: 12px 10px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 12px;
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .course-table-excel th:last-child {
+            border-right: none;
+        }
+        
+        .course-table-excel td {
+            padding: 10px;
+            border-bottom: 1px solid #e1e5e9;
+            border-right: 1px solid #e1e5e9;
+            text-align: center;
+            vertical-align: middle;
+            background: white;
+        }
+        
+        .course-table-excel td:last-child {
+            border-right: none;
+        }
+        
+        .course-table-excel tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        .course-table-excel tbody tr:hover {
+            background-color: #e3f2fd;
+        }
+        
+        /* 课程代码列样式 */
+        .course-code-cell {
+            font-family: "Consolas", "Monaco", monospace;
+            font-weight: 600;
+            color: #2c3e50;
+            background-color: #f0f3f7 !important;
+            text-align: left;
+            padding-left: 12px;
+        }
+        
+        /* 课程名称列样式 */
+        .course-name-cell {
+            text-align: left;
+            padding-left: 12px;
+            max-width: 200px;
+            line-height: 1.4;
+        }
+        
+        /* 通识类别样式 */
+        .general-category-cell {
+            font-weight: 500;
+            color: #7b68ee;
+        }
+        
+        /* 复选框列样式 */
+        .checkbox-cell {
+            width: 40px;
+            text-align: center;
+            background-color: #f8f9fa !important;
+        }
+        
+        .course-checkbox {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+        
+        /* 课程对应数量样式 */
+        .correspondence-cell {
+            font-weight: 600;
+        }
+        
+        .correspondence-available {
+            color: #28a745;
+        }
+        
+        .correspondence-none {
+            color: #dc3545;
+        }
+        
+        /* 课程类型标签 */
+        .course-type-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .type-lecture {
+            background-color: #e3f2fd;
+            color: #1565c0;
+        }
+        
+        .type-studio {
+            background-color: #f3e5f5;
+            color: #7b1fa2;
+        }
+        
+        .type-lab {
+            background-color: #e8f5e8;
+            color: #2e7d32;
+        }
+        
+        /* 可售课程单元样式 */
+        .available-units-cell {
+            font-weight: 600;
+        }
+        
+        .units-available {
+            color: #28a745;
+        }
+        
+        .units-none {
+            color: #dc3545;
+        }
+        
+        /* 表格响应式 */
+        @media (max-width: 768px) {
+            .autonomous-course-container {
+                padding: 10px;
+            }
+            
+            .course-table-excel {
+                font-size: 12px;
+            }
+            
+            .course-table-excel th,
+            .course-table-excel td {
+                padding: 8px 6px;
+            }
+            
+            .course-name-cell {
+                max-width: 150px;
+            }
+        }
+        
         .page-header {
             padding: 20px 0 24px 0;
             border-bottom: 1px solid #e1e5e9;
@@ -2155,7 +2506,7 @@
                                                 <tr class="student-row">
                                                     <td><input type="checkbox" class="student-checkbox" value="1"></td>
                                                     <td class="student-name">张明</td>
-                                                    <td class="school-name">北京大学</td>
+                                                    <td class="school-name">Harvard University</td>
                                                     <td class="entry-time">2024-10-15 14:30</td>
                                                     <td class="next-follow">2024-10-28 10:00</td>
                                                     <td class="status">
@@ -2175,7 +2526,7 @@
                                                 <tr class="student-row">
                                                     <td><input type="checkbox" class="student-checkbox" value="2"></td>
                                                     <td class="student-name">李小雨</td>
-                                                    <td class="school-name">清华大学</td>
+                                                    <td class="school-name">Stanford University</td>
                                                     <td class="entry-time">2024-10-18 09:20</td>
                                                     <td class="next-follow">2024-10-29 15:30</td>
                                                     <td class="status">
@@ -2195,7 +2546,7 @@
                                                 <tr class="student-row">
                                                     <td><input type="checkbox" class="student-checkbox" value="3"></td>
                                                     <td class="student-name">王晓华</td>
-                                                    <td class="school-name">上海交通大学</td>
+                                                    <td class="school-name">University of Toronto</td>
                                                     <td class="entry-time">2024-10-20 16:45</td>
                                                     <td class="next-follow">2024-10-30 11:00</td>
                                                     <td class="status">
@@ -2215,7 +2566,7 @@
                                                 <tr class="student-row">
                                                     <td><input type="checkbox" class="student-checkbox" value="4"></td>
                                                     <td class="student-name">陈思远</td>
-                                                    <td class="school-name">复旦大学</td>
+                                                    <td class="school-name">University of British Columbia</td>
                                                     <td class="entry-time">2024-10-22 13:15</td>
                                                     <td class="next-follow">2024-10-31 14:00</td>
                                                     <td class="status">
@@ -2235,7 +2586,7 @@
                                                 <tr class="student-row">
                                                     <td><input type="checkbox" class="student-checkbox" value="5"></td>
                                                     <td class="student-name">刘佳妮</td>
-                                                    <td class="school-name">浙江大学</td>
+                                                    <td class="school-name">McGill University</td>
                                                     <td class="entry-time">2024-10-25 10:30</td>
                                                     <td class="next-follow">2024-11-01 09:30</td>
                                                     <td class="status">
@@ -2307,17 +2658,231 @@
             <div class="analysis-content-container">
                 <!-- 学生档案 -->
                 <div id="student-profile" class="analysis-tab-content active">
-                    <div class="content-placeholder">
-                        <h3>学生档案</h3>
-                        <p>学生基础信息、联系方式、学习背景等详细档案内容</p>
+                    <div class="student-profile-form">
+                        <form id="studentProfileForm">
+                            <!-- 学生姓名 -->
+                            <div class="profile-form-field">
+                                <label for="studentName">学生姓名</label>
+                                <input type="text" id="studentName" name="studentName" value="" disabled>
+                            </div>
+                            
+                            <!-- 学生学校 -->
+                            <div class="profile-form-field">
+                                <label for="studentSchool">学生学校</label>
+                                <input type="text" id="studentSchool" name="studentSchool" value="" disabled>
+                            </div>
+                            
+                            <!-- 转学分需求 -->
+                            <div class="profile-form-field">
+                                <label>转学分需求</label>
+                                <div class="profile-radio-group">
+                                    <div class="profile-radio-option">
+                                        <input type="radio" id="creditTransferYes" name="creditTransfer" value="yes" checked>
+                                        <label for="creditTransferYes">是</label>
+                                    </div>
+                                    <div class="profile-radio-option">
+                                        <input type="radio" id="creditTransferNo" name="creditTransfer" value="no">
+                                        <label for="creditTransferNo">否</label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 上课目的 -->
+                            <div class="profile-form-field">
+                                <label>上课目的</label>
+                                <div class="profile-checkbox-group">
+                                    <div class="profile-checkbox-option">
+                                        <input type="checkbox" id="purposeGraduation" name="coursePurpose" value="graduation" checked>
+                                        <label for="purposeGraduation">毕业</label>
+                                    </div>
+                                    <div class="profile-checkbox-option">
+                                        <input type="checkbox" id="purposeTransfer" name="coursePurpose" value="transfer">
+                                        <label for="purposeTransfer">转学</label>
+                                    </div>
+                                    <div class="profile-checkbox-option">
+                                        <input type="checkbox" id="purposeGradSchool" name="coursePurpose" value="gradschool" checked>
+                                        <label for="purposeGradSchool">申研</label>
+                                    </div>
+                                    <div class="profile-checkbox-option">
+                                        <input type="checkbox" id="purposeStudyAbroad" name="coursePurpose" value="studyabroad">
+                                        <label for="purposeStudyAbroad">游学</label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 学生本校毕业要求 -->
+                            <div class="profile-form-field">
+                                <label for="graduationRequirements">学生本校毕业要求</label>
+                                <div class="file-upload-area" onclick="document.getElementById('graduationReqFile').click()">
+                                    <div class="file-upload-icon">📄</div>
+                                    <div class="file-upload-text">将文件拖到此处，或点击上传</div>
+                                    <div class="file-upload-hint">支持 PDF、Word、图片等格式，最大 10MB</div>
+                                </div>
+                                <input type="file" id="graduationReqFile" name="graduationReqFile" style="display: none;" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif">
+                                <div id="uploadedFiles" class="uploaded-files" style="display: none;">
+                                    <!-- 已上传的文件将显示在这里 -->
+                                </div>
+                            </div>
+                            
+                            <!-- 提交按钮 -->
+                            <button type="submit" class="profile-submit-btn">提交档案搜集</button>
+                        </form>
                     </div>
                 </div>
                 
                 <!-- 自主选课 -->
                 <div id="autonomous-selection" class="analysis-tab-content">
-                    <div class="content-placeholder">
-                        <h3>自主选课</h3>
-                        <p>学生自主选择课程的记录和偏好分析</p>
+                    <div class="autonomous-course-container">
+                        <table class="course-table-excel">
+                            <thead>
+                                <tr>
+                                    <th>选择</th>
+                                    <th>课程代码</th>
+                                    <th>课程名称</th>
+                                    <th>本校通识类别</th>
+                                    <th>课程对应</th>
+                                    <th>课程类型</th>
+                                    <th>对应在售课程单元</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
+                                    <td class="course-code-cell">MATH 21A</td>
+                                    <td class="course-name-cell">Multivariable Calculus</td>
+                                    <td class="general-category-cell">数学与逻辑推理</td>
+                                    <td class="correspondence-cell correspondence-available">对应(20)</td>
+                                    <td><span class="course-type-badge type-lecture">Lecture</span></td>
+                                    <td class="available-units-cell units-available">可售(153)</td>
+                                </tr>
+                                <tr>
+                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
+                                    <td class="course-code-cell">CHEM 17</td>
+                                    <td class="course-name-cell">Principles of General Chemistry</td>
+                                    <td class="general-category-cell">自然科学</td>
+                                    <td class="correspondence-cell correspondence-available">对应(15)</td>
+                                    <td><span class="course-type-badge type-lecture">Lecture</span></td>
+                                    <td class="available-units-cell units-available">可售(87)</td>
+                                </tr>
+                                <tr>
+                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
+                                    <td class="course-code-cell">CHEM 17L</td>
+                                    <td class="course-name-cell">General Chemistry Laboratory</td>
+                                    <td class="general-category-cell">自然科学</td>
+                                    <td class="correspondence-cell correspondence-available">对应(6)</td>
+                                    <td><span class="course-type-badge type-lab">Lab</span></td>
+                                    <td class="available-units-cell units-available">可售(45)</td>
+                                </tr>
+                                <tr>
+                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
+                                    <td class="course-code-cell">PSYC 1</td>
+                                    <td class="course-name-cell">Introduction to Psychology</td>
+                                    <td class="general-category-cell">社会科学</td>
+                                    <td class="correspondence-cell correspondence-available">对应(12)</td>
+                                    <td><span class="course-type-badge type-lecture">Lecture</span></td>
+                                    <td class="available-units-cell units-available">可售(92)</td>
+                                </tr>
+                                <tr>
+                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
+                                    <td class="course-code-cell">ENGL 10A</td>
+                                    <td class="course-name-cell">Expository Writing</td>
+                                    <td class="general-category-cell">语言文学</td>
+                                    <td class="correspondence-cell correspondence-available">对应(8)</td>
+                                    <td><span class="course-type-badge type-studio">Studio</span></td>
+                                    <td class="available-units-cell units-available">可售(67)</td>
+                                </tr>
+                                <tr>
+                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
+                                    <td class="course-code-cell">PHIL 144</td>
+                                    <td class="course-name-cell">Philosophy of Mind</td>
+                                    <td class="general-category-cell">哲学思辨</td>
+                                    <td class="correspondence-cell correspondence-none">暂无</td>
+                                    <td><span class="course-type-badge type-lecture">Lecture</span></td>
+                                    <td class="available-units-cell units-none">暂无可售</td>
+                                </tr>
+                                <tr>
+                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
+                                    <td class="course-code-cell">STAT 104</td>
+                                    <td class="course-name-cell">Introduction to Statistics</td>
+                                    <td class="general-category-cell">数学与逻辑推理</td>
+                                    <td class="correspondence-cell correspondence-available">对应(18)</td>
+                                    <td><span class="course-type-badge type-lecture">Lecture</span></td>
+                                    <td class="available-units-cell units-available">可售(124)</td>
+                                </tr>
+                                <tr>
+                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
+                                    <td class="course-code-cell">HIST 1430</td>
+                                    <td class="course-name-cell">The United States in the World</td>
+                                    <td class="general-category-cell">历史文化</td>
+                                    <td class="correspondence-cell correspondence-available">对应(10)</td>
+                                    <td><span class="course-type-badge type-lecture">Lecture</span></td>
+                                    <td class="available-units-cell units-available">可售(73)</td>
+                                </tr>
+                                <tr>
+                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
+                                    <td class="course-code-cell">VES 10A</td>
+                                    <td class="course-name-cell">Drawing I</td>
+                                    <td class="general-category-cell">艺术审美</td>
+                                    <td class="correspondence-cell correspondence-available">对应(4)</td>
+                                    <td><span class="course-type-badge type-studio">Studio</span></td>
+                                    <td class="available-units-cell units-available">可售(28)</td>
+                                </tr>
+                                <tr>
+                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
+                                    <td class="course-code-cell">ECON 10A</td>
+                                    <td class="course-name-cell">Principles of Economics</td>
+                                    <td class="general-category-cell">社会科学</td>
+                                    <td class="correspondence-cell correspondence-available">对应(25)</td>
+                                    <td><span class="course-type-badge type-lecture">Lecture</span></td>
+                                    <td class="available-units-cell units-available">可售(156)</td>
+                                </tr>
+                                <tr>
+                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
+                                    <td class="course-code-cell">BIOL 50</td>
+                                    <td class="course-name-cell">Introductory Biology</td>
+                                    <td class="general-category-cell">自然科学</td>
+                                    <td class="correspondence-cell correspondence-available">对应(14)</td>
+                                    <td><span class="course-type-badge type-lecture">Lecture</span></td>
+                                    <td class="available-units-cell units-available">可售(98)</td>
+                                </tr>
+                                <tr>
+                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
+                                    <td class="course-code-cell">BIOL 50L</td>
+                                    <td class="course-name-cell">Introductory Biology Laboratory</td>
+                                    <td class="general-category-cell">自然科学</td>
+                                    <td class="correspondence-cell correspondence-available">对应(6)</td>
+                                    <td><span class="course-type-badge type-lab">Lab</span></td>
+                                    <td class="available-units-cell units-available">可售(42)</td>
+                                </tr>
+                                <tr>
+                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
+                                    <td class="course-code-cell">GENED 1001</td>
+                                    <td class="course-name-cell">Stories from the End of the World</td>
+                                    <td class="general-category-cell">跨学科研究</td>
+                                    <td class="correspondence-cell correspondence-none">暂无</td>
+                                    <td><span class="course-type-badge type-lecture">Lecture</span></td>
+                                    <td class="available-units-cell units-none">暂无可售</td>
+                                </tr>
+                                <tr>
+                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
+                                    <td class="course-code-cell">CS 50</td>
+                                    <td class="course-name-cell">Introduction to Computer Science</td>
+                                    <td class="general-category-cell">计算思维</td>
+                                    <td class="correspondence-cell correspondence-available">对应(22)</td>
+                                    <td><span class="course-type-badge type-lecture">Lecture</span></td>
+                                    <td class="available-units-cell units-available">可售(189)</td>
+                                </tr>
+                                <tr>
+                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
+                                    <td class="course-code-cell">PHYS 11</td>
+                                    <td class="course-name-cell">Mechanics and Relativity</td>
+                                    <td class="general-category-cell">自然科学</td>
+                                    <td class="correspondence-cell correspondence-available">对应(16)</td>
+                                    <td><span class="course-type-badge type-lecture">Lecture</span></td>
+                                    <td class="available-units-cell units-available">可售(76)</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
                 
@@ -3290,9 +3855,20 @@
             // 获取学生信息
             const studentRow = document.querySelector(`input[value="${studentId}"]`).closest('.student-row');
             const studentName = studentRow.querySelector('.student-name').textContent;
+            const studentSchool = studentRow.querySelector('.school-name').textContent;
+            
+            // 存储当前学生信息到全局变量
+            window.currentStudentInfo = {
+                id: studentId,
+                name: studentName,
+                school: studentSchool
+            };
             
             // 更新分析页面标题
             document.getElementById('student-analysis-title').textContent = `${studentName} - 学生选课分析`;
+            
+            // 立即更新学生档案数据
+            updateStudentProfileData();
             
             // 隐藏主页面，显示分析页面
             document.querySelector('.main-layout').style.display = 'none';
@@ -3492,9 +4068,294 @@
                     this.classList.add('active');
                     const target = this.getAttribute('data-target');
                     document.getElementById(target).classList.add('active');
+                    
+                    // 如果切换到学生档案页面，更新学生信息
+                    if (target === 'student-profile') {
+                        updateStudentProfileData();
+                    }
                 });
             });
+            
+            // 初始化文件上传功能
+            initFileUpload();
+            
+            // 初始化学生档案表单
+            initStudentProfileForm();
+            
+            // 页面加载时检查是否需要更新学生档案数据
+            updateStudentProfileData();
         });
+        
+        // 更新学生档案数据
+        function updateStudentProfileData() {
+            let studentData = null;
+            
+            // 优先使用存储的当前学生信息
+            if (window.currentStudentInfo) {
+                studentData = getStudentDataByName(window.currentStudentInfo.name);
+                if (document.getElementById('studentName')) {
+                    document.getElementById('studentName').value = window.currentStudentInfo.name;
+                    document.getElementById('studentSchool').value = window.currentStudentInfo.school;
+                }
+            } else {
+                // 备用方案：从分析页面标题中获取学生信息
+                const titleElement = document.getElementById('student-analysis-title');
+                if (titleElement) {
+                    const currentStudentName = titleElement.textContent.split(' - ')[0];
+                    studentData = getStudentDataByName(currentStudentName);
+                    
+                    if (studentData && document.getElementById('studentName')) {
+                        document.getElementById('studentName').value = studentData.name;
+                        document.getElementById('studentSchool').value = studentData.school;
+                    }
+                }
+            }
+            
+            // 更新个性化档案选项
+            if (studentData) {
+                updateStudentProfileOptions(studentData);
+            }
+        }
+        
+        // 更新学生档案选项（转学分需求和上课目的）
+        function updateStudentProfileOptions(studentData) {
+            // 更新转学分需求
+            if (studentData.creditTransfer) {
+                const creditTransferRadio = document.querySelector(`input[name="creditTransfer"][value="${studentData.creditTransfer}"]`);
+                if (creditTransferRadio) {
+                    // 清除所有选中状态
+                    document.querySelectorAll('input[name="creditTransfer"]').forEach(radio => {
+                        radio.checked = false;
+                    });
+                    // 设置对应选项为选中
+                    creditTransferRadio.checked = true;
+                }
+            }
+            
+            // 更新上课目的
+            if (studentData.coursePurpose && Array.isArray(studentData.coursePurpose)) {
+                // 先清除所有选中状态
+                document.querySelectorAll('input[name="coursePurpose"]').forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+                
+                // 设置对应选项为选中
+                studentData.coursePurpose.forEach(purpose => {
+                    const purposeCheckbox = document.querySelector(`input[name="coursePurpose"][value="${purpose}"]`);
+                    if (purposeCheckbox) {
+                        purposeCheckbox.checked = true;
+                    }
+                });
+            }
+        }
+        
+        // 根据学生姓名获取学生数据
+        function getStudentDataByName(studentName) {
+            // 预设的学生数据映射，包含个性化档案信息
+            const studentDataMap = {
+                '张明': { 
+                    name: '张明', 
+                    school: 'Harvard University',
+                    creditTransfer: 'yes',
+                    coursePurpose: ['graduation', 'gradschool']
+                },
+                '李小雨': { 
+                    name: '李小雨', 
+                    school: 'Stanford University',
+                    creditTransfer: 'no',
+                    coursePurpose: ['transfer', 'studyabroad']
+                },
+                '王晓华': { 
+                    name: '王晓华', 
+                    school: 'University of Toronto',
+                    creditTransfer: 'yes',
+                    coursePurpose: ['graduation']
+                },
+                '陈思远': { 
+                    name: '陈思远', 
+                    school: 'University of British Columbia',
+                    creditTransfer: 'yes',
+                    coursePurpose: ['graduation', 'transfer', 'gradschool']
+                },
+                '刘佳妮': { 
+                    name: '刘佳妮', 
+                    school: 'McGill University',
+                    creditTransfer: 'no',
+                    coursePurpose: ['gradschool', 'studyabroad']
+                }
+            };
+            
+            return studentDataMap[studentName] || { 
+                name: studentName, 
+                school: '未知学校',
+                creditTransfer: 'yes',
+                coursePurpose: ['graduation']
+            };
+        }
+        
+        // 初始化文件上传功能
+        function initFileUpload() {
+            const fileInput = document.getElementById('graduationReqFile');
+            const uploadArea = document.querySelector('.file-upload-area');
+            const uploadedFilesContainer = document.getElementById('uploadedFiles');
+            let uploadedFiles = [];
+            
+            // 文件选择事件
+            fileInput.addEventListener('change', function(e) {
+                handleFiles(e.target.files);
+            });
+            
+            // 拖拽上传功能
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('dragover');
+            });
+            
+            uploadArea.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                this.classList.remove('dragover');
+            });
+            
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('dragover');
+                handleFiles(e.dataTransfer.files);
+            });
+            
+            // 处理文件
+            function handleFiles(files) {
+                Array.from(files).forEach(file => {
+                    // 文件大小检查 (10MB)
+                    if (file.size > 10 * 1024 * 1024) {
+                        alert(`文件 "${file.name}" 超过10MB限制`);
+                        return;
+                    }
+                    
+                    // 文件类型检查
+                    const allowedTypes = ['.pdf', '.doc', '.docx', '.jpg', '.jpeg', '.png', '.gif'];
+                    const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+                    if (!allowedTypes.includes(fileExtension)) {
+                        alert(`文件 "${file.name}" 格式不支持`);
+                        return;
+                    }
+                    
+                    // 检查文件是否已存在
+                    if (uploadedFiles.some(f => f.name === file.name && f.size === file.size)) {
+                        alert(`文件 "${file.name}" 已存在`);
+                        return;
+                    }
+                    
+                    uploadedFiles.push(file);
+                    updateUploadedFilesList();
+                });
+            }
+            
+            // 更新已上传文件列表
+            function updateUploadedFilesList() {
+                if (uploadedFiles.length === 0) {
+                    uploadedFilesContainer.style.display = 'none';
+                    return;
+                }
+                
+                uploadedFilesContainer.style.display = 'block';
+                uploadedFilesContainer.innerHTML = uploadedFiles.map((file, index) => `
+                    <div class="uploaded-file-item">
+                        <span class="uploaded-file-name">${file.name} (${formatFileSize(file.size)})</span>
+                        <button type="button" class="uploaded-file-remove" onclick="removeUploadedFile(${index})" title="删除文件">✖</button>
+                    </div>
+                `).join('');
+            }
+            
+            // 删除已上传文件
+            window.removeUploadedFile = function(index) {
+                uploadedFiles.splice(index, 1);
+                updateUploadedFilesList();
+            };
+            
+            // 格式化文件大小
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+        }
+        
+        // 初始化学生档案表单
+        function initStudentProfileForm() {
+            const form = document.getElementById('studentProfileForm');
+            
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // 收集表单数据
+                const formData = new FormData();
+                
+                // 基本信息
+                formData.append('studentName', document.getElementById('studentName').value);
+                formData.append('studentSchool', document.getElementById('studentSchool').value);
+                
+                // 转学分需求
+                const creditTransfer = document.querySelector('input[name="creditTransfer"]:checked');
+                formData.append('creditTransfer', creditTransfer ? creditTransfer.value : '');
+                
+                // 上课目的
+                const coursePurposes = [];
+                document.querySelectorAll('input[name="coursePurpose"]:checked').forEach(checkbox => {
+                    coursePurposes.push(checkbox.value);
+                });
+                formData.append('coursePurpose', coursePurposes.join(','));
+                
+                // 毕业要求文件
+                const fileInput = document.getElementById('graduationReqFile');
+                if (fileInput.files.length > 0) {
+                    Array.from(fileInput.files).forEach(file => {
+                        formData.append('graduationReqFiles', file);
+                    });
+                }
+                
+                // 提交表单
+                submitStudentProfile(formData);
+            });
+        }
+        
+        // 提交学生档案
+        function submitStudentProfile(formData) {
+            // 显示提交成功消息
+            const studentName = formData.get('studentName');
+            const creditTransfer = formData.get('creditTransfer') === 'yes' ? '需要' : '不需要';
+            const purposes = formData.get('coursePurpose').split(',').map(p => {
+                const purposeMap = {
+                    'graduation': '毕业',
+                    'transfer': '转学',
+                    'gradschool': '申研',
+                    'studyabroad': '游学'
+                };
+                return purposeMap[p] || p;
+            }).join('、');
+            
+            const fileCount = document.getElementById('graduationReqFile').files.length;
+            
+            let message = `档案搜集提交成功！\n\n`;
+            message += `学生: ${studentName}\n`;
+            message += `学校: ${formData.get('studentSchool')}\n`;
+            message += `转学分需求: ${creditTransfer}\n`;
+            message += `上课目的: ${purposes}\n`;
+            if (fileCount > 0) {
+                message += `已上传 ${fileCount} 个毕业要求文件`;
+            }
+            
+            alert(message);
+            
+            console.log('学生档案数据:', {
+                studentName: formData.get('studentName'),
+                studentSchool: formData.get('studentSchool'),
+                creditTransfer: formData.get('creditTransfer'),
+                coursePurpose: formData.get('coursePurpose'),
+                fileCount: fileCount
+            });
+        }
     </script>
 </body>
 </html>
