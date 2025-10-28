@@ -1630,13 +1630,13 @@
         }
         
         .course-link {
-            color: var(--primary-green);
+            color: #1e90ff;
             text-decoration: underline;
             cursor: pointer;
         }
         
         .course-link:hover {
-            color: var(--hover-green);
+            color: #4169e1;
             text-decoration: none;
         }
         
@@ -1646,53 +1646,73 @@
             padding: 10px 8px;
         }
         
-        /* 课程订阅入口样式 */
+        /* 课程订阅入口样式 - 文字版本 */
         .course-subscribe-btn {
             position: absolute;
-            top: 3px;
-            right: 3px;
+            top: 2px;
+            right: 2px;
             background: none;
-            color: #ffd700;
+            color: #ffa500;
             border: none;
             border-radius: 0;
-            width: 16px;
-            height: 16px;
-            font-size: 14px;
+            width: auto;
+            height: auto;
+            font-size: 12px;
+            font-weight: bold;
             cursor: pointer;
-            opacity: 0;
+            opacity: 1;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 10;
+            padding: 1px 3px;
+            line-height: 1;
         }
         
-        /* 已订阅状态的铃铛 */
+        /* 已订阅状态的文字 */
         .course-subscribe-btn.subscribed {
-            color: #888888;
+            color: #28a745;
+            text-decoration: none;
+            cursor: default;
+            pointer-events: none;
         }
         
-        /* 鼠标悬浮在课程单元格时显示订阅按钮 */
-        .course-cell:hover .course-subscribe-btn {
-            opacity: 1;
-        }
+        /* 订阅文字始终可见，无需悬浮显示 */
         
-        /* 订阅按钮悬浮效果 - 简单放大 */
+        /* 订阅按钮悬浮效果 - 轻微放大和下划线 */
         .course-subscribe-btn:hover {
-            transform: scale(1.3);
+            transform: scale(1.1);
+            text-decoration: underline;
+        }
+        
+        /* 已订阅按钮不响应悬浮效果 */
+        .course-subscribe-btn.subscribed:hover {
+            transform: none;
+            text-decoration: none;
         }
         
         /* 本校意向课程的订阅按钮 */
         .course-subscribe-btn.home-course {
-            color: #1e90ff;
+            color: #ffa500;
+            font-weight: bold;
         }
         
         .course-subscribe-btn.home-course:hover {
-            transform: scale(1.3);
+            transform: scale(1.1);
+            text-decoration: underline;
+        }
+        
+        /* 已订阅的本校课程按钮不响应悬浮效果 */
+        .course-subscribe-btn.home-course.subscribed:hover {
+            transform: none;
+            text-decoration: none;
         }
         
         .course-subscribe-btn.home-course.subscribed {
-            color: #888888;
+            color: #28a745;
+            cursor: default;
+            pointer-events: none;
         }
         
         /* 确保课程链接文本不受影响 */
@@ -1929,7 +1949,7 @@
                                     <div class="function-bar">
                                         <div class="batch-subscribe-dropdown" id="batchSubscribeDropdown">
                                             <button class="function-btn batch-subscribe-btn" id="batchSubscribeBtn" disabled>
-                                                <span class="btn-icon">🔔</span>
+                                                <span class="btn-icon">订阅</span>
                                                 <span class="btn-text">批量订阅</span>
                                                 <span class="dropdown-arrow">▼</span>
                                             </button>
@@ -1939,7 +1959,7 @@
                                                     <span class="btn-text">订阅本校课程</span>
                                                 </button>
                                                 <button class="dropdown-item" data-type="product">
-                                                    <span class="btn-icon">🔔</span>
+                                                    <span class="btn-icon">订阅</span>
                                                     <span class="btn-text">订阅产品课程</span>
                                                 </button>
                                             </div>
@@ -1969,11 +1989,11 @@
                                                     <td rowspan="3">The Ohio State University</td>
                                                     <td rowspan="3" class="course-cell">
                                                         <span class="course-link">HTHRHSC 3400</span> (Introduction to Health Promotion and Disease Prevention)
-                                                        <button class="course-subscribe-btn home-course" onclick="subscribeSingleCourse(this, 'home')" title="订阅本校意向课程">🔔</button>
+                                                        <button class="course-subscribe-btn home-course" onclick="subscribeSingleCourse(this, 'home')" title="订阅本校意向课程">订阅</button>
                                                     </td>
                                                     <td class="course-cell">
                                                         <span class="course-link">EXSC 221</span> (Science of Wellness) - Brigham Young University
-                                                        <button class="course-subscribe-btn" onclick="subscribeSingleCourse(this, 'product')" title="订阅产品课程">🔔</button>
+                                                        <button class="course-subscribe-btn" onclick="subscribeSingleCourse(this, 'product')" title="订阅产品课程">订阅</button>
                                                     </td>
                                                     <td>Self-Paced, Asynchronous ⚠️</td>
                                                     <td>2025-09-18 到 2026-09-18</td>
@@ -1984,7 +2004,7 @@
                                                     <td><input type="checkbox" class="course-checkbox" /></td>
                                                     <td class="course-cell">
                                                         <span class="course-link">HLTH 2010</span> (Personal Health and Wellness) - Arizona State University
-                                                        <button class="course-subscribe-btn" onclick="subscribeSingleCourse(this, 'product')" title="订阅产品课程">🔔</button>
+                                                        <button class="course-subscribe-btn" onclick="subscribeSingleCourse(this, 'product')" title="订阅产品课程">订阅</button>
                                                     </td>
                                                     <td>Scheduled, Synchronous</td>
                                                     <td>2025-11-01 到 2026-05-01</td>
@@ -1995,7 +2015,7 @@
                                                     <td><input type="checkbox" class="course-checkbox" /></td>
                                                     <td class="course-cell">
                                                         <span class="course-link">KINE 1304</span> (Health and Fitness for Life) - Utah State University
-                                                        <button class="course-subscribe-btn" onclick="subscribeSingleCourse(this, 'product')" title="订阅产品课程">🔔</button>
+                                                        <button class="course-subscribe-btn" onclick="subscribeSingleCourse(this, 'product')" title="订阅产品课程">订阅</button>
                                                     </td>
                                                     <td>Self-Paced, Asynchronous</td>
                                                     <td>2025-12-01 到 2026-06-01</td>
@@ -2010,11 +2030,11 @@
                                                     <td rowspan="3">University of California, Berkeley</td>
                                                     <td class="course-cell">
                                                         <span class="course-link">PSYC 2145</span> (Cognitive Psychology)
-                                                        <button class="course-subscribe-btn home-course" onclick="subscribeSingleCourse(this, 'home')" title="订阅本校意向课程">🔔</button>
+                                                        <button class="course-subscribe-btn home-course" onclick="subscribeSingleCourse(this, 'home')" title="订阅本校意向课程">订阅</button>
                                                     </td>
                                                     <td class="course-cell">
                                                         <span class="course-link">PSYC 111</span> (Introduction to Psychology) - Arizona State University
-                                                        <button class="course-subscribe-btn" onclick="subscribeSingleCourse(this, 'product')" title="订阅产品课程">🔔</button>
+                                                        <button class="course-subscribe-btn" onclick="subscribeSingleCourse(this, 'product')" title="订阅产品课程">订阅</button>
                                                     </td>
                                                     <td>Scheduled, Synchronous</td>
                                                     <td>2025-08-25 到 2025-12-15</td>
@@ -2027,11 +2047,11 @@
                                                     <td><input type="checkbox" class="course-checkbox" /></td>
                                                     <td class="course-cell">
                                                         <span class="course-link">STAT 3021</span> (Statistical Methods)
-                                                        <button class="course-subscribe-btn home-course" onclick="subscribeSingleCourse(this, 'home')" title="订阅本校意向课程">🔔</button>
+                                                        <button class="course-subscribe-btn home-course" onclick="subscribeSingleCourse(this, 'home')" title="订阅本校意向课程">订阅</button>
                                                     </td>
                                                     <td class="course-cell">
                                                         <span class="course-link">STAT 1040</span> (Introduction to Statistics) - Brigham Young University
-                                                        <button class="course-subscribe-btn" onclick="subscribeSingleCourse(this, 'product')" title="订阅产品课程">🔔</button>
+                                                        <button class="course-subscribe-btn" onclick="subscribeSingleCourse(this, 'product')" title="订阅产品课程">订阅</button>
                                                     </td>
                                                     <td>Self-Paced, Asynchronous</td>
                                                     <td>2025-10-15 到 2026-04-15</td>
@@ -2044,11 +2064,11 @@
                                                     <td><input type="checkbox" class="course-checkbox" /></td>
                                                     <td class="course-cell">
                                                         <span class="course-link">BIOL 1A03</span> (Introductory Biology)
-                                                        <button class="course-subscribe-btn home-course" onclick="subscribeSingleCourse(this, 'home')" title="订阅本校意向课程">🔔</button>
+                                                        <button class="course-subscribe-btn home-course" onclick="subscribeSingleCourse(this, 'home')" title="订阅本校意向课程">订阅</button>
                                                     </td>
                                                     <td class="course-cell">
                                                         <span class="course-link">BIOL 1010</span> (General Biology) - Utah State University
-                                                        <button class="course-subscribe-btn" onclick="subscribeSingleCourse(this, 'product')" title="订阅产品课程">🔔</button>
+                                                        <button class="course-subscribe-btn" onclick="subscribeSingleCourse(this, 'product')" title="订阅产品课程">订阅</button>
                                                     </td>
                                                     <td>Scheduled, Synchronous</td>
                                                     <td>2025-09-01 到 2025-12-20</td>
@@ -2063,11 +2083,11 @@
                                                     <td>Massachusetts Institute of Technology</td>
                                                     <td class="course-cell">
                                                         <span class="course-link">CS 6.006</span> (Introduction to Algorithms)
-                                                        <button class="course-subscribe-btn home-course" onclick="subscribeSingleCourse(this, 'home')" title="订阅本校意向课程">🔔</button>
+                                                        <button class="course-subscribe-btn home-course" onclick="subscribeSingleCourse(this, 'home')" title="订阅本校意向课程">订阅</button>
                                                     </td>
                                                     <td class="course-cell">
                                                         <span class="course-link">CS 1400</span> (Computer Science I) - Utah State University
-                                                        <button class="course-subscribe-btn" onclick="subscribeSingleCourse(this, 'product')" title="订阅产品课程">🔔</button>
+                                                        <button class="course-subscribe-btn" onclick="subscribeSingleCourse(this, 'product')" title="订阅产品课程">订阅</button>
                                                     </td>
                                                     <td>Self-Paced, Asynchronous</td>
                                                     <td>2025-10-01 到 2026-04-01</td>
@@ -2609,7 +2629,7 @@
             
             <div class="modal-footer">
                 <button type="button" class="btn btn-cancel" onclick="closeSubscribeModal()">取消</button>
-                <button type="button" class="btn btn-save" onclick="submitSubscribe()">保存设置</button>
+                <button type="button" class="btn btn-save" onclick="submitSubscribe()">确认订阅</button>
             </div>
         </div>
     </div>    <script>
@@ -2929,6 +2949,8 @@
             document.getElementById('courseItems').innerHTML = '';
             // 清除模态框头部的产品课程样式
             document.querySelector('#subscribeModal .modal-header').classList.remove('product-course');
+            // 清理单门课程订阅的状态
+            window.currentSubscribeButton = null;
         }
         
         // 获取选中的课程
@@ -2960,10 +2982,12 @@
                 
                 const courseCell = row.cells[4]; // 已选课程列
                 const fullCourseText = courseCell.textContent.trim();
+                const buttonElement = courseCell.querySelector('.course-subscribe-btn');
                 
                 selectedCourses.push({
                     student: studentName,
-                    course: fullCourseText
+                    course: fullCourseText,
+                    buttonElement: buttonElement
                 });
             });
             
@@ -3118,13 +3142,16 @@
         
         // 提交订阅
         function submitSubscribe() {
-            const selectedCourses = getSelectedCourses();
-            
-            if (selectedCourses.length === 1) {
+            // 检查是否是单门课程订阅模式
+            if (window.currentSubscribeButton) {
+                console.log('检测到单门课程订阅模式');
                 // 单门课程提交
                 submitSingleCourse();
             } else {
+                console.log('检测到批量课程订阅模式');
                 // 批量课程提交
+                const selectedCourses = getSelectedCourses();
+                console.log('选中的课程数量:', selectedCourses.length);
                 submitBatchCourses(selectedCourses);
             }
         }
@@ -3134,10 +3161,14 @@
             // 更新按钮状态为已订阅
             if (window.currentSubscribeButton) {
                 window.currentSubscribeButton.classList.add('subscribed');
+                window.currentSubscribeButton.textContent = '已订阅';
                 window.currentSubscribeButton.title = window.currentSubscribeButton.title.replace('订阅', '取消订阅');
+                console.log('单门课程订阅成功，按钮状态已更新');
+            } else {
+                console.error('错误：未找到currentSubscribeButton');
             }
             
-            alert('订阅条件已保存！系统将根据设置的条件监控课程状态。');
+            alert('订阅成功！系统将根据设置的条件监控课程状态。');
             closeSubscribeModal();
         }
         
@@ -3167,8 +3198,17 @@
                 });
             });
             
+            // 更新所有选中课程的按钮状态
+            selectedCourses.forEach(course => {
+                if (course.buttonElement) {
+                    course.buttonElement.classList.add('subscribed');
+                    course.buttonElement.textContent = '已订阅';
+                    course.buttonElement.title = course.buttonElement.title.replace('订阅', '取消订阅');
+                }
+            });
+            
             console.log('批量订阅数据:', coursesData);
-            alert(`已为 ${selectedCourses.length} 门课程保存订阅条件！`);
+            alert(`成功订阅 ${selectedCourses.length} 门课程！系统将根据设置的条件监控课程状态。`);
             closeSubscribeModal();
         }
         
@@ -3281,10 +3321,7 @@
             const isSubscribed = buttonElement.classList.contains('subscribed');
             
             if (isSubscribed) {
-                // 如果已订阅，取消订阅
-                buttonElement.classList.remove('subscribed');
-                buttonElement.title = buttonElement.title.replace('取消订阅', '订阅');
-                alert('已取消订阅该课程');
+                // 如果已订阅，仅作展示，不执行任何操作
                 return;
             }
             
@@ -3387,6 +3424,7 @@
                 if (selectedOption.value === 'direct') {
                     // 直接订阅
                     data.buttonElement.classList.add('subscribed');
+                    data.buttonElement.textContent = '已订阅';
                     data.buttonElement.title = data.buttonElement.title.replace('订阅', '取消订阅');
                     alert('订阅成功！');
                     closeSingleCourseModal();
