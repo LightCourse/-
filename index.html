@@ -1423,6 +1423,174 @@
             }
         }
         
+        /* 学生已选课程表格样式 */
+        .selected-courses-container {
+            padding: 20px;
+            max-width: 100%;
+            overflow-x: auto;
+        }
+        
+        .selected-courses-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        .selected-courses-table th {
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+            color: white;
+            padding: 12px 8px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 11px;
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .selected-courses-table th:last-child {
+            border-right: none;
+        }
+        
+        .selected-courses-table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #e1e5e9;
+            border-right: 1px solid #e1e5e9;
+            text-align: center;
+            vertical-align: middle;
+            background: white;
+            font-size: 11px;
+        }
+        
+        .selected-courses-table td:last-child {
+            border-right: none;
+        }
+        
+        .selected-courses-table tbody tr:nth-child(even) {
+            background-color: white;
+        }
+        
+        .selected-courses-table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        /* 本校课程列样式 */
+        .home-course-cell {
+            font-family: "Consolas", "Monaco", monospace;
+            font-weight: 600;
+            color: #2c3e50;
+            background-color: white !important;
+        }
+        
+        /* 课程满足类别样式 */
+        .course-category-badge {
+            display: inline-block;
+            padding: 3px 6px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+        
+        .category-required {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .category-elective {
+            background-color: #007bff;
+            color: white;
+        }
+        
+        .category-general {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .category-free {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        /* 当前状态样式 */
+        .status-potential {
+            color: #fd7e14;
+            font-weight: 600;
+        }
+        
+        .status-serving {
+            color: #20c997;
+            font-weight: 600;
+        }
+        
+        /* 审核状态样式 */
+        .audit-status-text {
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .audit-not-submitted {
+            color: #6c757d;
+        }
+        
+        .audit-ai-passed {
+            color: #28a745;
+        }
+        
+        .audit-ai-rejected {
+            color: #dc3545;
+        }
+        
+        /* 产品课程信息样式 */
+        .product-course-cell {
+            text-align: left;
+            line-height: 1.4;
+        }
+        
+        .product-course-code {
+            font-family: "Consolas", "Monaco", monospace;
+            font-weight: 600;
+            color: #495057;
+            display: block;
+        }
+        
+        .product-course-name {
+            color: #6c757d;
+            font-size: 10px;
+            margin-top: 2px;
+            display: block;
+        }
+        
+        /* 产品学校样式 */
+        .product-school-cell {
+            font-weight: 500;
+            color: #495057;
+            font-size: 10px;
+        }
+        
+        /* 日期、价格等信息样式 */
+        .date-cell, .price-cell, .code-cell, .duration-cell {
+            font-weight: 500;
+            font-size: 11px;
+        }
+        
+        .price-cell {
+            color: #e83e8c;
+            font-weight: 600;
+        }
+        
+        /* 合并单元格边框样式 */
+        .merged-cell {
+            border-right: 2px solid #4a90e2;
+            background-color: white !important;
+        }
+        
         .page-header {
             padding: 20px 0 24px 0;
             border-bottom: 1px solid #e1e5e9;
@@ -2888,9 +3056,181 @@
                 
                 <!-- 学生已选课程 -->
                 <div id="selected-courses" class="analysis-tab-content">
-                    <div class="content-placeholder">
-                        <h3>学生已选课程</h3>
-                        <p>学生当前已报名的所有课程列表和状态</p>
+                    <div class="selected-courses-container">
+                        <table class="selected-courses-table">
+                            <thead>
+                                <tr>
+                                    <th>选择</th>
+                                    <th>本校课程</th>
+                                    <th>课程满足类别、场景</th>
+                                    <th>当前状态</th>
+                                    <th>审核状态</th>
+                                    <th>产品课程</th>
+                                    <th>产品学校</th>
+                                    <th>上课日期</th>
+                                    <th>价格</th>
+                                    <th>班级代码</th>
+                                    <th>课程时长</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- MATH 21A 对应的多门产品课程 -->
+                                <tr>
+                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
+                                    <td class="home-course-cell merged-cell" rowspan="2">MATH 21A</td>
+                                    <td class="merged-cell" rowspan="2"><span class="course-category-badge category-required">专业必修课</span></td>
+                                    <td class="merged-cell status-serving" rowspan="2">服务中</td>
+                                    <td class="merged-cell" rowspan="2"><span class="audit-status-text audit-ai-passed">AI审核通过</span></td>
+                                    <td class="product-course-cell">
+                                        <span class="product-course-code">MATH 2210</span>
+                                        <span class="product-course-name">Multivariable Calculus</span>
+                                    </td>
+                                    <td class="product-school-cell">University of Toronto</td>
+                                    <td class="date-cell">2025-10-20~2025-12-13</td>
+                                    <td class="price-cell">1500美元</td>
+                                    <td class="code-cell">001</td>
+                                    <td class="duration-cell">8周</td>
+                                </tr>
+                                <tr>
+                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
+                                    <td class="product-course-cell">
+                                        <span class="product-course-code">MATH 264</span>
+                                        <span class="product-course-name">Vector Calculus</span>
+                                    </td>
+                                    <td class="product-school-cell">McGill University</td>
+                                    <td class="date-cell">2025-11-05~2025-12-28</td>
+                                    <td class="price-cell">1380美元</td>
+                                    <td class="code-cell">002</td>
+                                    <td class="duration-cell">8周</td>
+                                </tr>
+                                
+                                <!-- CHEM 17 单门产品课程 -->
+                                <tr>
+                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
+                                    <td class="home-course-cell">CHEM 17</td>
+                                    <td><span class="course-category-badge category-required">专业必修课</span></td>
+                                    <td class="status-potential">潜在价值</td>
+                                    <td><span class="audit-status-text audit-not-submitted">未提交审核</span></td>
+                                    <td class="product-course-cell">
+                                        <span class="product-course-code">CHEM 1000</span>
+                                        <span class="product-course-name">Chemical Principles</span>
+                                    </td>
+                                    <td class="product-school-cell">University of British Columbia</td>
+                                    <td class="date-cell">2025-11-12~2026-02-15</td>
+                                    <td class="price-cell">1680美元</td>
+                                    <td class="code-cell">003</td>
+                                    <td class="duration-cell">14周</td>
+                                </tr>
+                                
+                                <!-- PSYC 1 对应的三门产品课程 -->
+                                <tr>
+                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
+                                    <td class="home-course-cell merged-cell" rowspan="3">PSYC 1</td>
+                                    <td class="merged-cell" rowspan="3"><span class="course-category-badge category-general">通识课</span></td>
+                                    <td class="merged-cell status-serving" rowspan="3">服务中</td>
+                                    <td class="merged-cell" rowspan="3"><span class="audit-status-text audit-ai-passed">AI审核通过</span></td>
+                                    <td class="product-course-cell">
+                                        <span class="product-course-code">PSYC 100</span>
+                                        <span class="product-course-name">Introduction to Psychology</span>
+                                    </td>
+                                    <td class="product-school-cell">Stanford University</td>
+                                    <td class="date-cell">2025-10-28~2025-12-20</td>
+                                    <td class="price-cell">1420美元</td>
+                                    <td class="code-cell">004</td>
+                                    <td class="duration-cell">8周</td>
+                                </tr>
+                                <tr>
+                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
+                                    <td class="product-course-cell">
+                                        <span class="product-course-code">PSYC 1001</span>
+                                        <span class="product-course-name">Psychology Fundamentals</span>
+                                    </td>
+                                    <td class="product-school-cell">University of Toronto</td>
+                                    <td class="date-cell">2025-11-15~2026-01-10</td>
+                                    <td class="price-cell">1350美元</td>
+                                    <td class="code-cell">005</td>
+                                    <td class="duration-cell">8周</td>
+                                </tr>
+                                <tr>
+                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
+                                    <td class="product-course-cell">
+                                        <span class="product-course-code">PSYC 101</span>
+                                        <span class="product-course-name">Basic Psychology</span>
+                                    </td>
+                                    <td class="product-school-cell">McGill University</td>
+                                    <td class="date-cell">2025-12-01~2026-01-25</td>
+                                    <td class="price-cell">1290美元</td>
+                                    <td class="code-cell">006</td>
+                                    <td class="duration-cell">8周</td>
+                                </tr>
+                                
+                                <!-- ENGL 10A 单门产品课程 -->
+                                <tr>
+                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
+                                    <td class="home-course-cell">ENGL 10A</td>
+                                    <td><span class="course-category-badge category-elective">专业选修课</span></td>
+                                    <td class="status-potential">潜在价值</td>
+                                    <td><span class="audit-status-text audit-ai-rejected">AI审核驳回</span></td>
+                                    <td class="product-course-cell">
+                                        <span class="product-course-code">ENGL 1100</span>
+                                        <span class="product-course-name">Academic Writing</span>
+                                    </td>
+                                    <td class="product-school-cell">University of British Columbia</td>
+                                    <td class="date-cell">2025-11-20~2026-01-15</td>
+                                    <td class="price-cell">1200美元</td>
+                                    <td class="code-cell">007</td>
+                                    <td class="duration-cell">8周</td>
+                                </tr>
+                                
+                                <!-- STAT 104 对应的两门产品课程 -->
+                                <tr>
+                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
+                                    <td class="home-course-cell merged-cell" rowspan="2">STAT 104</td>
+                                    <td class="merged-cell" rowspan="2"><span class="course-category-badge category-free">自由选修课</span></td>
+                                    <td class="merged-cell status-serving" rowspan="2">服务中</td>
+                                    <td class="merged-cell" rowspan="2"><span class="audit-status-text audit-ai-passed">AI审核通过</span></td>
+                                    <td class="product-course-cell">
+                                        <span class="product-course-code">STAT 2040</span>
+                                        <span class="product-course-name">Statistics for Scientists</span>
+                                    </td>
+                                    <td class="product-school-cell">University of Toronto</td>
+                                    <td class="date-cell">2025-10-15~2025-12-10</td>
+                                    <td class="price-cell">1600美元</td>
+                                    <td class="code-cell">008</td>
+                                    <td class="duration-cell">8周</td>
+                                </tr>
+                                <tr>
+                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
+                                    <td class="product-course-cell">
+                                        <span class="product-course-code">MATH 204</span>
+                                        <span class="product-course-name">Probability and Statistics</span>
+                                    </td>
+                                    <td class="product-school-cell">McGill University</td>
+                                    <td class="date-cell">2025-11-01~2025-12-24</td>
+                                    <td class="price-cell">1450美元</td>
+                                    <td class="code-cell">009</td>
+                                    <td class="duration-cell">8周</td>
+                                </tr>
+                                
+                                <!-- CS 50 单门产品课程 -->
+                                <tr>
+                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
+                                    <td class="home-course-cell">CS 50</td>
+                                    <td><span class="course-category-badge category-elective">专业选修课</span></td>
+                                    <td class="status-serving">服务中</td>
+                                    <td><span class="audit-status-text audit-ai-passed">AI审核通过</span></td>
+                                    <td class="product-course-cell">
+                                        <span class="product-course-code">CPSC 110</span>
+                                        <span class="product-course-name">Computation, Programs, and Programming</span>
+                                    </td>
+                                    <td class="product-school-cell">University of British Columbia</td>
+                                    <td class="date-cell">2025-12-05~2026-02-28</td>
+                                    <td class="price-cell">1800美元</td>
+                                    <td class="code-cell">010</td>
+                                    <td class="duration-cell">12周</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
                 
