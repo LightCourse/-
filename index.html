@@ -1277,7 +1277,7 @@
         }
         
         .course-table-excel th {
-            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
             color: white;
             padding: 12px 10px;
             text-align: center;
@@ -1442,7 +1442,7 @@
         }
         
         .selected-courses-table th {
-            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
             color: white;
             padding: 12px 8px;
             text-align: center;
@@ -1590,6 +1590,394 @@
             border-right: 2px solid #4a90e2;
             background-color: white !important;
         }
+        
+        /* 课程订阅中心样式 */
+        .subscription-center-container {
+            padding: 20px;
+            max-width: 100%;
+            overflow-x: auto;
+        }
+        
+        .subscription-center-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            font-family: "Noto Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-size: 13px;
+            line-height: 1.5;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .subscription-center-table th {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+            color: white;
+            padding: 15px 12px;
+            text-align: center;
+            vertical-align: middle;
+            font-weight: 600;
+            font-size: 12px;
+            letter-spacing: 0.3px;
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        
+        .subscription-center-table th:last-child {
+            border-right: none;
+        }
+        
+        .subscription-center-table td {
+            padding: 16px 12px;
+            border-bottom: 1px solid #e8ecf0;
+            border-right: 1px solid #e8ecf0;
+            text-align: center;
+            vertical-align: middle;
+            background: white;
+            font-size: 12px;
+            color: #2c3e50;
+            line-height: 1.4;
+        }
+        
+        .subscription-center-table td:last-child {
+            border-right: none;
+        }
+        
+        .subscription-center-table tbody tr:hover {
+            background-color: #f8fafc;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease;
+        }
+        
+        .subscription-center-table tbody tr:hover td {
+            background-color: #f8fafc;
+        }
+        
+        /* 订阅中心表格列宽设置 */
+        .subscription-center-table th:nth-child(1) { width: 10%; } /* 订阅类型 */
+        .subscription-center-table th:nth-child(2) { width: 20%; } /* 订阅课程 */ 
+        .subscription-center-table th:nth-child(3) { width: 18%; } /* 订阅条件 */
+        .subscription-center-table th:nth-child(4) { width: 10%; } /* 当前状态 */
+        .subscription-center-table th:nth-child(5) { width: 10%; } /* 创建日期 */
+        .subscription-center-table th:nth-child(6) { width: 12%; } /* 截止日期 */
+        .subscription-center-table th:nth-child(7) { width: 20%; } /* 操作 */
+        
+        /* 筛选区域样式 */
+        .subscription-filter-area {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            border: 1px solid #e1e5e9;
+        }
+        
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .filter-item label {
+            font-size: 12px;
+            color: #495057;
+            white-space: nowrap;
+            font-weight: 500;
+        }
+        
+        .filter-select {
+            padding: 5px 8px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 12px;
+            background: white;
+            color: #495057;
+            min-width: 120px;
+            cursor: pointer;
+        }
+        
+        .filter-select:focus {
+            border-color: #4a90e2;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+        }
+        
+        .filter-reset-btn {
+            padding: 5px 12px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        
+        .filter-reset-btn:hover {
+            background: #5a6268;
+        }
+        
+        /* 操作按钮样式 */
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            height: 100%;
+        }
+        
+        .action-btn {
+            background: none;
+            border: none;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            padding: 3px 0;
+            font-weight: 600;
+            letter-spacing: 0.2px;
+            border-radius: 3px;
+        }
+        
+        /* 不同功能按钮的颜色 */
+        .btn-edit {
+            color: #28a745; /* 绿色 - 编辑 */
+        }
+        
+        .btn-edit:hover {
+            color: #1e7e34;
+            text-decoration: underline;
+        }
+        
+        .btn-cancel {
+            color: #dc3545; /* 红色 - 取消 */
+        }
+        
+        .btn-cancel:hover {
+            color: #c82333;
+            text-decoration: underline;
+        }
+        
+        .btn-renew {
+            color: #ffc107; /* 黄色 - 续期 */
+        }
+        
+        .btn-renew:hover {
+            color: #e0a800;
+            text-decoration: underline;
+        }
+        
+        .btn-view {
+            color: #007bff; /* 蓝色 - 查看 */
+        }
+        
+        .btn-view:hover {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+        
+        .btn-select {
+            color: #17a2b8; /* 青色 - 选择/跳转 */
+        }
+        
+        .btn-select:hover {
+            color: #138496;
+            text-decoration: underline;
+        }
+        
+        .btn-detail {
+            color: #6f42c1; /* 紫色 - 详情 */
+        }
+        
+        .btn-detail:hover {
+            color: #5a2d91;
+            text-decoration: underline;
+        }
+        
+        .final-status-note {
+            font-size: 11px;
+            color: #6c757d;
+            font-style: italic;
+            font-weight: 500;
+            text-align: center;
+            padding: 6px 0;
+            letter-spacing: 0.1px;
+        }
+        
+        /* 订阅类型样式 */
+        .subscription-type-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 14px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.2px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .type-product {
+            background-color: #e3f2fd;
+            color: #1565c0;
+        }
+        
+        .type-home {
+            background-color: #f3e5f5;
+            color: #7b1fa2;
+        }
+        
+        /* 订阅课程信息样式 */
+        .subscription-course-cell {
+            text-align: left;
+            line-height: 1.5;
+            max-width: 200px;
+            padding: 16px 15px;
+        }
+        
+        .course-info-top {
+            font-family: "SF Mono", "Monaco", "Consolas", monospace;
+            font-weight: 600;
+            color: #1a365d;
+            font-size: 12px;
+            display: block;
+            margin-bottom: 4px;
+            letter-spacing: 0.2px;
+        }
+        
+        .course-info-bottom {
+            color: #718096;
+            font-size: 11px;
+            font-weight: 500;
+            display: block;
+            letter-spacing: 0.1px;
+        }
+        
+        /* 订阅条件样式 */
+        .subscription-conditions {
+            text-align: left;
+            max-width: 140px;
+            position: relative;
+            padding: 16px 15px;
+        }
+        
+        .conditions-summary {
+            cursor: pointer;
+            display: block;
+            font-size: 12px;
+            color: #2c3e50;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+        
+        .conditions-tooltip {
+            position: absolute;
+            background: #333;
+            color: white;
+            padding: 8px 10px;
+            border-radius: 4px;
+            font-size: 10px;
+            white-space: nowrap;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-bottom: 5px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .conditions-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: #333;
+        }
+        
+        .subscription-conditions:hover .conditions-tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* 状态样式 */
+        .status-waiting {
+            color: #fd7e14;
+            font-weight: 600;
+            font-size: 12px;
+            letter-spacing: 0.2px;
+        }
+        
+        .status-matched {
+            color: #20c997;
+            font-weight: 600;
+            font-size: 12px;
+            letter-spacing: 0.2px;
+        }
+        
+        .status-notified {
+            color: #007bff;
+            font-weight: 600;
+            font-size: 12px;
+            letter-spacing: 0.2px;
+        }
+        
+        .status-viewed {
+            color: #6f42c1;
+            font-weight: 600;
+            font-size: 12px;
+            letter-spacing: 0.2px;
+        }
+        
+        .status-converted {
+            color: #28a745;
+            font-weight: 600;
+            font-size: 12px;
+            letter-spacing: 0.2px;
+        }
+        
+        .status-expired {
+            color: #dc3545;
+            font-weight: 600;
+            font-size: 12px;
+            letter-spacing: 0.2px;
+        }
+        
+        /* 截止日期样式 */
+        .deadline-cell {
+            font-weight: 500;
+            font-size: 12px;
+            color: #2c3e50;
+            line-height: 1.4;
+        }
+        
+        .deadline-urgent {
+            color: #dc3545;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        
+        .deadline-countdown {
+            font-size: 11px;
+            color: #dc3545;
+            font-weight: 600;
+            display: block;
+            margin-top: 3px;
+            letter-spacing: 0.1px;
+        }
+        
+
+        
+
         
         .page-header {
             padding: 20px 0 24px 0;
@@ -2684,7 +3072,9 @@
                                                     <td class="report-status">
                                                         <button class="btn-link" onclick="viewReport(1)">查看报告</button>
                                                     </td>
-                                                    <td class="subscription-info">数学提升班</td>
+                                                    <td class="subscription-info">
+                                                        <button class="btn-link" onclick="viewSubscriptionInfo('张明')">查看订阅信息</button>
+                                                    </td>
                                                     <td class="actions">
                                                         <button class="btn-edit" onclick="editStudent(1)" title="编辑">✏️</button>
                                                         <button class="btn-follow" onclick="addFollowRecord(1)" title="跟进">📝</button>
@@ -2704,7 +3094,9 @@
                                                     <td class="report-status">
                                                         <button class="btn-link" onclick="viewReport(2)">查看报告</button>
                                                     </td>
-                                                    <td class="subscription-info">英语口语班, 写作提高班</td>
+                                                    <td class="subscription-info">
+                                                        <button class="btn-link" onclick="viewSubscriptionInfo('李小雨')">查看订阅信息</button>
+                                                    </td>
                                                     <td class="actions">
                                                         <button class="btn-edit" onclick="editStudent(2)" title="编辑">✏️</button>
                                                         <button class="btn-follow" onclick="addFollowRecord(2)" title="跟进">📝</button>
@@ -2724,7 +3116,9 @@
                                                     <td class="report-status">
                                                         <button class="btn-link" onclick="viewReport(3)">查看报告</button>
                                                     </td>
-                                                    <td class="subscription-info">物理竞赛班</td>
+                                                    <td class="subscription-info">
+                                                        <button class="btn-link" onclick="viewSubscriptionInfo('王晓华')">查看订阅信息</button>
+                                                    </td>
                                                     <td class="actions">
                                                         <button class="btn-edit" onclick="editStudent(3)" title="编辑">✏️</button>
                                                         <button class="btn-follow" onclick="addFollowRecord(3)" title="跟进">📝</button>
@@ -2744,7 +3138,9 @@
                                                     <td class="report-status">
                                                         <button class="btn-link" onclick="viewReport(4)">查看报告</button>
                                                     </td>
-                                                    <td class="subscription-info">化学实验班, 生物基础班</td>
+                                                    <td class="subscription-info">
+                                                        <button class="btn-link" onclick="viewSubscriptionInfo('陈思远')">查看订阅信息</button>
+                                                    </td>
                                                     <td class="actions">
                                                         <button class="btn-edit" onclick="editStudent(4)" title="编辑">✏️</button>
                                                         <button class="btn-follow" onclick="addFollowRecord(4)" title="跟进">📝</button>
@@ -2764,7 +3160,9 @@
                                                     <td class="report-status">
                                                         <button class="btn-link" onclick="viewReport(5)">查看报告</button>
                                                     </td>
-                                                    <td class="subscription-info">计算机编程班</td>
+                                                    <td class="subscription-info">
+                                                        <button class="btn-link" onclick="viewSubscriptionInfo('刘佳妮')">查看订阅信息</button>
+                                                    </td>
                                                     <td class="actions">
                                                         <button class="btn-edit" onclick="editStudent(5)" title="编辑">✏️</button>
                                                         <button class="btn-follow" onclick="addFollowRecord(5)" title="跟进">📝</button>
@@ -2818,7 +3216,7 @@
                     <button class="analysis-tab-btn" data-target="autonomous-selection">自主选课</button>
                     <button class="analysis-tab-btn" data-target="selected-courses">学生已选课程</button>
                     <button class="analysis-tab-btn" data-target="report-management">选课报告管理</button>
-                    <button class="analysis-tab-btn" data-target="subscription-info">订阅课程信息</button>
+                    <button class="analysis-tab-btn" data-target="subscription-info">课程订阅中心</button>
                 </div>
             </div>
             
@@ -3242,11 +3640,166 @@
                     </div>
                 </div>
                 
-                <!-- 订阅课程信息 -->
+                <!-- 课程订阅中心 -->
                 <div id="subscription-info" class="analysis-tab-content">
-                    <div class="content-placeholder">
-                        <h3>订阅课程信息</h3>
-                        <p>学生订阅的课程详细信息和订阅状态</p>
+                    <div class="subscription-center-container">
+                        <!-- 筛选条件区域 -->
+                        <div class="subscription-filter-area">
+                            <div class="filter-item">
+                                <label for="subscription-type-filter">订阅类型：</label>
+                                <select id="subscription-type-filter" class="filter-select">
+                                    <option value="">全部</option>
+                                    <option value="product">产品课程</option>
+                                    <option value="home">本校课程</option>
+                                </select>
+                            </div>
+                            <div class="filter-item">
+                                <label for="status-filter">当前状态：</label>
+                                <select id="status-filter" class="filter-select">
+                                    <option value="">全部</option>
+                                    <option value="waiting">等待上架</option>
+                                    <option value="matched">已匹配</option>
+                                    <option value="notified">已通知</option>
+                                    <option value="viewed">已查看</option>
+                                    <option value="converted">已转化</option>
+                                    <option value="expired">已过期</option>
+                                </select>
+                            </div>
+                            <button class="filter-reset-btn" onclick="resetSubscriptionFilters()">重置筛选</button>
+                        </div>
+                        
+                        <table class="subscription-center-table">
+                            <thead>
+                                <tr>
+                                    <th>订阅类型</th>
+                                    <th>订阅课程</th>
+                                    <th>订阅条件</th>
+                                    <th>当前状态</th>
+                                    <th>创建日期</th>
+                                    <th>截止日期</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- 等待上架状态 -->
+                                <tr>
+                                    <td><span class="subscription-type-badge type-product">产品课程</span></td>
+                                    <td class="subscription-course-cell">
+                                        <span class="course-info-top">CHEM 1000 (Chemical Principles)</span>
+                                        <span class="course-info-bottom">University of British Columbia</span>
+                                    </td>
+                                    <td class="subscription-conditions">
+                                        <span class="conditions-summary">2025-Winter, 线下</span>
+                                        <div class="conditions-tooltip">学期：2025-Winter | 上课形式：线下 | 时长：12-16周 | 价格：≤2000美元</div>
+                                    </td>
+                                    <td class="status-waiting">等待上架</td>
+                                    <td>2025-08-15</td>
+                                    <td class="deadline-cell deadline-urgent">
+                                        2025-11-05
+                                        <span class="deadline-countdown">(剩7天)</span>
+                                    </td>
+                                    <td class="action-buttons">
+                                        <button class="action-btn btn-edit">编辑条件</button>
+                                        <button class="action-btn btn-cancel">取消订阅</button>
+                                        <button class="action-btn btn-renew">续期</button>
+                                    </td>
+                                </tr>
+                                <!-- 已匹配状态 -->
+                                <tr>
+                                    <td><span class="subscription-type-badge type-product">产品课程</span></td>
+                                    <td class="subscription-course-cell">
+                                        <span class="course-info-top">MATH 2210 (Multivariable Calculus)</span>
+                                        <span class="course-info-bottom">University of Toronto</span>
+                                    </td>
+                                    <td class="subscription-conditions">
+                                        <span class="conditions-summary">2025-Fall, 线上直播</span>
+                                        <div class="conditions-tooltip">学期：2025-Fall | 上课形式：线上直播 | 时长：≥8周 | 价格：≤1600美元</div>
+                                    </td>
+                                    <td class="status-matched">已匹配</td>
+                                    <td>2025-09-10</td>
+                                    <td class="deadline-cell">2025-12-15</td>
+                                    <td class="action-buttons">
+                                        <button class="action-btn btn-view">查看匹配课程</button>
+                                        <button class="action-btn btn-select">跳转选课</button>
+                                    </td>
+                                </tr>
+                                <!-- 已通知状态 -->
+                                <tr>
+                                    <td><span class="subscription-type-badge type-home">本校课程</span></td>
+                                    <td class="subscription-course-cell">
+                                        <span class="course-info-top">PSYC 1 (Introduction to Psychology)</span>
+                                        <span class="course-info-bottom">Harvard University</span>
+                                    </td>
+                                    <td class="subscription-conditions">
+                                        <span class="conditions-summary">任意学期, 不限形式</span>
+                                        <div class="conditions-tooltip">学期：任意学期 | 上课形式：不限 | 时长：不限 | 价格：≤1500美元</div>
+                                    </td>
+                                    <td class="status-notified">已通知</td>
+                                    <td>2025-07-20</td>
+                                    <td class="deadline-cell">2025-12-20</td>
+                                    <td class="action-buttons">
+                                        <button class="action-btn btn-detail">查看通知详情</button>
+                                        <button class="action-btn btn-view">查看匹配课程</button>
+                                        <button class="action-btn btn-select">跳转选课</button>
+                                    </td>
+                                </tr>
+                                <!-- 已查看状态 -->
+                                <tr>
+                                    <td><span class="subscription-type-badge type-product">产品课程</span></td>
+                                    <td class="subscription-course-cell">
+                                        <span class="course-info-top">ENGL 1100 (Academic Writing)</span>
+                                        <span class="course-info-bottom">University of British Columbia</span>
+                                    </td>
+                                    <td class="subscription-conditions">
+                                        <span class="conditions-summary">2025-Fall, 任意形式</span>
+                                        <div class="conditions-tooltip">学期：2025-Fall | 上课形式：任意 | 时长：≥6周 | 价格：≤1200美元</div>
+                                    </td>
+                                    <td class="status-viewed">已查看</td>
+                                    <td>2025-08-25</td>
+                                    <td class="deadline-cell">2025-11-30</td>
+                                    <td class="action-buttons">
+                                        <button class="action-btn btn-view">查看匹配课程</button>
+                                        <button class="action-btn btn-select">跳转选课</button>
+                                    </td>
+                                </tr>
+                                <!-- 已转化状态 -->
+                                <tr>
+                                    <td><span class="subscription-type-badge type-home">本校课程</span></td>
+                                    <td class="subscription-course-cell">
+                                        <span class="course-info-top">CS 50 (Introduction to Computer Science)</span>
+                                        <span class="course-info-bottom">Harvard University</span>
+                                    </td>
+                                    <td class="subscription-conditions">
+                                        <span class="conditions-summary">2025-Spring, 线上非直播</span>
+                                        <div class="conditions-tooltip">学期：2025-Spring | 上课形式：线上非直播 | 时长：8-12周 | 价格：≤1800美元 | 学分：≥3学分</div>
+                                    </td>
+                                    <td class="status-converted">已转化</td>
+                                    <td>2025-06-15</td>
+                                    <td class="deadline-cell">2025-10-15</td>
+                                    <td class="action-buttons">
+                                        <span class="final-status-note">已完成</span>
+                                    </td>
+                                </tr>
+                                <!-- 已过期状态 -->
+                                <tr>
+                                    <td><span class="subscription-type-badge type-product">产品课程</span></td>
+                                    <td class="subscription-course-cell">
+                                        <span class="course-info-top">STAT 2040 (Statistics for Scientists)</span>
+                                        <span class="course-info-bottom">University of Toronto</span>
+                                    </td>
+                                    <td class="subscription-conditions">
+                                        <span class="conditions-summary">2025-Fall, 线上直播</span>
+                                        <div class="conditions-tooltip">学期：2025-Fall | 上课形式：线上直播 | 时长：8周 | 价格：≤1600美元</div>
+                                    </td>
+                                    <td class="status-expired">已过期</td>
+                                    <td>2025-05-15</td>
+                                    <td class="deadline-cell">2025-10-28</td>
+                                    <td class="action-buttons">
+                                        <button class="action-btn btn-renew">续期</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -4215,6 +4768,54 @@
             document.getElementById('student-analysis-page').style.display = 'block';
         }
         
+        // 查看订阅信息功能
+        function viewSubscriptionInfo(studentName) {
+            // 获取学生行信息
+            const studentRows = document.querySelectorAll('.student-row');
+            let studentInfo = null;
+            
+            for (let row of studentRows) {
+                if (row.querySelector('.student-name').textContent === studentName) {
+                    studentInfo = {
+                        name: studentName,
+                        school: row.querySelector('.school-name').textContent,
+                        id: row.querySelector('.student-checkbox').value
+                    };
+                    break;
+                }
+            }
+            
+            if (studentInfo) {
+                // 存储当前学生信息到全局变量
+                window.currentStudentInfo = studentInfo;
+                
+                // 更新分析页面标题
+                document.getElementById('student-analysis-title').textContent = `${studentName} - 学生选课分析`;
+                
+                // 隐藏主页面，显示分析页面
+                document.querySelector('.main-layout').style.display = 'none';
+                document.getElementById('student-analysis-page').style.display = 'block';
+                
+                // 直接切换到课程订阅中心tab
+                const subscriptionTab = document.querySelector('[data-target="subscription-info"]');
+                if (subscriptionTab) {
+                    // 移除所有tab的active状态
+                    document.querySelectorAll('.analysis-tab-btn').forEach(tab => {
+                        tab.classList.remove('active');
+                    });
+                    
+                    // 隐藏所有tab内容
+                    document.querySelectorAll('.analysis-tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    
+                    // 激活订阅中心tab
+                    subscriptionTab.classList.add('active');
+                    document.getElementById('subscription-info').classList.add('active');
+                }
+            }
+        }
+        
         // 搜索框回车事件
         document.getElementById('studentSearch').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
@@ -4696,6 +5297,72 @@
                 fileCount: fileCount
             });
         }
+        
+        // 订阅中心筛选功能
+        function initSubscriptionFilters() {
+            const typeFilter = document.getElementById('subscription-type-filter');
+            const statusFilter = document.getElementById('status-filter');
+            
+            if (typeFilter && statusFilter) {
+                typeFilter.addEventListener('change', filterSubscriptions);
+                statusFilter.addEventListener('change', filterSubscriptions);
+            }
+        }
+        
+        function filterSubscriptions() {
+            const typeFilter = document.getElementById('subscription-type-filter').value;
+            const statusFilter = document.getElementById('status-filter').value;
+            const tableRows = document.querySelectorAll('.subscription-center-table tbody tr');
+            
+            tableRows.forEach(row => {
+                let showRow = true;
+                
+                // 筛选订阅类型
+                if (typeFilter) {
+                    const typeBadge = row.querySelector('.subscription-type-badge');
+                    const typeClass = typeBadge ? typeBadge.className : '';
+                    
+                    if (typeFilter === 'product' && !typeClass.includes('type-product')) {
+                        showRow = false;
+                    } else if (typeFilter === 'home' && !typeClass.includes('type-home')) {
+                        showRow = false;
+                    }
+                }
+                
+                // 筛选状态
+                if (statusFilter && showRow) {
+                    const statusCell = row.querySelector('td:nth-child(4)');
+                    const statusClass = statusCell ? statusCell.className : '';
+                    
+                    if (statusFilter === 'waiting' && !statusClass.includes('status-waiting')) {
+                        showRow = false;
+                    } else if (statusFilter === 'matched' && !statusClass.includes('status-matched')) {
+                        showRow = false;
+                    } else if (statusFilter === 'notified' && !statusClass.includes('status-notified')) {
+                        showRow = false;
+                    } else if (statusFilter === 'viewed' && !statusClass.includes('status-viewed')) {
+                        showRow = false;
+                    } else if (statusFilter === 'converted' && !statusClass.includes('status-converted')) {
+                        showRow = false;
+                    } else if (statusFilter === 'expired' && !statusClass.includes('status-expired')) {
+                        showRow = false;
+                    }
+                }
+                
+                row.style.display = showRow ? '' : 'none';
+            });
+        }
+        
+        function resetSubscriptionFilters() {
+            document.getElementById('subscription-type-filter').value = '';
+            document.getElementById('status-filter').value = '';
+            filterSubscriptions();
+        }
+        
+        // 初始化订阅筛选功能
+        document.addEventListener('DOMContentLoaded', function() {
+            initSubscriptionFilters();
+        });
     </script>
 </body>
 </html>
