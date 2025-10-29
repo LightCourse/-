@@ -865,8 +865,9 @@
         /* 选择模态框中的课程列表样式 */
         .course-list-container .course-list-scroll.readonly-field {
             background-color: #f8f9fa !important;
-            cursor: not-allowed !important;
+            cursor: default !important;
             max-height: 100px;
+            overflow-y: auto !important;
         }
         
         .course-list-container .course-count-title {
@@ -1323,6 +1324,45 @@
             background-color: #f0f3f7 !important;
             text-align: left;
             padding-left: 12px;
+            position: relative; /* 支持订阅按钮绝对定位 */
+            padding-right: 40px; /* 为订阅按钮预留空间 */
+        }
+        
+        /* 自主选课页面订阅按钮特殊样式 - 仅在课程代码列显示 */
+        #autonomous-selection .course-code-cell .course-subscribe-btn {
+            position: absolute;
+            top: 50%;
+            right: 5px;
+            transform: translateY(-50%);
+            background: none;
+            color: #ffa500;
+            border: none;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+            opacity: 0.8;
+            transition: all 0.3s ease;
+            padding: 2px 4px;
+            border-radius: 3px;
+            z-index: 5;
+        }
+        
+        #autonomous-selection .course-code-cell .course-subscribe-btn:hover {
+            opacity: 1;
+            background-color: rgba(255, 165, 0, 0.1);
+            transform: translateY(-50%) scale(1.05);
+        }
+        
+        #autonomous-selection .course-code-cell .course-subscribe-btn.subscribed {
+            color: #28a745;
+            opacity: 1;
+        }
+        
+        /* 防护措施：确保其他列绝对不出现订阅按钮 */
+        #autonomous-selection .available-units-cell .course-subscribe-btn,
+        #autonomous-selection .general-category-cell .course-subscribe-btn,
+        #autonomous-selection .correspondence-cell .course-subscribe-btn {
+            display: none !important;
         }
         
         /* 课程名称列样式 */
@@ -4603,16 +4643,9 @@
             // 构建课程列表HTML
             let courseListHTML = '';
             selectedCourses.forEach(course => {
-                // 从课程信息中提取课程代码和名称
-                const fullText = course.course;
-                const courseCodeMatch = fullText.match(/^([A-Z]{2,}\s+[\d\.]+)/);
-                const courseCode = courseCodeMatch ? courseCodeMatch[1] : '';
-                
-                // 提取课程名称（括号中的内容）
-                const courseNameMatch = fullText.match(/\(([^)]+)\)/);
-                const courseName = courseNameMatch ? courseNameMatch[1] : fullText;
-                
-                courseListHTML += `<div class="course-item-row">${courseCode} - ${courseName}</div>`;
+                // 课程信息应该已经是"课程代码(课程名称)"格式，直接显示
+                const courseDisplay = course.course || '未知课程';
+                courseListHTML += `<div class="course-item-row">${courseDisplay}</div>`;
             });
             
             courseInfoDisplay.innerHTML = `
@@ -4790,12 +4823,21 @@
                 }
                 
                 const courseCell = row.cells[4]; // 已选课程列
-                const fullCourseText = courseCell.textContent.trim();
                 const buttonElement = courseCell.querySelector('.course-subscribe-btn');
+                
+                // 提取课程代码和课程名称，格式化为"课程代码(课程名称)"
+                const courseLink = courseCell.querySelector('.course-link');
+                const courseCode = courseLink ? courseLink.textContent.trim() : '';
+                const fullCellText = courseCell.textContent.trim();
+                const courseNameMatch = fullCellText.match(/\(([^)]+)\)/);
+                const courseName = courseNameMatch ? courseNameMatch[1] : '';
+                
+                // 只保留课程代码和课程名称
+                const formattedCourse = courseCode && courseName ? `${courseCode}(${courseName})` : courseCode || '未知课程';
                 
                 selectedCourses.push({
                     student: studentName,
-                    course: fullCourseText,
+                    course: formattedCourse,
                     buttonElement: buttonElement
                 });
             });
@@ -5195,7 +5237,16 @@
             
             // 获取课程信息
             const courseCell = buttonElement.closest('.course-cell');
-            const courseName = courseCell.querySelector('.course-link').textContent.trim();
+            const courseLink = courseCell.querySelector('.course-link');
+            const courseCode = courseLink ? courseLink.textContent.trim() : '';
+            
+            // 获取完整的课程信息（课程代码和课程名称）
+            const fullCellText = courseCell.textContent.trim();
+            const courseNameMatch = fullCellText.match(/\(([^)]+)\)/);
+            const courseName = courseNameMatch ? courseNameMatch[1] : '';
+            
+            // 格式化为"课程代码(课程名称)"
+            const formattedCourse = courseCode && courseName ? `${courseCode}(${courseName})` : fullCellText;
             
             // 获取学生信息
             const row = courseCell.closest('tr');
@@ -5223,7 +5274,7 @@
             // 创建单门课程的选中数据
             const selectedCourse = [{
                 student: studentName,
-                course: courseName,
+                course: formattedCourse,
                 type: courseType
             }];
             
@@ -5365,6 +5416,11 @@
                     if (target === 'student-profile') {
                         updateStudentProfileData();
                     }
+                    
+                    // 如果切换到自主选课页面，部署订阅功能
+                    if (target === 'autonomous-selection') {
+                        initAutonomousSelectionSubscription();
+                    }
                 });
             });
             
@@ -5376,7 +5432,61 @@
             
             // 页面加载时检查是否需要更新学生档案数据
             updateStudentProfileData();
+            
+            // 如果当前页面显示的是自主选课，初始化订阅功能
+            setTimeout(() => {
+                const autonomousSection = document.getElementById('autonomous-selection');
+                if (autonomousSection && autonomousSection.classList.contains('active')) {
+                    initAutonomousSelectionSubscription();
+                }
+            }, 500); // 延迟确保DOM完全加载
         });
+        
+        // 初始化自主选课页面的订阅功能
+        function initAutonomousSelectionSubscription() {
+            // 仅使用自定义插入逻辑，精确控制订阅按钮只在课程代码列出现
+            document.querySelectorAll('#autonomous-selection .course-table-excel tbody tr').forEach((row, index) => {
+                const codeCell = row.querySelector('.course-code-cell');
+                const nameCell = row.querySelector('.course-name-cell');
+                const codeText = codeCell ? codeCell.textContent.trim() : '';
+                
+                // 仅在课程代码列添加订阅按钮，不区分任何状态
+                if (codeCell && !codeCell.querySelector('.course-subscribe-btn')) {
+                    const courseName = nameCell ? nameCell.textContent.trim() : `课程${index + 1}`;
+                    const courseCode = codeText || `CODE${index + 1}`;
+                    
+                    // 生成订阅按钮HTML，确保包含正确的数据属性
+                    const buttonElement = document.createElement('button');
+                    buttonElement.className = 'course-subscribe-btn home-course';
+                    buttonElement.textContent = '订阅';
+                    buttonElement.title = '订阅本校意向课程';
+                    
+                    // 设置数据属性
+                    buttonElement.setAttribute('data-course-id', `autonomous_${courseCode}_${index}`);
+                    buttonElement.setAttribute('data-course-code', courseCode);
+                    buttonElement.setAttribute('data-course-name', courseName);
+                    buttonElement.setAttribute('data-course-type', 'home');
+                    buttonElement.setAttribute('data-student-name', window.currentStudentInfo ? window.currentStudentInfo.name : '当前学生');
+                    
+                    // 绑定点击事件
+                    buttonElement.onclick = function(event) {
+                        SubscriptionModule.handleSingleSubscribe(this);
+                    };
+                    
+                    // 只插入到课程代码单元格，绝不添加到其他列
+                    codeCell.appendChild(buttonElement);
+                }
+            });
+            
+            // 清理函数：移除任何可能错误添加到其他列的订阅按钮
+            document.querySelectorAll('#autonomous-selection .available-units-cell .course-subscribe-btn').forEach(btn => btn.remove());
+            document.querySelectorAll('#autonomous-selection .general-category-cell .course-subscribe-btn').forEach(btn => btn.remove());
+            document.querySelectorAll('#autonomous-selection .correspondence-cell .course-subscribe-btn').forEach(btn => btn.remove());
+            document.querySelectorAll('#autonomous-selection .course-name-cell .course-subscribe-btn').forEach(btn => btn.remove());
+            
+            const buttonCount = document.querySelectorAll('#autonomous-selection .course-code-cell .course-subscribe-btn').length;
+            console.log(`自主选课页面：已为所有 ${buttonCount} 个课程代码列添加本校课程订阅功能（不区分状态）`);
+        }
         
         // 更新学生档案数据
         function updateStudentProfileData() {
@@ -5792,6 +5902,652 @@
             // 模拟处理操作
             alert(`执行操作: ${action} (订阅ID: ${subscriptionId})`);
         }
+        
+        // ===== 灵活订阅功能模块 =====
+        // 为实现跨页面、多场景订阅功能设计的通用组件系统
+        
+        window.SubscriptionModule = (function() {
+            
+            // 私有配置对象
+            const config = {
+                buttonClass: 'course-subscribe-btn',
+                subscribedClass: 'subscribed',
+                homeClass: 'home-course',
+                productClass: 'product-course'
+            };
+            
+            // 订阅组件配置预设
+            const componentPresets = {
+                // 单个课程订阅 - 本校课程
+                'single-home': {
+                    type: 'single',
+                    courseType: 'home',
+                    buttonText: '订阅',
+                    allowedTypes: ['home']
+                },
+                
+                // 单个课程订阅 - 产品课程
+                'single-product': {
+                    type: 'single',
+                    courseType: 'product', 
+                    buttonText: '订阅',
+                    allowedTypes: ['product']
+                },
+                
+                // 单个课程订阅 - 支持两种类型
+                'single-mixed': {
+                    type: 'single',
+                    courseType: 'auto', // 自动识别
+                    buttonText: '订阅',
+                    allowedTypes: ['home', 'product']
+                },
+                
+                // 批量订阅 - 仅本校课程
+                'batch-home': {
+                    type: 'batch',
+                    courseType: 'home',
+                    buttonText: '批量订阅本校课程',
+                    allowedTypes: ['home'],
+                    requireSelection: true
+                },
+                
+                // 批量订阅 - 仅产品课程
+                'batch-product': {
+                    type: 'batch',
+                    courseType: 'product',
+                    buttonText: '批量订阅产品课程', 
+                    allowedTypes: ['product'],
+                    requireSelection: true
+                },
+                
+                // 批量订阅 - 混合类型
+                'batch-mixed': {
+                    type: 'batch',
+                    courseType: 'mixed',
+                    buttonText: '批量订阅',
+                    allowedTypes: ['home', 'product'],
+                    requireSelection: true
+                }
+            };
+            
+            // 生成单个订阅按钮
+            function generateSingleButton(options = {}) {
+                const {
+                    courseId = '',
+                    courseName = '',
+                    courseType = 'product',
+                    studentName = '',
+                    buttonText = '订阅',
+                    position = 'absolute',
+                    size = 'normal',
+                    style = 'minimal',
+                    preset = null
+                } = options;
+                
+                // 应用预设配置
+                const config = preset ? { ...componentPresets[preset], ...options } : options;
+                
+                // 构建CSS类名
+                let cssClasses = ['course-subscribe-btn'];
+                if (config.courseType === 'home') cssClasses.push('home-course');
+                if (position !== 'absolute') cssClasses.push(`subscribe-${position}`);
+                if (size !== 'normal') cssClasses.push(`subscribe-${size}`);
+                if (style !== 'minimal') cssClasses.push(`subscribe-${style}`);
+                
+                // 构建数据属性
+                const dataAttrs = [
+                    `data-course-id="${courseId}"`,
+                    `data-course-name="${courseName}"`,
+                    `data-course-type="${config.courseType}"`,
+                    `data-student-name="${studentName}"`
+                ].join(' ');
+                
+                return `<button class="${cssClasses.join(' ')}" 
+                        onclick="SubscriptionModule.handleSingleSubscribe(this)" 
+                        ${dataAttrs}
+                        title="订阅${config.courseType === 'home' ? '本校' : '产品'}课程">${config.buttonText}</button>`;
+            }
+            
+            // 生成批量订阅按钮
+            function generateBatchButton(options = {}) {
+                const {
+                    targetSelector = 'input[type="checkbox"]',
+                    preset = 'batch-mixed',
+                    position = 'toolbar',
+                    size = 'normal'
+                } = options;
+                
+                const config = { ...componentPresets[preset], ...options };
+                
+                let cssClasses = ['batch-subscribe-btn'];
+                if (size !== 'normal') cssClasses.push(`batch-${size}`);
+                
+                // 根据课程类型确定样式
+                if (config.courseType === 'home') {
+                    cssClasses.push('home-subscribe-btn');
+                } else if (config.courseType === 'product') {
+                    cssClasses.push('product-subscribe-btn');
+                }
+                
+                const dataAttrs = [
+                    `data-target-selector="${targetSelector}"`,
+                    `data-course-type="${config.courseType}"`,
+                    `data-allowed-types="${config.allowedTypes.join(',')}"`
+                ].join(' ');
+                
+                return `<button class="${cssClasses.join(' ')}" 
+                        onclick="SubscriptionModule.handleBatchSubscribe(this)" 
+                        ${dataAttrs}
+                        ${config.requireSelection ? 'disabled' : ''}
+                        title="${config.buttonText}">${config.buttonText}</button>`;
+            }
+            
+            // 核心部署函数 - 添加单个订阅按钮
+            function deploySingleButtons(selector, options = {}) {
+                const elements = document.querySelectorAll(selector);
+                let addedCount = 0;
+                
+                elements.forEach((element, index) => {
+                    // 检查是否已有订阅按钮
+                    if (element.querySelector('.course-subscribe-btn')) {
+                        return;
+                    }
+                    
+                    // 自动提取课程信息
+                    const courseInfo = extractCourseInfo(element, options);
+                    
+                    // 应用课程类型过滤
+                    if (options.allowedTypes && !options.allowedTypes.includes(courseInfo.courseType)) {
+                        return; // 跳过不允许的课程类型
+                    }
+                    
+                    // 生成按钮HTML
+                    const buttonHtml = generateSingleButton({
+                        ...options,
+                        ...courseInfo,
+                        courseId: courseInfo.courseId || `course_${index}`
+                    });
+                    
+                    // 插入按钮
+                    insertButton(element, buttonHtml, options.insertMethod);
+                    addedCount++;
+                });
+                
+                return addedCount;
+            }
+            
+            // 部署批量订阅按钮
+            function deployBatchButton(containerSelector, options = {}) {
+                const container = document.querySelector(containerSelector);
+                if (!container) {
+                    console.warn('SubscriptionModule: 未找到批量订阅按钮容器:', containerSelector);
+                    return false;
+                }
+                
+                // 检查是否已存在批量订阅按钮
+                if (container.querySelector('.batch-subscribe-btn')) {
+                    return false;
+                }
+                
+                // 生成批量订阅按钮
+                const buttonHtml = generateBatchButton(options);
+                
+                // 插入按钮
+                container.insertAdjacentHTML('beforeend', buttonHtml);
+                
+                // 如果需要选择检测，启用选择监听
+                if (options.requireSelection) {
+                    setupBatchSelectionListener(options.targetSelector || 'input[type="checkbox"]');
+                }
+                
+                return true;
+            }
+            
+            // 按钮插入辅助函数
+            function insertButton(element, buttonHtml, insertMethod) {
+                if (insertMethod === 'append') {
+                    element.insertAdjacentHTML('beforeend', buttonHtml);
+                } else if (insertMethod === 'prepend') {
+                    element.insertAdjacentHTML('afterbegin', buttonHtml);
+                } else if (insertMethod === 'after') {
+                    element.insertAdjacentHTML('afterend', buttonHtml);
+                } else {
+                    // 默认插入到右上角
+                    element.style.position = 'relative';
+                    element.insertAdjacentHTML('beforeend', buttonHtml);
+                }
+            }
+            
+            // 从元素中提取课程信息
+            function extractCourseInfo(element, options = {}) {
+                const info = {};
+                
+                // 提取课程名称
+                if (options.courseNameSelector) {
+                    const nameEl = element.querySelector(options.courseNameSelector);
+                    info.courseName = nameEl ? nameEl.textContent.trim() : '';
+                } else {
+                    // 尝试常见的课程名称选择器
+                    const nameSelectors = ['.course-name', '.course-title', 'h3', 'h4', '.title'];
+                    for (const sel of nameSelectors) {
+                        const nameEl = element.querySelector(sel);
+                        if (nameEl) {
+                            info.courseName = nameEl.textContent.trim();
+                            break;
+                        }
+                    }
+                    
+                    // 如果没有找到，尝试从课程单元格中提取完整信息
+                    if (!info.courseName) {
+                        const courseCell = element.querySelector('.course-cell');
+                        if (courseCell) {
+                            const courseLink = courseCell.querySelector('.course-link');
+                            const courseCode = courseLink ? courseLink.textContent.trim() : '';
+                            const fullText = courseCell.textContent.trim();
+                            const courseNameMatch = fullText.match(/\(([^)]+)\)/);
+                            const courseName = courseNameMatch ? courseNameMatch[1] : '';
+                            
+                            // 格式化为"课程代码(课程名称)"
+                            info.courseName = courseCode && courseName ? `${courseCode}(${courseName})` : fullText;
+                        }
+                    }
+                }
+                
+                // 提取学生信息
+                if (options.studentNameSelector) {
+                    const studentEl = element.querySelector(options.studentNameSelector);
+                    info.studentName = studentEl ? studentEl.textContent.trim() : '';
+                } else {
+                    // 尝试从上下文中找学生信息
+                    const studentSelectors = ['.student-name', '.user-name', '.name'];
+                    for (const sel of studentSelectors) {
+                        const studentEl = element.querySelector(sel) || element.closest('tr')?.querySelector(sel);
+                        if (studentEl) {
+                            info.studentName = studentEl.textContent.trim();
+                            break;
+                        }
+                    }
+                }
+                
+                // 提取课程ID
+                info.courseId = element.dataset.courseId || element.id || '';
+                
+                // 智能判断课程类型
+                if (options.courseType === 'auto') {
+                    info.courseType = detectCourseType(element);
+                } else {
+                    info.courseType = options.courseType || 'product';
+                }
+                
+                return info;
+            }
+            
+            // 智能检测课程类型
+            function detectCourseType(element) {
+                // 检查是否有类型标识
+                const typeBadge = element.querySelector('.subscription-type-badge, .type-badge');
+                if (typeBadge) {
+                    const text = typeBadge.textContent.trim();
+                    if (text.includes('本校') || text.includes('home')) return 'home';
+                    if (text.includes('产品') || text.includes('product')) return 'product';
+                }
+                
+                // 检查CSS类名
+                if (element.classList.contains('home-course') || element.querySelector('.home-course')) {
+                    return 'home';
+                }
+                if (element.classList.contains('product-course') || element.querySelector('.product-course')) {
+                    return 'product';
+                }
+                
+                // 默认为产品课程
+                return 'product';
+            }
+            
+            // 处理单个课程订阅
+            function handleSingleSubscribe(button) {
+                if (button.classList.contains(config.subscribedClass)) {
+                    return; // 已订阅，不执行操作
+                }
+                
+                // 阻止事件冒泡
+                if (event) event.stopPropagation();
+                
+                // 获取课程信息
+                const courseData = {
+                    courseId: button.dataset.courseId,
+                    courseCode: button.dataset.courseCode,
+                    courseName: button.dataset.courseName,
+                    courseType: button.dataset.courseType,
+                    studentName: button.dataset.studentName
+                };
+                
+                // 格式化课程信息为"课程代码(课程名称)"
+                const formattedCourse = courseData.courseCode && courseData.courseName 
+                    ? `${courseData.courseCode}(${courseData.courseName})`
+                    : courseData.courseName;
+                
+                // 创建与原有系统兼容的数据格式
+                const selectedCourse = [{
+                    student: courseData.studentName || '当前用户',
+                    course: formattedCourse,
+                    type: courseData.courseType
+                }];
+                
+                // 确定模态框标题
+                const modalTitle = courseData.courseType === 'home' ? '本校课程订阅' : '产品课程订阅';
+                
+                // 调用原有的单课程订阅模态框
+                openSingleCourseSelectionModal(selectedCourse, modalTitle, button);
+            }
+            
+            // 处理批量订阅
+            function handleBatchSubscribe(button) {
+                const targetSelector = button.dataset.targetSelector;
+                const courseType = button.dataset.courseType;
+                const allowedTypes = button.dataset.allowedTypes.split(',');
+                
+                // 获取选中的项目
+                const selectedItems = document.querySelectorAll(`${targetSelector}:checked`);
+                
+                if (selectedItems.length === 0) {
+                    alert('请先选择要订阅的课程');
+                    return;
+                }
+                
+                // 提取选中课程的信息
+                const selectedCourses = [];
+                selectedItems.forEach(checkbox => {
+                    const row = checkbox.closest('tr, .course-item, .subscription-card');
+                    if (row) {
+                        const courseInfo = extractCourseInfo(row);
+                        
+                        // 检查课程类型是否被允许
+                        if (allowedTypes.includes(courseInfo.courseType)) {
+                            selectedCourses.push({
+                                student: courseInfo.studentName || '当前用户',
+                                course: courseInfo.courseName,
+                                type: courseInfo.courseType
+                            });
+                        }
+                    }
+                });
+                
+                if (selectedCourses.length === 0) {
+                    alert('没有找到符合条件的课程');
+                    return;
+                }
+                
+                // 根据课程类型确定标题
+                let modalTitle = '批量订阅';
+                if (courseType === 'home') {
+                    modalTitle = '批量本校课程订阅';
+                } else if (courseType === 'product') {
+                    modalTitle = '批量产品课程订阅';
+                }
+                
+                // 调用原有的批量订阅逻辑
+                if (typeof openBatchSubscribeModal === 'function') {
+                    // 存储选中的课程数据供模态框使用
+                    window.batchSelectedCourses = selectedCourses;
+                    openBatchSubscribeModal(modalTitle);
+                } else {
+                    // fallback: 调用单课程流程处理每个课程
+                    selectedCourses.forEach((course, index) => {
+                        setTimeout(() => {
+                            const mockButton = document.createElement('button');
+                            openSingleCourseSelectionModal([course], modalTitle, mockButton);
+                        }, index * 500); // 延迟处理避免模态框冲突
+                    });
+                }
+            }
+            
+            // 批量选择监听器设置
+            function setupBatchSelectionListener(checkboxSelector) {
+                const checkboxes = document.querySelectorAll(checkboxSelector);
+                const batchButton = document.querySelector('.batch-subscribe-btn[disabled]');
+                
+                if (!batchButton) return;
+                
+                function updateBatchButton() {
+                    const selectedCount = document.querySelectorAll(`${checkboxSelector}:checked`).length;
+                    batchButton.disabled = selectedCount === 0;
+                    
+                    if (selectedCount > 0) {
+                        batchButton.textContent = batchButton.textContent.replace(/\(\d+\)/, '') + `(${selectedCount})`;
+                    } else {
+                        batchButton.textContent = batchButton.textContent.replace(/\(\d+\)/, '');
+                    }
+                }
+                
+                checkboxes.forEach(checkbox => {
+                    checkbox.addEventListener('change', updateBatchButton);
+                });
+                
+                // 全选按钮监听
+                const selectAllCheckbox = document.querySelector('input[type="checkbox"][id*="selectAll"]');
+                if (selectAllCheckbox) {
+                    selectAllCheckbox.addEventListener('change', () => {
+                        setTimeout(updateBatchButton, 50);
+                    });
+                }
+            }
+            
+            // 快速场景化部署函数
+            function quickDeploy(scenario, customOptions = {}) {
+                const scenarios = {
+                    // 场景1: 仅单个本校课程订阅
+                    'single-home-only': {
+                        type: 'single',
+                        preset: 'single-home',
+                        selector: '.course-item, .subscription-card, tr',
+                        allowedTypes: ['home'],
+                        position: 'absolute',
+                        size: 'small'
+                    },
+                    
+                    // 场景2: 仅单个产品课程订阅  
+                    'single-product-only': {
+                        type: 'single',
+                        preset: 'single-product',
+                        selector: '.course-item, .subscription-card, tr',
+                        allowedTypes: ['product'],
+                        position: 'absolute',
+                        size: 'small'
+                    },
+                    
+                    // 场景3: 混合单个课程订阅
+                    'single-mixed': {
+                        type: 'single',
+                        preset: 'single-mixed',
+                        selector: '.course-item, .subscription-card, tr',
+                        allowedTypes: ['home', 'product'],
+                        courseType: 'auto',
+                        position: 'absolute',
+                        size: 'small'
+                    },
+                    
+                    // 场景4: 仅本校课程批量订阅
+                    'batch-home-only': {
+                        type: 'batch',
+                        preset: 'batch-home',
+                        containerSelector: '.function-bar, .toolbar',
+                        targetSelector: 'input[type="checkbox"]',
+                        allowedTypes: ['home']
+                    },
+                    
+                    // 场景5: 仅产品课程批量订阅
+                    'batch-product-only': {
+                        type: 'batch',
+                        preset: 'batch-product', 
+                        containerSelector: '.function-bar, .toolbar',
+                        targetSelector: 'input[type="checkbox"]',
+                        allowedTypes: ['product']
+                    },
+                    
+                    // 场景6: 混合批量订阅
+                    'batch-mixed': {
+                        type: 'batch',
+                        preset: 'batch-mixed',
+                        containerSelector: '.function-bar, .toolbar', 
+                        targetSelector: 'input[type="checkbox"]',
+                        allowedTypes: ['home', 'product']
+                    },
+                    
+                    // 场景7: 单个 + 批量组合 (仅本校)
+                    'combo-home': {
+                        type: 'combo',
+                        single: { preset: 'single-home', allowedTypes: ['home'] },
+                        batch: { preset: 'batch-home', allowedTypes: ['home'] }
+                    },
+                    
+                    // 场景8: 单个 + 批量组合 (仅产品)
+                    'combo-product': {
+                        type: 'combo', 
+                        single: { preset: 'single-product', allowedTypes: ['product'] },
+                        batch: { preset: 'batch-product', allowedTypes: ['product'] }
+                    },
+                    
+                    // 场景9: 完整功能 (当前页面的完整实现)
+                    'full-featured': {
+                        type: 'combo',
+                        single: { preset: 'single-mixed', allowedTypes: ['home', 'product'], courseType: 'auto' },
+                        batch: { preset: 'batch-mixed', allowedTypes: ['home', 'product'] }
+                    }
+                };
+                
+                const config = scenarios[scenario];
+                if (!config) {
+                    console.warn('SubscriptionModule: 未知的部署场景:', scenario);
+                    return { single: 0, batch: false };
+                }
+                
+                const options = { ...config, ...customOptions };
+                const result = { single: 0, batch: false };
+                
+                // 部署单个订阅按钮
+                if (options.type === 'single' || options.type === 'combo') {
+                    const singleConfig = options.type === 'combo' ? options.single : options;
+                    const selector = customOptions.selector || singleConfig.selector || '.course-item, .subscription-card';
+                    
+                    result.single = deploySingleButtons(selector, {
+                        ...singleConfig,
+                        ...customOptions
+                    });
+                }
+                
+                // 部署批量订阅按钮
+                if (options.type === 'batch' || options.type === 'combo') {
+                    const batchConfig = options.type === 'combo' ? options.batch : options;
+                    const containerSelector = customOptions.containerSelector || batchConfig.containerSelector || '.function-bar';
+                    
+                    result.batch = deployBatchButton(containerSelector, {
+                        ...batchConfig,
+                        ...customOptions
+                    });
+                }
+                
+                return result;
+            }
+            
+            // 添加必要的CSS样式
+            function injectStyles() {
+                if (document.getElementById('subscription-module-styles')) {
+                    return; // 样式已存在
+                }
+                
+                const styles = `
+                    <style id="subscription-module-styles">
+                    /* 通用订阅按钮样式扩展 */
+                    .subscribe-inline {
+                        position: static !important;
+                        display: inline-block !important;
+                        margin-left: 10px;
+                    }
+                    
+                    .subscribe-block {
+                        position: static !important;
+                        display: block !important;
+                        margin: 10px 0;
+                        width: auto;
+                    }
+                    
+                    .subscribe-small {
+                        font-size: 10px !important;
+                        padding: 1px 2px !important;
+                    }
+                    
+                    .subscribe-large {
+                        font-size: 14px !important;
+                        padding: 8px 16px !important;
+                    }
+                    
+                    .subscribe-button {
+                        background: #007bff !important;
+                        color: white !important;
+                        border: 1px solid #007bff !important;
+                        border-radius: 4px !important;
+                        padding: 6px 12px !important;
+                        transition: all 0.3s ease !important;
+                    }
+                    
+                    .subscribe-button:hover {
+                        background: #0056b3 !important;
+                        transform: none !important;
+                        text-decoration: none !important;
+                    }
+                    
+                    .subscribe-badge {
+                        background: #f8f9fa !important;
+                        color: #495057 !important;
+                        border: 1px solid #dee2e6 !important;
+                        border-radius: 12px !important;
+                        padding: 2px 8px !important;
+                        font-size: 11px !important;
+                    }
+                    </style>
+                `;
+                
+                document.head.insertAdjacentHTML('beforeend', styles);
+            }
+            
+            // 公开API
+            return {
+                // 🎯 核心部署功能
+                deploy: quickDeploy,                    // 场景化快速部署
+                deploySingle: deploySingleButtons,      // 部署单个订阅按钮
+                deployBatch: deployBatchButton,         // 部署批量订阅按钮
+                
+                // 🔧 底层构建功能  
+                generateSingle: generateSingleButton,   // 生成单个按钮HTML
+                generateBatch: generateBatchButton,     // 生成批量按钮HTML
+                
+                // 📋 事件处理函数
+                handleSingleSubscribe: handleSingleSubscribe,  // 单个订阅处理
+                handleBatchSubscribe: handleBatchSubscribe,    // 批量订阅处理
+                
+                // 🛠️ 工具函数
+                extractCourseInfo: extractCourseInfo,   // 提取课程信息
+                detectCourseType: detectCourseType,     // 检测课程类型
+                injectStyles: injectStyles,             // 注入样式
+                
+                // 📖 预设配置
+                presets: componentPresets,              // 所有预设配置
+                
+                // ℹ️ 版本信息
+                version: '2.0.0'
+            };
+        })();
+        
+        // 自动注入样式
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                window.SubscriptionModule.injectStyles();
+            });
+        } else {
+            window.SubscriptionModule.injectStyles();
+        }
+        
     </script>
 </body>
 </html>
