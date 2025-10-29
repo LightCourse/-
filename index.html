@@ -1591,388 +1591,514 @@
             background-color: white !important;
         }
         
-        /* 课程订阅中心样式 */
+        /* 课程订阅中心 - 卡片式布局样式 */
         .subscription-center-container {
-            padding: 20px;
+            padding: 24px;
             max-width: 100%;
-            overflow-x: auto;
         }
         
-        .subscription-center-table {
-            width: 100%;
-            border-collapse: collapse;
+        .subscription-cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 24px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .subscription-card {
             background: white;
-            font-family: "Noto Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            font-size: 13px;
-            line-height: 1.5;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            border-radius: 8px;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid #f1f5f9;
             overflow: hidden;
+            transition: all 0.3s ease;
+            font-family: "Noto Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
         
-        .subscription-center-table th {
-            background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
-            color: white;
-            padding: 15px 12px;
-            text-align: center;
-            vertical-align: middle;
+        .subscription-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            border-color: #e2e8f0;
+        }
+        
+        .card-header {
+            padding: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 1px solid #f8fafc;
+            position: relative;
+        }
+        
+        .course-main-info {
+            flex: 1;
+            padding-right: 16px;
+        }
+        
+        .course-title {
+            font-size: 20px;
             font-weight: 600;
-            font-size: 12px;
-            letter-spacing: 0.3px;
-            border-right: 1px solid rgba(255, 255, 255, 0.2);
-            white-space: nowrap;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            color: #0f172a;
+            margin: 0 0 8px 0;
+            line-height: 1.3;
+            letter-spacing: -0.5px;
         }
         
-        .subscription-center-table th:last-child {
-            border-right: none;
-        }
-        
-        .subscription-center-table td {
-            padding: 16px 12px;
-            border-bottom: 1px solid #e8ecf0;
-            border-right: 1px solid #e8ecf0;
-            text-align: center;
-            vertical-align: middle;
-            background: white;
-            font-size: 12px;
-            color: #2c3e50;
+        .course-subtitle {
+            font-size: 15px;
+            font-weight: 400;  
+            color: #64748b;
+            margin: 0 0 6px 0;
             line-height: 1.4;
         }
         
-        .subscription-center-table td:last-child {
-            border-right: none;
-        }
-        
-        .subscription-center-table tbody tr:hover {
-            background-color: #f8fafc;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-            transition: all 0.2s ease;
-        }
-        
-        .subscription-center-table tbody tr:hover td {
-            background-color: #f8fafc;
-        }
-        
-        /* 订阅中心表格列宽设置 */
-        .subscription-center-table th:nth-child(1) { width: 10%; } /* 订阅类型 */
-        .subscription-center-table th:nth-child(2) { width: 20%; } /* 订阅课程 */ 
-        .subscription-center-table th:nth-child(3) { width: 18%; } /* 订阅条件 */
-        .subscription-center-table th:nth-child(4) { width: 10%; } /* 当前状态 */
-        .subscription-center-table th:nth-child(5) { width: 10%; } /* 创建日期 */
-        .subscription-center-table th:nth-child(6) { width: 12%; } /* 截止日期 */
-        .subscription-center-table th:nth-child(7) { width: 20%; } /* 操作 */
-        
-        /* 筛选区域样式 */
+        .university-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: #94a3b8;
+            margin: 0;
+            letter-spacing: 0.1px;
+        }        /* 筛选区域样式 - 升级版 */
         .subscription-filter-area {
             display: flex;
-            gap: 20px;
+            gap: 24px;
             align-items: center;
-            padding: 15px 20px;
-            background: #f8f9fa;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            border: 1px solid #e1e5e9;
+            padding: 20px 24px;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 16px;
+            margin-bottom: 24px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
         }
         
         .filter-item {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
         }
         
         .filter-item label {
-            font-size: 12px;
-            color: #495057;
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
             white-space: nowrap;
-            font-weight: 500;
+            letter-spacing: 0.2px;
         }
         
         .filter-select {
-            padding: 5px 8px;
-            border: 1px solid #ced4da;
-            border-radius: 4px;
-            font-size: 12px;
+            padding: 10px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
             background: white;
-            color: #495057;
-            min-width: 120px;
+            color: #374151;
+            min-width: 140px;
             cursor: pointer;
+            transition: all 0.2s ease;
         }
         
         .filter-select:focus {
-            border-color: #4a90e2;
+            border-color: var(--primary-green);
             outline: none;
-            box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+            box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.1);
         }
         
         .filter-reset-btn {
-            padding: 5px 12px;
-            background: #6c757d;
+            padding: 10px 20px;
+            background: #6b7280;
             color: white;
             border: none;
-            border-radius: 4px;
-            font-size: 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
             cursor: pointer;
-            transition: background 0.2s ease;
+            transition: all 0.2s ease;
+            letter-spacing: 0.2px;
         }
         
         .filter-reset-btn:hover {
-            background: #5a6268;
+            background: #4b5563;
+            transform: translateY(-1px);
         }
         
-        /* 操作按钮样式 */
-        .action-buttons {
+        .card-body {
+            padding: 20px 24px;
+            border-bottom: 1px solid #f8fafc;
+        }
+        
+        .status-section {
             display: flex;
-            flex-direction: column;
-            gap: 6px;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            height: 100%;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
         }
         
-        .action-btn {
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.1px;
+            background: #f8fafc;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .status-badge .status-icon {
+            font-size: 14px;
+        }
+        
+        /* 通过图标颜色区分不同状态 */
+        .status-waiting .status-icon {
+            color: #f59e0b;
+        }
+        
+        .status-matched .status-icon {
+            color: #10b981;
+        }
+        
+        .status-notified .status-icon {
+            color: #3b82f6;
+        }
+        
+        .status-viewed .status-icon {
+            color: #8b5cf6;
+        }
+        
+        .status-converted .status-icon {
+            color: #059669;
+        }
+        
+        .status-expired .status-icon {
+            color: #ef4444;
+        }
+        
+        .deadline-info {
+            text-align: right;
+        }
+        
+        .deadline-label {
+            display: block;
+            font-size: 12px;
+            color: #6b7280;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        
+        .deadline-date {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .deadline-info.urgent .deadline-date {
+            color: #dc2626;
+        }
+        
+        .deadline-info.expired .deadline-date {
+            color: #6b7280;
+            text-decoration: line-through;
+        }
+        
+        .deadline-warning {
+            display: block;
+            font-size: 12px;
+            color: #dc2626;
+            font-weight: 700;
+            margin-top: 4px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .subscription-summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: #f8fafc;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .summary-text {
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        .details-toggle {
             background: none;
             border: none;
-            font-size: 11px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            white-space: nowrap;
-            padding: 3px 0;
+            color: var(--primary-green);
+            font-size: 12px;
             font-weight: 600;
-            letter-spacing: 0.2px;
-            border-radius: 3px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
         }
         
-        /* 不同功能按钮的颜色 */
+        .details-toggle:hover {
+            background: rgba(46, 204, 113, 0.1);
+        }
+        
+        .subscription-details {
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 12px;
+        }
+        
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-label {
+            font-size: 13px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+        
+        .detail-value {
+            font-size: 13px;
+            color: #374151;
+            font-weight: 600;
+        }
+        
+        .card-actions {
+            padding: 20px 24px;
+            background: #fafbfc;
+            border-top: 1px solid #f1f5f9;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            justify-content: flex-start;
+        }
+        
+        .btn-primary {
+            background: var(--primary-green);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            letter-spacing: 0.2px;
+        }
+        
+        .btn-primary:hover {
+            background: var(--dark-green);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #f8fafc;
+            color: #374151;
+            border: 2px solid #e5e7eb;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            letter-spacing: 0.2px;
+        }
+        
+        .btn-secondary:hover {
+            background: #e5e7eb;
+            border-color: #d1d5db;
+            transform: translateY(-1px);
+        }
+        
+        .btn-danger {
+            background: #fee2e2;
+            color: #dc2626;
+            border: 2px solid #fecaca;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            letter-spacing: 0.2px;
+        }
+        
+        .btn-danger:hover {
+            background: #fecaca;
+            border-color: #f87171;
+            transform: translateY(-1px);
+        }
+        
+        /* 统一的功能按钮样式 - 小巧圆角描边设计 */
+        .card-actions button {
+            background: transparent;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            letter-spacing: 0.1px;
+        }
+        
+        .card-actions button:hover {
+            background: #f8fafc;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 跳转选课 - 绿色 */
+        .btn-primary-action {
+            color: #059669 !important;
+            border-color: #d1fae5 !important;
+        }
+        
+        .btn-primary-action:hover {
+            color: #047857 !important;
+            border-color: #a7f3d0 !important;
+            background: #f0fdf4 !important;
+        }
+        
+        /* 编辑条件 - 灰色 */
         .btn-edit {
-            color: #28a745; /* 绿色 - 编辑 */
+            color: #6b7280 !important;
+            border-color: #e5e7eb !important;
         }
         
         .btn-edit:hover {
-            color: #1e7e34;
-            text-decoration: underline;
+            color: #4b5563 !important;
+            border-color: #d1d5db !important;
+            background: #f9fafb !important;
         }
         
-        .btn-cancel {
-            color: #dc3545; /* 红色 - 取消 */
-        }
-        
-        .btn-cancel:hover {
-            color: #c82333;
-            text-decoration: underline;
-        }
-        
-        .btn-renew {
-            color: #ffc107; /* 黄色 - 续期 */
-        }
-        
-        .btn-renew:hover {
-            color: #e0a800;
-            text-decoration: underline;
-        }
-        
+        /* 查看匹配课程 - 蓝色 */
         .btn-view {
-            color: #007bff; /* 蓝色 - 查看 */
+            color: #2563eb !important;
+            border-color: #dbeafe !important;
         }
         
         .btn-view:hover {
-            color: #0056b3;
-            text-decoration: underline;
+            color: #1d4ed8 !important;
+            border-color: #bfdbfe !important;
+            background: #eff6ff !important;
         }
         
-        .btn-select {
-            color: #17a2b8; /* 青色 - 选择/跳转 */
+        /* 续期 - 橘色 */
+        .btn-renew {
+            color: #ea580c !important;
+            border-color: #fed7aa !important;
         }
         
-        .btn-select:hover {
-            color: #138496;
-            text-decoration: underline;
+        .btn-renew:hover {
+            color: #c2410c !important;
+            border-color: #fdba74 !important;
+            background: #fff7ed !important;
         }
         
-        .btn-detail {
-            color: #6f42c1; /* 紫色 - 详情 */
+        /* 取消订阅 - 红色 */
+        .btn-destructive {
+            color: #dc2626 !important;
+            border-color: #fecaca !important;
         }
         
-        .btn-detail:hover {
-            color: #5a2d91;
-            text-decoration: underline;
+        .btn-destructive:hover {
+            color: #b91c1c !important;
+            border-color: #fca5a5 !important;
+            background: #fef2f2 !important;
         }
         
-        .final-status-note {
-            font-size: 11px;
-            color: #6c757d;
-            font-style: italic;
-            font-weight: 500;
-            text-align: center;
-            padding: 6px 0;
-            letter-spacing: 0.1px;
+        .completion-note {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #059669;
+            font-weight: 600;
+            font-size: 14px;
         }
         
-        /* 订阅类型样式 */
+        .completion-icon {
+            font-size: 16px;
+        }
+        
+        /* 订阅类型样式 - 升级版 */
         .subscription-type-badge {
             display: inline-block;
             padding: 6px 12px;
-            border-radius: 14px;
+            border-radius: 16px;
             font-size: 11px;
-            font-weight: 600;
+            font-weight: 500;
             letter-spacing: 0.2px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            background: #f8fafc;
+            color: #64748b;
+            border: 1px solid #e2e8f0;
         }
         
         .type-product {
-            background-color: #e3f2fd;
-            color: #1565c0;
+            background: #eff6ff;
+            color: #1e40af;
+            border-color: #c7d2fe;
         }
         
         .type-home {
-            background-color: #f3e5f5;
-            color: #7b1fa2;
+            background: #fff7ed;
+            color: #c2410c;
+            border-color: #fed7aa;
         }
         
-        /* 订阅课程信息样式 */
-        .subscription-course-cell {
-            text-align: left;
-            line-height: 1.5;
-            max-width: 200px;
-            padding: 16px 15px;
-        }
-        
-        .course-info-top {
-            font-family: "SF Mono", "Monaco", "Consolas", monospace;
-            font-weight: 600;
-            color: #1a365d;
-            font-size: 12px;
-            display: block;
-            margin-bottom: 4px;
-            letter-spacing: 0.2px;
-        }
-        
-        .course-info-bottom {
-            color: #718096;
-            font-size: 11px;
-            font-weight: 500;
-            display: block;
-            letter-spacing: 0.1px;
-        }
-        
-        /* 订阅条件样式 */
-        .subscription-conditions {
-            text-align: left;
-            max-width: 140px;
-            position: relative;
-            padding: 16px 15px;
-        }
-        
-        .conditions-summary {
-            cursor: pointer;
-            display: block;
-            font-size: 12px;
-            color: #2c3e50;
-            font-weight: 500;
-            line-height: 1.4;
-        }
-        
-        .conditions-tooltip {
-            position: absolute;
-            background: #333;
-            color: white;
-            padding: 8px 10px;
-            border-radius: 4px;
-            font-size: 10px;
-            white-space: nowrap;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            margin-bottom: 5px;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-            z-index: 1000;
-        }
-        
-        .conditions-tooltip::after {
-            content: '';
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            border: 5px solid transparent;
-            border-top-color: #333;
-        }
-        
-        .subscription-conditions:hover .conditions-tooltip {
-            opacity: 1;
-            visibility: visible;
-        }
-        
-        /* 状态样式 */
-        .status-waiting {
-            color: #fd7e14;
-            font-weight: 600;
-            font-size: 12px;
-            letter-spacing: 0.2px;
-        }
-        
-        .status-matched {
-            color: #20c997;
-            font-weight: 600;
-            font-size: 12px;
-            letter-spacing: 0.2px;
-        }
-        
-        .status-notified {
-            color: #007bff;
-            font-weight: 600;
-            font-size: 12px;
-            letter-spacing: 0.2px;
-        }
-        
-        .status-viewed {
-            color: #6f42c1;
-            font-weight: 600;
-            font-size: 12px;
-            letter-spacing: 0.2px;
-        }
-        
-        .status-converted {
-            color: #28a745;
-            font-weight: 600;
-            font-size: 12px;
-            letter-spacing: 0.2px;
-        }
-        
-        .status-expired {
-            color: #dc3545;
-            font-weight: 600;
-            font-size: 12px;
-            letter-spacing: 0.2px;
-        }
-        
-        /* 截止日期样式 */
-        .deadline-cell {
-            font-weight: 500;
-            font-size: 12px;
-            color: #2c3e50;
-            line-height: 1.4;
-        }
-        
-        .deadline-urgent {
-            color: #dc3545;
-            font-weight: 600;
-            font-size: 12px;
-        }
-        
-        .deadline-countdown {
-            font-size: 11px;
-            color: #dc3545;
-            font-weight: 600;
-            display: block;
-            margin-top: 3px;
-            letter-spacing: 0.1px;
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .subscription-cards-container {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            
+            .subscription-center-container {
+                padding: 16px;
+            }
+            
+            .card-header,
+            .card-body,
+            .card-actions {
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+            
+            .course-title {
+                font-size: 20px;
+            }
+            
+            .course-subtitle {
+                font-size: 14px;
+            }
+            
+            .card-actions {
+                flex-direction: column;
+            }
+            
+            .card-actions button {
+                width: 100%;
+                justify-content: center;
+            }
         }
         
 
@@ -3647,7 +3773,7 @@
                         <div class="subscription-filter-area">
                             <div class="filter-item">
                                 <label for="subscription-type-filter">订阅类型：</label>
-                                <select id="subscription-type-filter" class="filter-select">
+                                <select id="subscription-type-filter" class="filter-select" onchange="filterCards()">
                                     <option value="">全部</option>
                                     <option value="product">产品课程</option>
                                     <option value="home">本校课程</option>
@@ -3655,7 +3781,7 @@
                             </div>
                             <div class="filter-item">
                                 <label for="status-filter">当前状态：</label>
-                                <select id="status-filter" class="filter-select">
+                                <select id="status-filter" class="filter-select" onchange="filterCards()">
                                     <option value="">全部</option>
                                     <option value="waiting">等待上架</option>
                                     <option value="matched">已匹配</option>
@@ -3668,138 +3794,363 @@
                             <button class="filter-reset-btn" onclick="resetSubscriptionFilters()">重置筛选</button>
                         </div>
                         
-                        <table class="subscription-center-table">
-                            <thead>
-                                <tr>
-                                    <th>订阅类型</th>
-                                    <th>订阅课程</th>
-                                    <th>订阅条件</th>
-                                    <th>当前状态</th>
-                                    <th>创建日期</th>
-                                    <th>截止日期</th>
-                                    <th>操作</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- 等待上架状态 -->
-                                <tr>
-                                    <td><span class="subscription-type-badge type-product">产品课程</span></td>
-                                    <td class="subscription-course-cell">
-                                        <span class="course-info-top">CHEM 1000 (Chemical Principles)</span>
-                                        <span class="course-info-bottom">University of British Columbia</span>
-                                    </td>
-                                    <td class="subscription-conditions">
-                                        <span class="conditions-summary">2025-Winter, 线下</span>
-                                        <div class="conditions-tooltip">学期：2025-Winter | 上课形式：线下 | 时长：12-16周 | 价格：≤2000美元</div>
-                                    </td>
-                                    <td class="status-waiting">等待上架</td>
-                                    <td>2025-08-15</td>
-                                    <td class="deadline-cell deadline-urgent">
-                                        2025-11-05
-                                        <span class="deadline-countdown">(剩7天)</span>
-                                    </td>
-                                    <td class="action-buttons">
-                                        <button class="action-btn btn-edit">编辑条件</button>
-                                        <button class="action-btn btn-cancel">取消订阅</button>
-                                        <button class="action-btn btn-renew">续期</button>
-                                    </td>
-                                </tr>
-                                <!-- 已匹配状态 -->
-                                <tr>
-                                    <td><span class="subscription-type-badge type-product">产品课程</span></td>
-                                    <td class="subscription-course-cell">
-                                        <span class="course-info-top">MATH 2210 (Multivariable Calculus)</span>
-                                        <span class="course-info-bottom">University of Toronto</span>
-                                    </td>
-                                    <td class="subscription-conditions">
-                                        <span class="conditions-summary">2025-Fall, 线上直播</span>
-                                        <div class="conditions-tooltip">学期：2025-Fall | 上课形式：线上直播 | 时长：≥8周 | 价格：≤1600美元</div>
-                                    </td>
-                                    <td class="status-matched">已匹配</td>
-                                    <td>2025-09-10</td>
-                                    <td class="deadline-cell">2025-12-15</td>
-                                    <td class="action-buttons">
-                                        <button class="action-btn btn-view">查看匹配课程</button>
-                                        <button class="action-btn btn-select">跳转选课</button>
-                                    </td>
-                                </tr>
-                                <!-- 已通知状态 -->
-                                <tr>
-                                    <td><span class="subscription-type-badge type-home">本校课程</span></td>
-                                    <td class="subscription-course-cell">
-                                        <span class="course-info-top">PSYC 1 (Introduction to Psychology)</span>
-                                        <span class="course-info-bottom">Harvard University</span>
-                                    </td>
-                                    <td class="subscription-conditions">
-                                        <span class="conditions-summary">任意学期, 不限形式</span>
-                                        <div class="conditions-tooltip">学期：任意学期 | 上课形式：不限 | 时长：不限 | 价格：≤1500美元</div>
-                                    </td>
-                                    <td class="status-notified">已通知</td>
-                                    <td>2025-07-20</td>
-                                    <td class="deadline-cell">2025-12-20</td>
-                                    <td class="action-buttons">
-                                        <button class="action-btn btn-detail">查看通知详情</button>
-                                        <button class="action-btn btn-view">查看匹配课程</button>
-                                        <button class="action-btn btn-select">跳转选课</button>
-                                    </td>
-                                </tr>
-                                <!-- 已查看状态 -->
-                                <tr>
-                                    <td><span class="subscription-type-badge type-product">产品课程</span></td>
-                                    <td class="subscription-course-cell">
-                                        <span class="course-info-top">ENGL 1100 (Academic Writing)</span>
-                                        <span class="course-info-bottom">University of British Columbia</span>
-                                    </td>
-                                    <td class="subscription-conditions">
-                                        <span class="conditions-summary">2025-Fall, 任意形式</span>
-                                        <div class="conditions-tooltip">学期：2025-Fall | 上课形式：任意 | 时长：≥6周 | 价格：≤1200美元</div>
-                                    </td>
-                                    <td class="status-viewed">已查看</td>
-                                    <td>2025-08-25</td>
-                                    <td class="deadline-cell">2025-11-30</td>
-                                    <td class="action-buttons">
-                                        <button class="action-btn btn-view">查看匹配课程</button>
-                                        <button class="action-btn btn-select">跳转选课</button>
-                                    </td>
-                                </tr>
-                                <!-- 已转化状态 -->
-                                <tr>
-                                    <td><span class="subscription-type-badge type-home">本校课程</span></td>
-                                    <td class="subscription-course-cell">
-                                        <span class="course-info-top">CS 50 (Introduction to Computer Science)</span>
-                                        <span class="course-info-bottom">Harvard University</span>
-                                    </td>
-                                    <td class="subscription-conditions">
-                                        <span class="conditions-summary">2025-Spring, 线上非直播</span>
-                                        <div class="conditions-tooltip">学期：2025-Spring | 上课形式：线上非直播 | 时长：8-12周 | 价格：≤1800美元 | 学分：≥3学分</div>
-                                    </td>
-                                    <td class="status-converted">已转化</td>
-                                    <td>2025-06-15</td>
-                                    <td class="deadline-cell">2025-10-15</td>
-                                    <td class="action-buttons">
-                                        <span class="final-status-note">已完成</span>
-                                    </td>
-                                </tr>
-                                <!-- 已过期状态 -->
-                                <tr>
-                                    <td><span class="subscription-type-badge type-product">产品课程</span></td>
-                                    <td class="subscription-course-cell">
-                                        <span class="course-info-top">STAT 2040 (Statistics for Scientists)</span>
-                                        <span class="course-info-bottom">University of Toronto</span>
-                                    </td>
-                                    <td class="subscription-conditions">
-                                        <span class="conditions-summary">2025-Fall, 线上直播</span>
-                                        <div class="conditions-tooltip">学期：2025-Fall | 上课形式：线上直播 | 时长：8周 | 价格：≤1600美元</div>
-                                    </td>
-                                    <td class="status-expired">已过期</td>
-                                    <td>2025-05-15</td>
-                                    <td class="deadline-cell">2025-10-28</td>
-                                    <td class="action-buttons">
-                                        <button class="action-btn btn-renew">续期</button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div class="subscription-cards-container">
+                            <!-- 等待上架状态 -->
+                            <div class="subscription-card" id="card-waiting" data-status="waiting">
+                                <div class="card-header">
+                                    <div class="course-main-info">
+                                        <h3 class="course-title">CHEM 1000</h3>
+                                        <p class="course-subtitle">Chemical Principles</p>
+                                        <p class="university-name">University of British Columbia</p>
+                                    </div>
+                                    <div class="subscription-type-badge type-product">产品课程</div>
+                                </div>
+                                
+                                <div class="card-body">
+                                    <div class="status-section">
+                                        <div class="status-badge status-waiting">
+                                            <span class="status-icon">⏳</span>
+                                            <span class="status-text">等待上架</span>
+                                        </div>
+                                        <div class="deadline-info urgent">
+                                            <span class="deadline-label">截止时间</span>
+                                            <span class="deadline-date">2025-11-05</span>
+                                            <span class="deadline-warning">⚠️ 剩7天</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="subscription-summary">
+                                        <span class="summary-text">2025-Winter, 线下</span>
+                                        <button class="details-toggle" onclick="toggleDetails('card-waiting')">查看详情</button>
+                                    </div>
+                                    
+                                    <div class="subscription-details" style="display: none;">
+                                        <div class="detail-item">
+                                            <span class="detail-label">学期：</span>
+                                            <span class="detail-value">2025-Winter</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">上课形式：</span>
+                                            <span class="detail-value">线下</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">时长：</span>
+                                            <span class="detail-value">12-16周</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">价格：</span>
+                                            <span class="detail-value">≤2000美元</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">创建日期：</span>
+                                            <span class="detail-value">2025-08-15</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="card-actions">
+                                    <button class="btn-edit">编辑条件</button>
+                                    <button class="btn-renew">续期</button>
+                                    <button class="btn-destructive">取消订阅</button>
+                                </div>
+                            </div>
+
+                            <!-- 已匹配状态 -->
+                            <div class="subscription-card" id="card-matched" data-status="matched">
+                                <div class="card-header">
+                                    <div class="course-main-info">
+                                        <h3 class="course-title">MATH 2210</h3>
+                                        <p class="course-subtitle">Multivariable Calculus</p>
+                                        <p class="university-name">University of Toronto</p>
+                                    </div>
+                                    <div class="subscription-type-badge type-product">产品课程</div>
+                                </div>
+                                
+                                <div class="card-body">
+                                    <div class="status-section">
+                                        <div class="status-badge status-matched">
+                                            <span class="status-icon">✅</span>
+                                            <span class="status-text">已匹配</span>
+                                        </div>
+                                        <div class="deadline-info">
+                                            <span class="deadline-label">截止时间</span>
+                                            <span class="deadline-date">2025-12-15</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="subscription-summary">
+                                        <span class="summary-text">2025-Fall, 线上直播</span>
+                                        <button class="details-toggle" onclick="toggleDetails(this)">查看详情</button>
+                                    </div>
+                                    
+                                    <div class="subscription-details" style="display: none;">
+                                        <div class="detail-item">
+                                            <span class="detail-label">学期：</span>
+                                            <span class="detail-value">2025-Fall</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">上课形式：</span>
+                                            <span class="detail-value">线上直播</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">时长：</span>
+                                            <span class="detail-value">≥8周</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">价格：</span>
+                                            <span class="detail-value">≤1600美元</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">创建日期：</span>
+                                            <span class="detail-value">2025-09-10</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="card-actions">
+                                    <button class="btn-primary-action">跳转选课</button>
+                                    <button class="btn-view">查看匹配课程</button>
+                                </div>
+                            </div>
+
+                            <!-- 已通知状态 -->
+                            <div class="subscription-card" id="card-notified" data-status="notified">
+                                <div class="card-header">
+                                    <div class="course-main-info">
+                                        <h3 class="course-title">PSYC 1</h3>
+                                        <p class="course-subtitle">Introduction to Psychology</p>
+                                        <p class="university-name">Harvard University</p>
+                                    </div>
+                                    <div class="subscription-type-badge type-home">本校课程</div>
+                                </div>
+                                
+                                <div class="card-body">
+                                    <div class="status-section">
+                                        <div class="status-badge status-notified">
+                                            <span class="status-icon">📧</span>
+                                            <span class="status-text">已通知</span>
+                                        </div>
+                                        <div class="deadline-info">
+                                            <span class="deadline-label">截止时间</span>
+                                            <span class="deadline-date">2025-12-20</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="subscription-summary">
+                                        <span class="summary-text">任意学期, 不限形式</span>
+                                        <button class="details-toggle" onclick="toggleDetails(this)">查看详情</button>
+                                    </div>
+                                    
+                                    <div class="subscription-details" style="display: none;">
+                                        <div class="detail-item">
+                                            <span class="detail-label">学期：</span>
+                                            <span class="detail-value">任意学期</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">上课形式：</span>
+                                            <span class="detail-value">不限</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">时长：</span>
+                                            <span class="detail-value">不限</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">价格：</span>
+                                            <span class="detail-value">≤1500美元</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">创建日期：</span>
+                                            <span class="detail-value">2025-07-20</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="card-actions">
+                                    <button class="btn-primary-action">跳转选课</button>
+                                    <button class="btn-view">查看匹配课程</button>
+                                    <button class="btn-view">查看通知详情</button>
+                                </div>
+                            </div>
+
+                            <!-- 已查看状态 -->
+                            <div class="subscription-card" id="card-viewed" data-status="viewed">
+                                <div class="card-header">
+                                    <div class="course-main-info">
+                                        <h3 class="course-title">ENGL 1100</h3>
+                                        <p class="course-subtitle">Academic Writing</p>
+                                        <p class="university-name">University of British Columbia</p>
+                                    </div>
+                                    <div class="subscription-type-badge type-product">产品课程</div>
+                                </div>
+                                
+                                <div class="card-body">
+                                    <div class="status-section">
+                                        <div class="status-badge status-viewed">
+                                            <span class="status-icon">👁️</span>
+                                            <span class="status-text">已查看</span>
+                                        </div>
+                                        <div class="deadline-info">
+                                            <span class="deadline-label">截止时间</span>
+                                            <span class="deadline-date">2025-11-30</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="subscription-summary">
+                                        <span class="summary-text">2025-Fall, 任意形式</span>
+                                        <button class="details-toggle" onclick="toggleDetails(this)">查看详情</button>
+                                    </div>
+                                    
+                                    <div class="subscription-details" style="display: none;">
+                                        <div class="detail-item">
+                                            <span class="detail-label">学期：</span>
+                                            <span class="detail-value">2025-Fall</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">上课形式：</span>
+                                            <span class="detail-value">任意</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">时长：</span>
+                                            <span class="detail-value">≥6周</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">价格：</span>
+                                            <span class="detail-value">≤1200美元</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">创建日期：</span>
+                                            <span class="detail-value">2025-08-25</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="card-actions">
+                                    <button class="btn-primary-action">跳转选课</button>
+                                    <button class="btn-view">查看匹配课程</button>
+                                </div>
+                            </div>
+
+                            <!-- 已转化状态 -->
+                            <div class="subscription-card" id="card-converted" data-status="converted">
+                                <div class="card-header">
+                                    <div class="course-main-info">
+                                        <h3 class="course-title">CS 50</h3>
+                                        <p class="course-subtitle">Introduction to Computer Science</p>
+                                        <p class="university-name">Harvard University</p>
+                                    </div>
+                                    <div class="subscription-type-badge type-home">本校课程</div>
+                                </div>
+                                
+                                <div class="card-body">
+                                    <div class="status-section">
+                                        <div class="status-badge status-converted">
+                                            <span class="status-icon">🎉</span>
+                                            <span class="status-text">已转化</span>
+                                        </div>
+                                        <div class="deadline-info">
+                                            <span class="deadline-label">截止时间</span>
+                                            <span class="deadline-date">2025-10-15</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="subscription-summary">
+                                        <span class="summary-text">2025-Spring, 线上非直播</span>
+                                        <button class="details-toggle" onclick="toggleDetails(this)">查看详情</button>
+                                    </div>
+                                    
+                                    <div class="subscription-details" style="display: none;">
+                                        <div class="detail-item">
+                                            <span class="detail-label">学期：</span>
+                                            <span class="detail-value">2025-Spring</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">上课形式：</span>
+                                            <span class="detail-value">线上非直播</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">时长：</span>
+                                            <span class="detail-value">8-12周</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">价格：</span>
+                                            <span class="detail-value">≤1800美元</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">学分：</span>
+                                            <span class="detail-value">≥3学分</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">创建日期：</span>
+                                            <span class="detail-value">2025-06-15</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="card-actions">
+                                    <div class="completion-note">
+                                        <span class="completion-icon">✅</span>
+                                        <span class="completion-text">订阅已完成</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 已过期状态 -->
+                            <div class="subscription-card" id="card-expired" data-status="expired">
+                                <div class="card-header">
+                                    <div class="course-main-info">
+                                        <h3 class="course-title">STAT 2040</h3>
+                                        <p class="course-subtitle">Statistics for Scientists</p>
+                                        <p class="university-name">University of Toronto</p>
+                                    </div>
+                                    <div class="subscription-type-badge type-product">产品课程</div>
+                                </div>
+                                
+                                <div class="card-body">
+                                    <div class="status-section">
+                                        <div class="status-badge status-expired">
+                                            <span class="status-icon">⏰</span>
+                                            <span class="status-text">已过期</span>
+                                        </div>
+                                        <div class="deadline-info expired">
+                                            <span class="deadline-label">截止时间</span>
+                                            <span class="deadline-date">2025-10-28</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="subscription-summary">
+                                        <span class="summary-text">2025-Fall, 线上直播</span>
+                                        <button class="details-toggle" onclick="toggleDetails(this)">查看详情</button>
+                                    </div>
+                                    
+                                    <div class="subscription-details" style="display: none;">
+                                        <div class="detail-item">
+                                            <span class="detail-label">学期：</span>
+                                            <span class="detail-value">2025-Fall</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">上课形式：</span>
+                                            <span class="detail-value">线上直播</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">时长：</span>
+                                            <span class="detail-value">8周</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">价格：</span>
+                                            <span class="detail-value">≤1600美元</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">创建日期：</span>
+                                            <span class="detail-value">2025-05-15</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="card-actions">
+                                    <button class="btn-renew">续期</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -5356,13 +5707,91 @@
         function resetSubscriptionFilters() {
             document.getElementById('subscription-type-filter').value = '';
             document.getElementById('status-filter').value = '';
-            filterSubscriptions();
+            filterCards();
         }
         
-        // 初始化订阅筛选功能
-        document.addEventListener('DOMContentLoaded', function() {
-            initSubscriptionFilters();
-        });
+        // 初始化订阅筛选功能（已改为卡片筛选，不再需要表格筛选初始化）
+        // document.addEventListener('DOMContentLoaded', function() {
+        //     initSubscriptionFilters();
+        // });
+        
+        // 卡片布局相关函数
+        function filterCards() {
+            const statusFilter = document.getElementById('status-filter').value;
+            const typeFilter = document.getElementById('subscription-type-filter').value;
+            const cards = document.querySelectorAll('.subscription-card');
+            
+            // Map filter values to actual status text
+            const statusMap = {
+                'waiting': '等待上架',
+                'matched': '已匹配',
+                'notified': '已通知',
+                'viewed': '已查看',
+                'converted': '已转化',
+                'expired': '已过期'
+            };
+            
+            // Map subscription type filter values to badge text
+            const typeMap = {
+                'product': '产品课程',
+                'home': '本校课程'
+            };
+            
+            cards.forEach(card => {
+                let showCard = true;
+                
+                // Check status filter
+                if (statusFilter !== '') {
+                    const statusBadge = card.querySelector('.status-badge .status-text');
+                    if (statusBadge) {
+                        const statusText = statusBadge.textContent.trim();
+                        const expectedStatus = statusMap[statusFilter];
+                        if (statusText !== expectedStatus) {
+                            showCard = false;
+                        }
+                    }
+                }
+                
+                // Check subscription type filter
+                if (typeFilter !== '' && showCard) {
+                    const typeBadge = card.querySelector('.subscription-type-badge');
+                    if (typeBadge) {
+                        const typeText = typeBadge.textContent.trim();
+                        const expectedType = typeMap[typeFilter];
+                        if (typeText !== expectedType) {
+                            showCard = false;
+                        }
+                    }
+                }
+                
+                // Show or hide the card
+                card.style.display = showCard ? '' : 'none';
+            });
+        }
+        
+        function toggleDetails(button) {
+            // Find the parent card
+            const card = button.closest('.subscription-card');
+            if (!card) return;
+            
+            // Find the subscription details within this card
+            const details = card.querySelector('.subscription-details');
+            if (!details) return;
+            
+            // Toggle the details visibility
+            if (details.style.display === 'none' || details.style.display === '') {
+                details.style.display = 'block';
+                button.textContent = '收起详情';
+            } else {
+                details.style.display = 'none';
+                button.textContent = '查看详情';
+            }
+        }
+        
+        function handleAction(action, subscriptionId) {
+            // 模拟处理操作
+            alert(`执行操作: ${action} (订阅ID: ${subscriptionId})`);
+        }
     </script>
 </body>
 </html>
