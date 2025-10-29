@@ -3465,6 +3465,16 @@
                 <!-- 自主选课 -->
                 <div id="autonomous-selection" class="analysis-tab-content">
                     <div class="autonomous-course-container">
+                        <!-- 功能栏：批量订阅 -->
+                        <div class="function-bar" style="margin-bottom: 16px; padding: 12px 16px; background: #f8f9fa; border-radius: 6px; border: 1px solid #e9ecef;">
+                            <div class="batch-subscribe-section">
+                                <button class="batch-subscribe-btn home-subscribe-btn" id="batchSubscribeHomeBtn" disabled>
+                                    <span class="btn-icon">📋</span>
+                                    <span class="btn-text">批量订阅</span>
+                                </button>
+                            </div>
+                        </div>
+                        
                         <table class="course-table-excel">
                             <thead>
                                 <tr>
@@ -4822,15 +4832,22 @@
                     }
                 }
                 
-                const courseCell = row.cells[4]; // 已选课程列
-                const buttonElement = courseCell.querySelector('.course-subscribe-btn');
+                // 通过类名查找课程信息，避免rowspan导致的列索引问题
+                const courseCell = row.querySelector('.course-cell'); // 直接查找包含课程信息的单元格
+                const buttonElement = row.querySelector('.course-subscribe-btn'); // 在整行中查找订阅按钮
                 
                 // 提取课程代码和课程名称，格式化为"课程代码(课程名称)"
-                const courseLink = courseCell.querySelector('.course-link');
-                const courseCode = courseLink ? courseLink.textContent.trim() : '';
-                const fullCellText = courseCell.textContent.trim();
-                const courseNameMatch = fullCellText.match(/\(([^)]+)\)/);
-                const courseName = courseNameMatch ? courseNameMatch[1] : '';
+                let courseCode = '';
+                let courseName = '';
+                
+                if (courseCell) {
+                    const courseLink = courseCell.querySelector('.course-link');
+                    courseCode = courseLink ? courseLink.textContent.trim() : '';
+                    
+                    const fullCellText = courseCell.textContent.trim();
+                    const courseNameMatch = fullCellText.match(/\(([^)]+)\)/);
+                    courseName = courseNameMatch ? courseNameMatch[1] : '';
+                }
                 
                 // 只保留课程代码和课程名称
                 const formattedCourse = courseCode && courseName ? `${courseCode}(${courseName})` : courseCode || '未知课程';
@@ -4856,9 +4873,25 @@
         }
         
         // 填充批量模态框数据
-        function fillBatchModalData(selectedCourses, type) {
+        function fillBatchModalData(selectedCourses, type, options = {}) {
             // 填充批量模式的学生姓名和课程信息
-            document.getElementById('batchStudentNameField').textContent = selectedCourses[0].student;
+            const studentNameField = document.getElementById('batchStudentNameField');
+            studentNameField.textContent = selectedCourses[0].student;
+            
+            // 🎯 根据选项设置学生姓名是否可编辑
+            if (options.readonlyStudentName) {
+                studentNameField.style.backgroundColor = '#f8f9fa';
+                studentNameField.style.color = '#6c757d';
+                studentNameField.style.cursor = 'default';
+                studentNameField.contentEditable = false;
+                studentNameField.title = '系统自动获取，不可编辑';
+            } else {
+                studentNameField.style.backgroundColor = '';
+                studentNameField.style.color = '';
+                studentNameField.style.cursor = '';
+                studentNameField.contentEditable = true;
+                studentNameField.title = '';
+            }
             
             // 填充选中的课程（垂直列表显示）
             const courseCount = selectedCourses.length;
@@ -5060,6 +5093,13 @@
             
             console.log('批量订阅数据:', coursesData);
             alert(`成功订阅 ${selectedCourses.length} 门课程！系统将根据设置的条件监控课程状态。`);
+            
+            // 🎯 批量订阅完成后，调用相应页面的清理函数
+            if (window.currentBatchContext && window.currentBatchContext.clearFunction) {
+                window.currentBatchContext.clearFunction();
+                window.currentBatchContext = null; // 清理上下文
+            }
+            
             closeSubscribeModal();
         }
         
@@ -5486,6 +5526,225 @@
             
             const buttonCount = document.querySelectorAll('#autonomous-selection .course-code-cell .course-subscribe-btn').length;
             console.log(`自主选课页面：已为所有 ${buttonCount} 个课程代码列添加本校课程订阅功能（不区分状态）`);
+            
+            // 🎯 初始化批量订阅功能，连接到现有模态框系统
+            initAutonomousBatchSubscription();
+        }
+        
+        // 初始化自主选课页面的批量订阅功能（连接现有系统）
+        function initAutonomousBatchSubscription() {
+            const batchBtn = document.getElementById('batchSubscribeHomeBtn');
+            const checkboxes = document.querySelectorAll('#autonomous-selection .course-checkbox');
+            
+            if (!batchBtn || checkboxes.length === 0) {
+                console.warn('自主选课批量订阅：未找到必需的元素');
+                return;
+            }
+            
+            // 🎯 更新批量订阅按钮状态（>=2门课程才可点击）
+            function updateBatchButton() {
+                const selectedCount = document.querySelectorAll('#autonomous-selection .course-checkbox:checked').length;
+                
+                // 只有选择>=2门课程时才启用按钮，无说明文字
+                if (selectedCount >= 2) {
+                    batchBtn.disabled = false;
+                    batchBtn.querySelector('.btn-text').textContent = '批量订阅';
+                } else {
+                    batchBtn.disabled = true;
+                    batchBtn.querySelector('.btn-text').textContent = '批量订阅';
+                }
+            }
+            
+            // 为所有复选框添加事件监听器
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', updateBatchButton);
+            });
+            
+            // 🎯 批量订阅按钮点击事件 - 连接到现有的模态框系统
+            batchBtn.addEventListener('click', function() {
+                const selectedCount = document.querySelectorAll('#autonomous-selection .course-checkbox:checked').length;
+                
+                if (selectedCount < 2) {
+                    alert('请至少选择2门课程进行批量订阅');
+                    return;
+                }
+                
+                // 构建符合现有系统格式的课程数据
+                const selectedCourses = getAutonomousSelectedCourses();
+                
+                if (selectedCourses.length === 0) {
+                    alert('未找到有效的课程信息');
+                    return;
+                }
+                
+                // 🚀 直接调用现有的批量订阅模态框
+                openAutonomousBatchModal(selectedCourses);
+            });
+            
+            console.log('✅ 自主选课页面：批量订阅功能已初始化并连接到现有模态框系统');
+        }
+        
+        // 获取自主选课页面选中的课程（格式化为现有系统格式）
+        function getAutonomousSelectedCourses() {
+            const selectedCourses = [];
+            const checkedBoxes = document.querySelectorAll('#autonomous-selection .course-checkbox:checked');
+            
+            checkedBoxes.forEach(checkbox => {
+                const row = checkbox.closest('tr');
+                const codeCell = row.querySelector('.course-code-cell');
+                const nameCell = row.querySelector('.course-name-cell');
+                
+                if (codeCell && nameCell) {
+                    // 🎯 优化：精确提取课程代码，排除按钮文本
+                    let courseCode = '';
+                    const codeTextNodes = [];
+                    for (let node of codeCell.childNodes) {
+                        if (node.nodeType === Node.TEXT_NODE) {
+                            codeTextNodes.push(node.textContent.trim());
+                        }
+                    }
+                    courseCode = codeTextNodes.join('').trim() || codeCell.textContent.replace(/订阅/g, '').trim();
+                    
+                    // 🎯 优化：精确提取课程名称，过滤按钮文本
+                    const courseName = nameCell.textContent.replace(/订阅/g, '').trim();
+                    
+                    // 确保数据有效
+                    if (courseCode && courseName) {
+                        // 🎯 获取系统中的学生信息
+                        const studentName = getSystemStudentName();
+                        
+                        selectedCourses.push({
+                            student: studentName,
+                            course: `${courseCode}(${courseName})`,
+                            type: 'home'
+                        });
+                    }
+                }
+            });
+            
+            return selectedCourses;
+        }
+        
+        // 🎯 获取系统中的学生姓名
+        function getSystemStudentName() {
+            try {
+                // 方式1: 从全局变量获取当前学生信息
+                if (window.currentStudentInfo && window.currentStudentInfo.name) {
+                    return window.currentStudentInfo.name;
+                }
+                
+                // 方式2: 从页面标题或用户信息区域获取
+                const userInfo = document.querySelector('.user-info, .student-name, .current-user');
+                if (userInfo && userInfo.textContent.trim()) {
+                    return userInfo.textContent.trim();
+                }
+                
+                // 方式3: 从导航栏或头部信息获取
+                const navUser = document.querySelector('.nav-user, .header-user, .username');
+                if (navUser && navUser.textContent.trim()) {
+                    return navUser.textContent.trim();
+                }
+                
+                // 方式4: 从页面URL或参数中提取
+                const urlParams = new URLSearchParams(window.location.search);
+                const studentParam = urlParams.get('student') || urlParams.get('name') || urlParams.get('user');
+                if (studentParam) {
+                    return decodeURIComponent(studentParam);
+                }
+                
+                // 方式5: 从本地存储获取
+                const storedName = localStorage.getItem('studentName') || sessionStorage.getItem('studentName');
+                if (storedName) {
+                    return storedName;
+                }
+                
+                // 方式6: 从现有订阅按钮中获取学生信息
+                const existingBtn = document.querySelector('#autonomous-selection .course-subscribe-btn[data-student-name]');
+                if (existingBtn) {
+                    const studentName = existingBtn.getAttribute('data-student-name');
+                    if (studentName && studentName !== '当前学生') {
+                        return studentName;
+                    }
+                }
+                
+                // 兜底返回默认值
+                return '当前学生';
+            } catch (error) {
+                console.warn('获取学生姓名失败，使用默认值:', error);
+                return '当前学生';
+            }
+        }
+        
+        // 打开自主选课批量订阅模态框（使用现有系统）
+        function openAutonomousBatchModal(selectedCourses) {
+            // 设置模态框标题
+            document.getElementById('modalTitle').textContent = '本校课程批量设置';
+            
+            // 设置模态框头部样式
+            const modalHeader = document.querySelector('#subscribeModal .modal-header');
+            modalHeader.classList.add('product-course');
+            
+            // 🎯 使用现有的数据填充函数，学生姓名不可编辑
+            fillBatchModalData(selectedCourses, '本校课程', { readonlyStudentName: true });
+            
+            // 显示批量模式
+            showBatchCourseMode();
+            
+            // 显示模态框
+            document.getElementById('subscribeModal').style.display = 'flex';
+            
+            console.log('✅ 自主选课批量订阅模态框已打开，课程数量:', selectedCourses.length);
+            
+            // 🎯 保存当前批量订阅的上下文，用于完成后的清理
+            window.currentBatchContext = {
+                pageType: 'autonomous-selection',
+                clearFunction: clearAutonomousBatchSelection
+            };
+        }
+        
+        // 清理自主选课页面的批量选择状态
+        function clearAutonomousBatchSelection() {
+            // 取消所有复选框的选中状态
+            document.querySelectorAll('#autonomous-selection .course-checkbox:checked').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            // 更新批量订阅按钮状态
+            const batchBtn = document.getElementById('batchSubscribeHomeBtn');
+            if (batchBtn) {
+                batchBtn.disabled = true;
+                batchBtn.querySelector('.btn-text').textContent = '批量订阅';
+            }
+            
+            console.log('✅ 自主选课批量选择状态已清理');
+        }
+        
+        // 🧪 测试自主选课批量订阅功能
+        function testAutonomousBatchSubscription() {
+            console.log('🧪 开始测试自主选课批量订阅功能...');
+            
+            // 测试学生姓名获取
+            const studentName = getSystemStudentName();
+            console.log('📝 获取到的学生姓名:', studentName);
+            
+            // 测试课程数据获取
+            const selectedCourses = getAutonomousSelectedCourses();
+            console.log('📚 当前选中的课程:', selectedCourses);
+            
+            // 测试按钮状态
+            const batchBtn = document.getElementById('batchSubscribeHomeBtn');
+            if (batchBtn) {
+                const isEnabled = !batchBtn.disabled;
+                const buttonText = batchBtn.querySelector('.btn-text').textContent;
+                console.log('🔘 批量订阅按钮状态:', { isEnabled, buttonText });
+            }
+            
+            console.log('✅ 自主选课批量订阅功能测试完成');
+            return {
+                studentName,
+                selectedCourses,
+                buttonStatus: batchBtn ? { enabled: !batchBtn.disabled, text: batchBtn.querySelector('.btn-text').textContent } : null
+            };
         }
         
         // 更新学生档案数据
@@ -5946,7 +6205,7 @@
                 'batch-home': {
                     type: 'batch',
                     courseType: 'home',
-                    buttonText: '批量订阅本校课程',
+                    buttonText: '批量订阅',
                     allowedTypes: ['home'],
                     requireSelection: true
                 },
@@ -6526,7 +6785,295 @@
                 handleSingleSubscribe: handleSingleSubscribe,  // 单个订阅处理
                 handleBatchSubscribe: handleBatchSubscribe,    // 批量订阅处理
                 
-                // 🛠️ 工具函数
+                // 🎯 按类别分离的批量订阅组件
+                BatchHomeSubscription: {
+                    // ✅ 本校课程专用批量订阅组件
+                    deploy: function(containerSelector, config = {}) {
+                        const container = document.querySelector(containerSelector);
+                        if (!container) {
+                            console.warn('BatchHomeSubscription: 未找到容器:', containerSelector);
+                            return { success: false, message: '容器不存在' };
+                        }
+                        
+                        const buttonConfig = {
+                            preset: 'batch-home',
+                            targetSelector: config.checkboxSelector || 'input[type="checkbox"]',
+                            allowedTypes: ['home'],
+                            buttonText: config.buttonText || '批量订阅',
+                            requireSelection: true,
+                            ...config
+                        };
+                        
+                        const result = deployBatchButton(containerSelector, buttonConfig);
+                        return { success: result, type: 'home', buttonText: buttonConfig.buttonText };
+                    },
+                    
+                    getSelected: function(config = {}) {
+                        // 统一使用核心数据抓取功能
+                        const pageConfig = config.pageType ? createBatchConfig(config.pageType, config) : config;
+                        return getSelectedCoursesWithType('home', pageConfig);
+                    },
+                    
+                    execute: function(config = {}) {
+                        // 统一使用核心执行功能
+                        const selectedCourses = this.getSelected(config);
+                        if (selectedCourses.length === 0) {
+                            alert('请选择要订阅的本校课程');
+                            return { success: false, courses: [] };
+                        }
+                        
+                        // 调用统一的执行逻辑
+                        return executeBatchSubscribeWithType('home', '本校课程', config);
+                    }
+                },
+                
+                BatchProductSubscription: {
+                    // ✅ 产品课程专用批量订阅组件
+                    deploy: function(containerSelector, config = {}) {
+                        const container = document.querySelector(containerSelector);
+                        if (!container) {
+                            console.warn('BatchProductSubscription: 未找到容器:', containerSelector);
+                            return { success: false, message: '容器不存在' };
+                        }
+                        
+                        const buttonConfig = {
+                            preset: 'batch-product',
+                            targetSelector: config.checkboxSelector || 'input[type="checkbox"]',
+                            allowedTypes: ['product'],
+                            buttonText: config.buttonText || '批量订阅产品课程',
+                            requireSelection: true,
+                            ...config
+                        };
+                        
+                        const result = deployBatchButton(containerSelector, buttonConfig);
+                        return { success: result, type: 'product', buttonText: buttonConfig.buttonText };
+                    },
+                    
+                    getSelected: function(config = {}) {
+                        // 统一使用核心数据抓取功能
+                        const pageConfig = config.pageType ? createBatchConfig(config.pageType, config) : config;
+                        return getSelectedCoursesWithType('product', pageConfig);
+                    },
+                    
+                    execute: function(config = {}) {
+                        // 统一使用核心执行功能
+                        const selectedCourses = this.getSelected(config);
+                        if (selectedCourses.length === 0) {
+                            alert('请选择要订阅的产品课程');
+                            return { success: false, courses: [] };
+                        }
+                        
+                        // 调用统一的执行逻辑
+                        return executeBatchSubscribeWithType('product', '产品课程', config);
+                    }
+                },
+                
+                BatchMixedSubscription: {
+                    // ✅ 混合类型批量订阅组件
+                    deploy: function(containerSelector, config = {}) {
+                        const container = document.querySelector(containerSelector);
+                        if (!container) {
+                            console.warn('BatchMixedSubscription: 未找到容器:', containerSelector);
+                            return { success: false, message: '容器不存在' };
+                        }
+                        
+                        const buttonConfig = {
+                            preset: 'batch-mixed',
+                            targetSelector: config.checkboxSelector || 'input[type="checkbox"]',
+                            allowedTypes: ['home', 'product'],
+                            buttonText: config.buttonText || '批量订阅',
+                            requireSelection: true,
+                            ...config
+                        };
+                        
+                        const result = deployBatchButton(containerSelector, buttonConfig);
+                        return { success: result, type: 'mixed', buttonText: buttonConfig.buttonText };
+                    },
+                    
+                    deployBoth: function(containerSelector, config = {}) {
+                        // � 同时部署本校和产品课程批量订阅按钮
+                        const homeResult = this.parent.BatchHomeSubscription.deploy(containerSelector, {
+                            ...config,
+                            buttonText: config.homeButtonText || '批量订阅'
+                        });
+                        
+                        const productResult = this.parent.BatchProductSubscription.deploy(containerSelector, {
+                            ...config,
+                            buttonText: config.productButtonText || '批量订阅产品课程'
+                        });
+                        
+                        return {
+                            home: homeResult,
+                            product: productResult,
+                            total: (homeResult.success ? 1 : 0) + (productResult.success ? 1 : 0)
+                        };
+                    },
+                    
+                    getSelected: function(targetType, config = {}) {
+                        // 统一使用核心数据抓取功能
+                        const pageConfig = config.pageType ? createBatchConfig(config.pageType, config) : config;
+                        return getSelectedCoursesWithType(targetType, pageConfig);
+                    },
+                    
+                    execute: function(targetType, config = {}) {
+                        // 统一使用核心执行功能
+                        const courseTypeText = targetType === 'home' ? '本校课程' : '产品课程';
+                        const selectedCourses = this.getSelected(targetType, config);
+                        
+                        if (selectedCourses.length === 0) {
+                            alert(`请选择要订阅的${courseTypeText}`);
+                            return { success: false, courses: [] };
+                        }
+                        
+                        // 调用统一的执行逻辑
+                        return executeBatchSubscribeWithType(targetType, courseTypeText, config);
+                    }
+                },
+                
+                // 🚀 便捷部署接口
+                quickDeployBatch: function(batchType, containerSelector, config = {}) {
+                    switch(batchType) {
+                        case 'home-only':
+                            return this.BatchHomeSubscription.deploy(containerSelector, config);
+                        case 'product-only':
+                            return this.BatchProductSubscription.deploy(containerSelector, config);
+                        case 'both-separate':
+                            return this.BatchMixedSubscription.deployBoth(containerSelector, config);
+                        case 'mixed':
+                            return this.BatchMixedSubscription.deploy(containerSelector, config);
+                        default:
+                            console.warn('quickDeployBatch: 未知的批量类型:', batchType);
+                            return this.BatchMixedSubscription.deploy(containerSelector, config);
+                    }
+                },
+                
+                // 🎛️ 高级配置接口
+                createBatchConfig: function(pageType, customConfig = {}) {
+                    const defaultConfigs = {
+                        // 学生服务场景配置（自主选课页面）
+                        'autonomous-selection': {
+                            checkboxSelector: '.course-checkbox:checked',
+                            studentNameSelector: '.student-name',
+                            courseCellSelector: '.course-cell',
+                            courseLinkSelector: '.course-link',
+                            subscribeButtonSelector: '.course-subscribe-btn',
+                            modalTitleSelector: '#modalTitle',
+                            modalSelector: '#subscribeModal',
+                            modalHeaderSelector: '#subscribeModal .modal-header',
+                            minCourses: 2,
+                            showSuccessAlert: true,
+                            // 🎯 学生服务场景预定义列信息
+                            columnMapping: {
+                                home: {
+                                    columnIndex: 3,          // "本校意向课程"列 = 本校课程信息
+                                    cellSelector: 'td:nth-child(4).course-cell',
+                                    courseType: 'home',
+                                    description: '本校意向课程'
+                                },
+                                product: {
+                                    columnIndex: 4,          // "已选课程"列 = 产品课程信息
+                                    cellSelector: 'td:nth-child(5).course-cell',
+                                    courseType: 'product',
+                                    description: '已选课程（产品课程）'
+                                }
+                            }
+                        },
+                        
+                        // 通用配置
+                        'generic': {
+                            checkboxSelector: 'input[type="checkbox"]:checked',
+                            studentNameSelector: '.student, .user-name',
+                            courseCellSelector: '.course, .item',
+                            courseLinkSelector: '.title, .name',
+                            subscribeButtonSelector: '.btn, .button',
+                            modalTitleSelector: '#title, .title',
+                            modalSelector: '#modal, .modal',
+                            modalHeaderSelector: '.header, .top',
+                            minCourses: 1,
+                            showSuccessAlert: true
+                        }
+                    };
+                    
+                    const baseConfig = defaultConfigs[pageType] || defaultConfigs['generic'];
+                    return { ...baseConfig, ...customConfig };
+                },
+                
+                // 📊 核心数据抓取功能
+                getSelectedCoursesWithType: function(targetType, config = {}) {
+                    const checkboxes = document.querySelectorAll(config.checkboxSelector || '.course-checkbox:checked');
+                    const selectedCourses = [];
+                    
+                    checkboxes.forEach(checkbox => {
+                        const row = checkbox.closest('tr');
+                        if (!row) return;
+                        
+                        const courseCells = row.querySelectorAll(config.courseCellSelector || '.course-cell');
+                        const subscribeButtonSelector = config.subscribeButtonSelector || '.course-subscribe-btn';
+                        
+                        let chosenCell = null;
+                        let buttonElement = null;
+                        let courseType = '';
+                        
+                        if (targetType) {
+                            // 🎯 优先使用预定义列信息进行精确查找
+                            if (config.columnMapping && config.columnMapping[targetType]) {
+                                const columnInfo = config.columnMapping[targetType];
+                                
+                                if (typeof columnInfo.columnIndex === 'number') {
+                                    const targetCell = row.cells[columnInfo.columnIndex];
+                                    if (targetCell && targetCell.classList.contains('course-cell')) {
+                                        chosenCell = targetCell;
+                                        buttonElement = targetCell.querySelector(subscribeButtonSelector);
+                                        courseType = columnInfo.courseType;
+                                        
+                                        console.log(`✅ 精确定位${columnInfo.description}: 列${columnInfo.columnIndex + 1}`, {
+                                            courseElement: targetCell.querySelector('.course-link'),
+                                            courseText: targetCell.querySelector('.course-link')?.textContent,
+                                            courseType: courseType
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                        
+                        if (chosenCell && buttonElement) {
+                            const courseInfo = extractCourseInfo(chosenCell, config);
+                            courseInfo.courseType = courseType;
+                            selectedCourses.push(courseInfo);
+                        }
+                    });
+                    
+                    return selectedCourses;
+                },
+                
+                // ⚡ 核心执行功能
+                executeBatchSubscribeWithType: function(targetType, courseTypeText, config = {}) {
+                    const selectedCourses = this.getSelectedCoursesWithType(targetType, config);
+                    
+                    if (selectedCourses.length === 0) {
+                        alert(`请选择要订阅的${courseTypeText}`);
+                        return { success: false, courses: [], message: '未选择课程' };
+                    }
+                    
+                    // 执行批量订阅逻辑
+                    console.log(`🚀 执行${courseTypeText}批量订阅:`, selectedCourses);
+                    
+                    // 模拟订阅成功
+                    const successMessage = `成功批量订阅 ${selectedCourses.length} 门${courseTypeText}！`;
+                    
+                    if (config.showSuccessAlert !== false) {
+                        alert(successMessage);
+                    }
+                    
+                    return {
+                        success: true,
+                        courses: selectedCourses,
+                        message: successMessage,
+                        count: selectedCourses.length
+                    };
+                },
+                
+                // �🛠️ 工具函数
                 extractCourseInfo: extractCourseInfo,   // 提取课程信息
                 detectCourseType: detectCourseType,     // 检测课程类型
                 injectStyles: injectStyles,             // 注入样式
@@ -6534,11 +7081,127 @@
                 // 📖 预设配置
                 presets: componentPresets,              // 所有预设配置
                 
+                // 📋 使用示例和说明
+                examples: {
+                    // 示例1: 只需要本校课程批量订阅的页面
+                    deployHomeOnly: function(containerSelector) {
+                        return window.SubscriptionModule.BatchHomeSubscription.deploy(containerSelector);
+                    },
+                    
+                    // 示例2: 只需要产品课程批量订阅的页面  
+                    deployProductOnly: function(containerSelector) {
+                        return window.SubscriptionModule.BatchProductSubscription.deploy(containerSelector);
+                    },
+                    
+                    // 示例3: 需要两种独立按钮的页面
+                    deployBothSeparate: function(containerSelector) {
+                        return window.SubscriptionModule.BatchMixedSubscription.deployBoth(containerSelector);
+                    },
+                    
+                    // 示例4: 需要混合批量订阅的页面
+                    deployMixed: function(containerSelector) {
+                        return window.SubscriptionModule.BatchMixedSubscription.deploy(containerSelector);
+                    },
+                    
+                    // 示例5: 自定义配置的页面
+                    deployCustom: function(containerSelector, pageType) {
+                        return window.SubscriptionModule.quickDeployBatch('both-separate', containerSelector, {
+                            pageType: pageType,
+                            minCourses: 3,
+                            homeButtonText: '订阅本校课程',
+                            productButtonText: '订阅产品课程'
+                        });
+                    }
+                },
+                
                 // ℹ️ 版本信息
-                version: '2.0.0'
+                version: '2.1.0'
             };
         })();
         
+        // 🧪 完整的自主选课批量订阅测试函数
+        window.testAutonomousBatchFlow = function() {
+            console.log('=== 自主选课批量订阅完整流程测试 ===');
+            
+            // 检查页面状态
+            const autonomousPage = document.getElementById('autonomous-selection');
+            if (!autonomousPage || autonomousPage.style.display === 'none') {
+                console.warn('⚠️ 请先切换到"自主选课"页面');
+                return { success: false, message: '页面未激活' };
+            }
+            
+            // 检查核心组件
+            const batchBtn = document.getElementById('batchSubscribeHomeBtn');
+            const checkboxes = document.querySelectorAll('#autonomous-selection .course-checkbox');
+            const modal = document.getElementById('subscribeModal');
+            
+            console.log('🔍 核心组件检查:');
+            console.log('  批量订阅按钮:', batchBtn ? '✅' : '❌');
+            console.log('  课程复选框:', checkboxes.length > 0 ? `✅ ${checkboxes.length}个` : '❌');
+            console.log('  订阅模态框:', modal ? '✅' : '❌');
+            
+            // 检查现有系统函数
+            const requiredFunctions = [
+                'getAutonomousSelectedCourses',
+                'openAutonomousBatchModal', 
+                'fillBatchModalData',
+                'showBatchCourseMode',
+                'submitBatchCourses'
+            ];
+            
+            console.log('🔍 系统函数检查:');
+            requiredFunctions.forEach(funcName => {
+                const exists = typeof window[funcName] === 'function';
+                console.log(`  ${funcName}:`, exists ? '✅' : '❌');
+            });
+            
+            // 测试数据流
+            if (checkboxes.length > 0) {
+                console.log('\n🧪 测试数据流:');
+                
+                // 1. 选择几个课程
+                const testCount = Math.min(2, checkboxes.length);
+                console.log(`选择前 ${testCount} 个课程...`);
+                for (let i = 0; i < testCount; i++) {
+                    checkboxes[i].checked = true;
+                }
+                
+                // 2. 测试数据提取
+                const selectedCourses = getAutonomousSelectedCourses();
+                console.log('提取的课程数据:', selectedCourses);
+                
+                // 3. 测试按钮状态更新
+                checkboxes[0].dispatchEvent(new Event('change'));
+                setTimeout(() => {
+                    console.log('按钮状态:', batchBtn.disabled ? '禁用' : '启用');
+                    console.log('按钮文本:', batchBtn.querySelector('.btn-text').textContent);
+                    
+                    // 清理测试
+                    for (let i = 0; i < testCount; i++) {
+                        checkboxes[i].checked = false;
+                    }
+                    checkboxes[0].dispatchEvent(new Event('change'));
+                    
+                    console.log('✅ 批量订阅流程测试完成');
+                }, 100);
+                
+                return {
+                    success: true,
+                    components: {
+                        batchButton: !!batchBtn,
+                        checkboxes: checkboxes.length,
+                        modal: !!modal
+                    },
+                    dataFlow: {
+                        selectedCount: selectedCourses.length,
+                        sampleData: selectedCourses[0]
+                    }
+                };
+            }
+            
+            return { success: false, message: '没有可测试的课程' };
+        };
+
         // 自动注入样式
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', function() {
