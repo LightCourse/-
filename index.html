@@ -103,6 +103,70 @@
             flex: 1;
         }
 
+        .product-layout {
+            display: flex;
+            min-height: calc(100vh - 160px);
+        }
+
+        .product-sidebar {
+            width: 220px;
+            background: white;
+            border-right: 1px solid #ddd;
+            padding: 20px;
+        }
+
+        .product-content {
+            flex: 1;
+        }
+
+        .product-table-container {
+            margin: 20px 0;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e1e5e9;
+            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
+        }
+
+        .product-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            background: white;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+        }
+
+        .product-table thead th {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+            color: white;
+            font-weight: 600;
+            letter-spacing: 0.4px;
+            padding: 14px 12px;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        #product-course-mapping .product-table thead tr:first-child th {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+        }
+
+        .product-table tbody td {
+            padding: 12px;
+            border-bottom: 1px solid #e1e5e9;
+            color: #334155;
+            background: white;
+        }
+
+        .product-table tbody tr:nth-child(even) td {
+            background: #f9fafb;
+        }
+
+        .product-table tbody tr:hover td {
+            background: #e8f1fe;
+        }
+
         .university-table-container {
             margin: 20px 0;
             padding: 16px;
@@ -3746,9 +3810,666 @@
                     
                     <!-- 产品中心内容 -->
                     <div id="product-center" class="tab-content" style="display: none;">
-                        <div style="text-align: center; padding: 100px 0; color: #999;">
-                            <h2>产品中心</h2>
-                            <p>内容开发中...</p>
+                        <div class="product-layout">
+                            <div class="product-sidebar">
+                                <div class="sidebar-section">
+                                    <div class="sidebar-title active" data-target="product-unit-management">课程单元管理</div>
+                                </div>
+                                <div class="sidebar-section">
+                                    <div class="sidebar-title" data-target="product-course-mapping">课程对应信息</div>
+                                </div>
+                            </div>
+                            <div class="product-content">
+                                <div id="product-unit-management" class="sub-content">
+                                    <div class="product-table-container">
+                                        <table class="product-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Course Price</th>
+                                                    <th>School Name</th>
+                                                    <th>Course Code</th>
+                                                    <th>Course Name</th>
+                                                    <th>Credits</th>
+                                                    <th>Prerequisites</th>
+                                                    <th>Start Date</th>
+                                                    <th>End Date</th>
+                                                    <th>Seats Remaining</th>
+                                                    <th>Course Duration</th>
+                                                    <th>Course Modality</th>
+                                                    <th>Academic Term</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>1480美元</td>
+                                                    <td>San Francisco State University</td>
+                                                    <td>MATH 226S</td>
+                                                    <td>Calculus I</td>
+                                                    <td>4</td>
+                                                    <td>Pre-Calculus</td>
+                                                    <td>2025-08-26</td>
+                                                    <td>2025-12-10</td>
+                                                    <td>35</td>
+                                                    <td>16周</td>
+                                                    <td>On Campus</td>
+                                                    <td>2025-2026(Fall)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>1520美元</td>
+                                                    <td>San Francisco State University</td>
+                                                    <td>MATH 227S</td>
+                                                    <td>Calculus II</td>
+                                                    <td>4</td>
+                                                    <td>MATH 226S</td>
+                                                    <td>2026-01-16</td>
+                                                    <td>2026-05-05</td>
+                                                    <td>28</td>
+                                                    <td>16周</td>
+                                                    <td>Hybrid</td>
+                                                    <td>2025-2026(Spring)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>1180美元</td>
+                                                    <td>San Francisco State University</td>
+                                                    <td>ECON 101S</td>
+                                                    <td>Introduction to Microeconomic Analysis</td>
+                                                    <td>3</td>
+                                                    <td>None</td>
+                                                    <td>2025-09-02</td>
+                                                    <td>2025-12-05</td>
+                                                    <td>40</td>
+                                                    <td>15周</td>
+                                                    <td>Asynchronous</td>
+                                                    <td>2025-2026(Fall)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>1290美元</td>
+                                                    <td>San Francisco State University</td>
+                                                    <td>ECON 301S</td>
+                                                    <td>Intermediate Microeconomic Theory</td>
+                                                    <td>3</td>
+                                                    <td>ECON 101S</td>
+                                                    <td>2026-03-04</td>
+                                                    <td>2026-05-28</td>
+                                                    <td>22</td>
+                                                    <td>12周</td>
+                                                    <td>Synchronous</td>
+                                                    <td>2025-2026(Spring)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>980美元</td>
+                                                    <td>San Francisco State University</td>
+                                                    <td>PSY 200S</td>
+                                                    <td>General Psychology</td>
+                                                    <td>3</td>
+                                                    <td>None</td>
+                                                    <td>2025-10-07</td>
+                                                    <td>2025-12-19</td>
+                                                    <td>30</td>
+                                                    <td>10周</td>
+                                                    <td>Asynchronous</td>
+                                                    <td>2025-2026(Fall)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>1030美元</td>
+                                                    <td>San Francisco State University</td>
+                                                    <td>PSY 451S</td>
+                                                    <td>Theories of Personality</td>
+                                                    <td>3</td>
+                                                    <td>PSY 200S</td>
+                                                    <td>2026-02-10</td>
+                                                    <td>2026-04-22</td>
+                                                    <td>18</td>
+                                                    <td>10周</td>
+                                                    <td>Synchronous</td>
+                                                    <td>2025-2026(Spring)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>1420美元</td>
+                                                    <td>University of Wisconsin-Green Bay</td>
+                                                    <td>MATH 209G</td>
+                                                    <td>Calculus and Analytical Geometry I</td>
+                                                    <td>4</td>
+                                                    <td>Pre-Calculus</td>
+                                                    <td>2025-09-03</td>
+                                                    <td>2025-12-12</td>
+                                                    <td>32</td>
+                                                    <td>15周</td>
+                                                    <td>On Campus</td>
+                                                    <td>2025-2026(Fall)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>1470美元</td>
+                                                    <td>University of Wisconsin-Green Bay</td>
+                                                    <td>MATH 260G</td>
+                                                    <td>Multivariable Calculus</td>
+                                                    <td>4</td>
+                                                    <td>MATH 230G</td>
+                                                    <td>2026-01-22</td>
+                                                    <td>2026-05-06</td>
+                                                    <td>24</td>
+                                                    <td>15周</td>
+                                                    <td>Hybrid</td>
+                                                    <td>2025-2026(Spring)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>1120美元</td>
+                                                    <td>University of Wisconsin-Green Bay</td>
+                                                    <td>ECON 202G</td>
+                                                    <td>Macro Economic Analysis</td>
+                                                    <td>3</td>
+                                                    <td>ECON 201G</td>
+                                                    <td>2025-10-01</td>
+                                                    <td>2025-12-17</td>
+                                                    <td>27</td>
+                                                    <td>11周</td>
+                                                    <td>Asynchronous</td>
+                                                    <td>2025-2026(Fall)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>1240美元</td>
+                                                    <td>University of Wisconsin-Green Bay</td>
+                                                    <td>ECON 302G</td>
+                                                    <td>Intermediate Microeconomics</td>
+                                                    <td>3</td>
+                                                    <td>ECON 202G</td>
+                                                    <td>2026-02-03</td>
+                                                    <td>2026-04-30</td>
+                                                    <td>20</td>
+                                                    <td>12周</td>
+                                                    <td>Synchronous</td>
+                                                    <td>2025-2026(Spring)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>960美元</td>
+                                                    <td>University of Wisconsin-Green Bay</td>
+                                                    <td>PSYCH 203G</td>
+                                                    <td>Foundations of Psychology</td>
+                                                    <td>3</td>
+                                                    <td>None</td>
+                                                    <td>2025-09-16</td>
+                                                    <td>2025-12-02</td>
+                                                    <td>38</td>
+                                                    <td>12周</td>
+                                                    <td>Asynchronous</td>
+                                                    <td>2025-2026(Fall)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>1080美元</td>
+                                                    <td>University of Wisconsin-Green Bay</td>
+                                                    <td>PSYCH 440G</td>
+                                                    <td>Physiological Psychology</td>
+                                                    <td>3</td>
+                                                    <td>PSYCH 203G</td>
+                                                    <td>2026-01-29</td>
+                                                    <td>2026-04-16</td>
+                                                    <td>16</td>
+                                                    <td>10周</td>
+                                                    <td>Hybrid</td>
+                                                    <td>2025-2026(Spring)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>1360美元</td>
+                                                    <td>Trine University</td>
+                                                    <td>MA 232T</td>
+                                                    <td>Calculus II</td>
+                                                    <td>4</td>
+                                                    <td>MA 131T</td>
+                                                    <td>2025-08-25</td>
+                                                    <td>2025-12-08</td>
+                                                    <td>26</td>
+                                                    <td>15周</td>
+                                                    <td>On Campus</td>
+                                                    <td>2025-2026(Fall)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>1410美元</td>
+                                                    <td>Trine University</td>
+                                                    <td>MA 233T</td>
+                                                    <td>Calculus III</td>
+                                                    <td>4</td>
+                                                    <td>MA 232T</td>
+                                                    <td>2026-01-09</td>
+                                                    <td>2026-04-26</td>
+                                                    <td>21</td>
+                                                    <td>14周</td>
+                                                    <td>Synchronous</td>
+                                                    <td>2025-2026(Spring)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>1150美元</td>
+                                                    <td>Trine University</td>
+                                                    <td>ECO 213T</td>
+                                                    <td>Microeconomics</td>
+                                                    <td>3</td>
+                                                    <td>None</td>
+                                                    <td>2025-09-01</td>
+                                                    <td>2025-11-24</td>
+                                                    <td>34</td>
+                                                    <td>12周</td>
+                                                    <td>Hybrid</td>
+                                                    <td>2025-2026(Fall)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>1280美元</td>
+                                                    <td>Trine University</td>
+                                                    <td>ECO 453T</td>
+                                                    <td>International Economics</td>
+                                                    <td>3</td>
+                                                    <td>ECO 213T</td>
+                                                    <td>2026-02-17</td>
+                                                    <td>2026-05-12</td>
+                                                    <td>19</td>
+                                                    <td>12周</td>
+                                                    <td>Asynchronous</td>
+                                                    <td>2025-2026(Spring)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>920美元</td>
+                                                    <td>Trine University</td>
+                                                    <td>PSY 113T</td>
+                                                    <td>Principles of Psychology</td>
+                                                    <td>3</td>
+                                                    <td>None</td>
+                                                    <td>2025-10-06</td>
+                                                    <td>2025-12-15</td>
+                                                    <td>37</td>
+                                                    <td>10周</td>
+                                                    <td>Asynchronous</td>
+                                                    <td>2025-2026(Fall)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>1010美元</td>
+                                                    <td>Trine University</td>
+                                                    <td>PSY 333T</td>
+                                                    <td>Psychology of Learning</td>
+                                                    <td>3</td>
+                                                    <td>PSY 113T</td>
+                                                    <td>2026-01-27</td>
+                                                    <td>2026-04-08</td>
+                                                    <td>17</td>
+                                                    <td>10周</td>
+                                                    <td>Synchronous</td>
+                                                    <td>2025-2026(Spring)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>1320美元</td>
+                                                    <td>Brookdale Community College</td>
+                                                    <td>MATH 171B</td>
+                                                    <td>Calculus I</td>
+                                                    <td>4</td>
+                                                    <td>Pre-Calculus</td>
+                                                    <td>2025-09-04</td>
+                                                    <td>2025-12-11</td>
+                                                    <td>29</td>
+                                                    <td>14周</td>
+                                                    <td>On Campus</td>
+                                                    <td>2025-2026(Fall)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>1340美元</td>
+                                                    <td>Brookdale Community College</td>
+                                                    <td>MATH 172B</td>
+                                                    <td>Calculus II</td>
+                                                    <td>4</td>
+                                                    <td>MATH 171B</td>
+                                                    <td>2026-01-18</td>
+                                                    <td>2026-04-29</td>
+                                                    <td>24</td>
+                                                    <td>14周</td>
+                                                    <td>Hybrid</td>
+                                                    <td>2025-2026(Spring)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>970美元</td>
+                                                    <td>Brookdale Community College</td>
+                                                    <td>ECON 105B</td>
+                                                    <td>Principles of Microeconomics</td>
+                                                    <td>3</td>
+                                                    <td>None</td>
+                                                    <td>2025-09-10</td>
+                                                    <td>2025-12-03</td>
+                                                    <td>41</td>
+                                                    <td>12周</td>
+                                                    <td>Asynchronous</td>
+                                                    <td>2025-2026(Fall)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>1040美元</td>
+                                                    <td>Brookdale Community College</td>
+                                                    <td>ECON 225B</td>
+                                                    <td>Macroeconomics</td>
+                                                    <td>3</td>
+                                                    <td>ECON 105B</td>
+                                                    <td>2026-02-05</td>
+                                                    <td>2026-04-30</td>
+                                                    <td>23</td>
+                                                    <td>12周</td>
+                                                    <td>Synchronous</td>
+                                                    <td>2025-2026(Spring)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>880美元</td>
+                                                    <td>Brookdale Community College</td>
+                                                    <td>PSYC 105B</td>
+                                                    <td>Introduction to Psychology</td>
+                                                    <td>3</td>
+                                                    <td>None</td>
+                                                    <td>2025-10-01</td>
+                                                    <td>2025-12-17</td>
+                                                    <td>36</td>
+                                                    <td>11周</td>
+                                                    <td>Asynchronous</td>
+                                                    <td>2025-2026(Fall)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>930美元</td>
+                                                    <td>Brookdale Community College</td>
+                                                    <td>PSYC 215B</td>
+                                                    <td>Lifespan Development</td>
+                                                    <td>3</td>
+                                                    <td>PSYC 105B</td>
+                                                    <td>2026-01-29</td>
+                                                    <td>2026-04-21</td>
+                                                    <td>20</td>
+                                                    <td>10周</td>
+                                                    <td>Hybrid</td>
+                                                    <td>2025-2026(Spring)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>1490美元</td>
+                                                    <td>Arizona State University</td>
+                                                    <td>MAT 265A</td>
+                                                    <td>Calculus for Engineers I</td>
+                                                    <td>3</td>
+                                                    <td>MAT 170A</td>
+                                                    <td>2025-08-19</td>
+                                                    <td>2025-12-03</td>
+                                                    <td>44</td>
+                                                    <td>16周</td>
+                                                    <td>Hybrid</td>
+                                                    <td>2025-2026(Fall)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>1530美元</td>
+                                                    <td>Arizona State University</td>
+                                                    <td>MAT 266A</td>
+                                                    <td>Calculus for Engineers II</td>
+                                                    <td>3</td>
+                                                    <td>MAT 265A</td>
+                                                    <td>2026-01-13</td>
+                                                    <td>2026-05-01</td>
+                                                    <td>31</td>
+                                                    <td>16周</td>
+                                                    <td>On Campus</td>
+                                                    <td>2025-2026(Spring)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>1125美元</td>
+                                                    <td>Arizona State University</td>
+                                                    <td>ECN 211A</td>
+                                                    <td>Macroeconomic Principles</td>
+                                                    <td>3</td>
+                                                    <td>None</td>
+                                                    <td>2025-09-01</td>
+                                                    <td>2025-12-09</td>
+                                                    <td>48</td>
+                                                    <td>15周</td>
+                                                    <td>Asynchronous</td>
+                                                    <td>2025-2026(Fall)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>1260美元</td>
+                                                    <td>Arizona State University</td>
+                                                    <td>ECN 312A</td>
+                                                    <td>Intermediate Microeconomic Theory</td>
+                                                    <td>3</td>
+                                                    <td>ECN 211A</td>
+                                                    <td>2026-02-03</td>
+                                                    <td>2026-04-28</td>
+                                                    <td>26</td>
+                                                    <td>12周</td>
+                                                    <td>Synchronous</td>
+                                                    <td>2025-2026(Spring)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>985美元</td>
+                                                    <td>Arizona State University</td>
+                                                    <td>PSY 101A</td>
+                                                    <td>Introduction to Psychology</td>
+                                                    <td>3</td>
+                                                    <td>None</td>
+                                                    <td>2025-10-06</td>
+                                                    <td>2025-12-18</td>
+                                                    <td>42</td>
+                                                    <td>10周</td>
+                                                    <td>Asynchronous</td>
+                                                    <td>2025-2026(Fall)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>1095美元</td>
+                                                    <td>Arizona State University</td>
+                                                    <td>PSY 230A</td>
+                                                    <td>Introductory Statistics for Psychology</td>
+                                                    <td>3</td>
+                                                    <td>PSY 101A</td>
+                                                    <td>2026-01-27</td>
+                                                    <td>2026-04-13</td>
+                                                    <td>25</td>
+                                                    <td>11周</td>
+                                                    <td>Hybrid</td>
+                                                    <td>2025-2026(Spring)</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div id="product-course-mapping" class="sub-content" style="display: none;">
+                                    <div class="product-table-container">
+                                        <table class="product-table">
+                                            <thead>
+                                                <tr>
+                                                    <th colspan="4">学生学校课程信息</th>
+                                                    <th colspan="3">产品学校课程信息</th>
+                                                    <th colspan="2">对应详情</th>
+                                                </tr>
+                                                <tr>
+                                                    <th>School Name</th>
+                                                    <th>Course Code</th>
+                                                    <th>Course Name</th>
+                                                    <th>General Education Category</th>
+                                                    <th>Product School</th>
+                                                    <th>Product Course Code</th>
+                                                    <th>Product Course Name</th>
+                                                    <th>Alignment Status</th>
+                                                    <th>Verification Outcome</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>The Pennsylvania State University Park</td>
+                                                    <td>MATH 240P</td>
+                                                    <td>Multivariable Calculus</td>
+                                                    <td>Quantitative Reasoning</td>
+                                                    <td>San Francisco State University</td>
+                                                    <td>MATH 227S</td>
+                                                    <td>Calculus II</td>
+                                                    <td>对应</td>
+                                                    <td>认证成功 (5)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>The Pennsylvania State University Park</td>
+                                                    <td>ECON 302P</td>
+                                                    <td>Intermediate Microeconomic Analysis</td>
+                                                    <td>Social and Behavioral Sciences</td>
+                                                    <td>University of Wisconsin-Green Bay</td>
+                                                    <td>ECON 302G</td>
+                                                    <td>Intermediate Microeconomics</td>
+                                                    <td>对应</td>
+                                                    <td>认证成功 (3)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>The Pennsylvania State University Park</td>
+                                                    <td>PSYCH 260P</td>
+                                                    <td>Cognitive Psychology</td>
+                                                    <td>Social and Behavioral Sciences</td>
+                                                    <td>Arizona State University</td>
+                                                    <td>PSY 230A</td>
+                                                    <td>Introductory Statistics for Psychology</td>
+                                                    <td>不对应</td>
+                                                    <td>认证失败 (2)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of Illinois Urbana-Champaign</td>
+                                                    <td>MATH 241U</td>
+                                                    <td>Calculus III</td>
+                                                    <td>Quantitative Reasoning</td>
+                                                    <td>Trine University</td>
+                                                    <td>MA 233T</td>
+                                                    <td>Calculus III</td>
+                                                    <td>对应</td>
+                                                    <td>认证成功 (4)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of Illinois Urbana-Champaign</td>
+                                                    <td>ECON 203U</td>
+                                                    <td>Economic Statistics I</td>
+                                                    <td>Statistics and Data Literacy</td>
+                                                    <td>Brookdale Community College</td>
+                                                    <td>ECON 225B</td>
+                                                    <td>Macroeconomics</td>
+                                                    <td>不对应</td>
+                                                    <td>认证失败 (1)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of Illinois Urbana-Champaign</td>
+                                                    <td>PSYC 238U</td>
+                                                    <td>Abnormal Psychology</td>
+                                                    <td>Social and Behavioral Sciences</td>
+                                                    <td>Arizona State University</td>
+                                                    <td>PSY 101A</td>
+                                                    <td>Introduction to Psychology</td>
+                                                    <td>对应</td>
+                                                    <td>认证成功 (6)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of Wisconsin-Madison</td>
+                                                    <td>MATH 234W</td>
+                                                    <td>Calculus-Functions of Several Variables</td>
+                                                    <td>Quantitative Reasoning</td>
+                                                    <td>Arizona State University</td>
+                                                    <td>MAT 266A</td>
+                                                    <td>Calculus for Engineers II</td>
+                                                    <td>对应</td>
+                                                    <td>认证成功 (5)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of Wisconsin-Madison</td>
+                                                    <td>ECON 301W</td>
+                                                    <td>Intermediate Microeconomics</td>
+                                                    <td>Social and Behavioral Sciences</td>
+                                                    <td>Trine University</td>
+                                                    <td>ECO 453T</td>
+                                                    <td>International Economics</td>
+                                                    <td>不对应</td>
+                                                    <td>认证失败 (3)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of Wisconsin-Madison</td>
+                                                    <td>PSYCH 225W</td>
+                                                    <td>Cognition</td>
+                                                    <td>Social and Behavioral Sciences</td>
+                                                    <td>San Francisco State University</td>
+                                                    <td>PSY 451S</td>
+                                                    <td>Theories of Personality</td>
+                                                    <td>不对应</td>
+                                                    <td>认证失败 (2)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of California, Davis</td>
+                                                    <td>MAT 21B D</td>
+                                                    <td>Integral Calculus</td>
+                                                    <td>Quantitative Reasoning</td>
+                                                    <td>Brookdale Community College</td>
+                                                    <td>MATH 172B</td>
+                                                    <td>Calculus II</td>
+                                                    <td>对应</td>
+                                                    <td>认证成功 (7)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of California, Davis</td>
+                                                    <td>ECN 102 D</td>
+                                                    <td>Analysis of Microeconomic Data</td>
+                                                    <td>Statistics and Data Literacy</td>
+                                                    <td>San Francisco State University</td>
+                                                    <td>ECON 301S</td>
+                                                    <td>Intermediate Microeconomic Theory</td>
+                                                    <td>对应</td>
+                                                    <td>认证成功 (4)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td rowspan="2">University of California, Davis</td>
+                                                    <td rowspan="2">PSC 1 D</td>
+                                                    <td rowspan="2">General Psychology</td>
+                                                    <td rowspan="2">Social and Behavioral Sciences</td>
+                                                    <td>Arizona State University</td>
+                                                    <td>PSY 101A</td>
+                                                    <td>Introduction to Psychology</td>
+                                                    <td>对应</td>
+                                                    <td>认证成功 (8)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>San Francisco State University</td>
+                                                    <td>PSY 200S</td>
+                                                    <td>General Psychology</td>
+                                                    <td>对应</td>
+                                                    <td>认证成功 (5)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td rowspan="2">University of California, Los Angeles</td>
+                                                    <td rowspan="2">MATH 31B L</td>
+                                                    <td rowspan="2">Integration and Infinite Series</td>
+                                                    <td rowspan="2">Quantitative Reasoning</td>
+                                                    <td>University of Wisconsin-Green Bay</td>
+                                                    <td>MATH 260G</td>
+                                                    <td>Multivariable Calculus</td>
+                                                    <td>对应</td>
+                                                    <td>认证成功 (6)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Arizona State University</td>
+                                                    <td>MAT 266A</td>
+                                                    <td>Calculus for Engineers II</td>
+                                                    <td>对应</td>
+                                                    <td>认证成功 (4)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of California, Los Angeles</td>
+                                                    <td>ECON 101 L</td>
+                                                    <td>Price Theory</td>
+                                                    <td>Social and Behavioral Sciences</td>
+                                                    <td>Arizona State University</td>
+                                                    <td>ECN 312A</td>
+                                                    <td>Intermediate Microeconomic Theory</td>
+                                                    <td>对应</td>
+                                                    <td>认证成功 (5)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of California, Los Angeles</td>
+                                                    <td>PSYCH 115 L</td>
+                                                    <td>Principles of Behavioral Neuroscience</td>
+                                                    <td>Natural Sciences</td>
+                                                    <td>University of Wisconsin-Green Bay</td>
+                                                    <td>PSYCH 440G</td>
+                                                    <td>Physiological Psychology</td>
+                                                    <td>对应</td>
+                                                    <td>认证成功 (6)</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
@@ -5345,6 +6066,23 @@
                 this.classList.add('active');
 
                 document.querySelectorAll('#university-center .sub-content').forEach(content => {
+                    content.style.display = 'none';
+                });
+
+                const target = this.getAttribute('data-target');
+                const targetElement = document.getElementById(target);
+                if (targetElement) {
+                    targetElement.style.display = 'block';
+                }
+            });
+        });
+
+        document.querySelectorAll('.product-sidebar .sidebar-title').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.product-sidebar .sidebar-title').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+
+                document.querySelectorAll('#product-center .sub-content').forEach(content => {
                     content.style.display = 'none';
                 });
 
