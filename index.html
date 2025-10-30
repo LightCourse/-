@@ -102,6 +102,66 @@
         .student-content {
             flex: 1;
         }
+
+        .university-table-container {
+            margin: 20px 0;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e1e5e9;
+            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
+        }
+
+        .university-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            background: white;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+        }
+
+        .university-table thead th {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+            color: white;
+            font-weight: 600;
+            letter-spacing: 0.4px;
+            padding: 14px 12px;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        .university-table tbody td {
+            padding: 12px;
+            border-bottom: 1px solid #e1e5e9;
+            color: #334155;
+            background: white;
+        }
+
+        .university-table tbody tr:nth-child(even) td {
+            background: #f9fafb;
+        }
+
+        .university-table tbody tr:hover td {
+            background: #e6f4ea;
+        }
+
+        .university-layout {
+            display: flex;
+            min-height: calc(100vh - 160px);
+        }
+
+        .university-sidebar {
+            width: 220px;
+            background: white;
+            border-right: 1px solid #ddd;
+            padding: 20px;
+        }
+
+        .university-content {
+            flex: 1;
+        }
         
         .sidebar-section {
             margin-bottom: 30px;
@@ -2985,9 +3045,702 @@
                 <div id="content-area">
                     <!-- 大学中心内容 -->
                     <div id="university-center" class="tab-content" style="display: none;">
-                        <div style="text-align: center; padding: 100px 0; color: #999;">
-                            <h2>大学中心</h2>
-                            <p>内容开发中...</p>
+                        <div class="university-layout">
+                            <div class="university-sidebar">
+                                <div class="sidebar-section">
+                                    <div class="sidebar-title active" data-target="university-basic-info">大学基础信息</div>
+                                </div>
+                                <div class="sidebar-section">
+                                    <div class="sidebar-title" data-target="university-course-library">课程库信息</div>
+                                </div>
+                            </div>
+                            <div class="university-content">
+                                <div id="university-basic-info" class="sub-content">
+                                    <div class="university-table-container">
+                                        <table class="university-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>School Name</th>
+                                                    <th>Country</th>
+                                                    <th>State / Province</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>The Pennsylvania State University Park</td>
+                                                    <td>US</td>
+                                                    <td>Pennsylvania</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of Illinois Urbana-Champaign</td>
+                                                    <td>US</td>
+                                                    <td>Illinois</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of Wisconsin-Madison</td>
+                                                    <td>US</td>
+                                                    <td>Wisconsin</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>San Francisco State University</td>
+                                                    <td>US</td>
+                                                    <td>California</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of Wisconsin-Green Bay</td>
+                                                    <td>US</td>
+                                                    <td>Wisconsin</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Trine University</td>
+                                                    <td>US</td>
+                                                    <td>Indiana</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Brookdale Community College</td>
+                                                    <td>US</td>
+                                                    <td>New Jersey</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Arizona State University</td>
+                                                    <td>US</td>
+                                                    <td>Arizona</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of California, Davis</td>
+                                                    <td>US</td>
+                                                    <td>California</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of California, Los Angeles</td>
+                                                    <td>US</td>
+                                                    <td>California</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div id="university-course-library" class="sub-content" style="display: none;">
+                                    <div class="university-table-container">
+                                        <table class="university-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>School Name</th>
+                                                    <th>Course Code</th>
+                                                    <th>Course Name</th>
+                                                    <th>Discipline</th>
+                                                    <th>Credits</th>
+                                                    <th>Course Description</th>
+                                                    <th>Prerequisites</th>
+                                                    <th>General Education Category</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>The Pennsylvania State University Park</td>
+                                                    <td>MATH 240P</td>
+                                                    <td>Multivariable Calculus</td>
+                                                    <td>Mathematics</td>
+                                                    <td>4</td>
+                                                    <td>Vector calculus covering gradients, line integrals, and Green's Theorem.</td>
+                                                    <td>MATH 141P</td>
+                                                    <td>Quantitative Reasoning</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>The Pennsylvania State University Park</td>
+                                                    <td>MATH 141P</td>
+                                                    <td>Calculus II</td>
+                                                    <td>Mathematics</td>
+                                                    <td>4</td>
+                                                    <td>Integral calculus with applications and series analysis.</td>
+                                                    <td>MATH 140P</td>
+                                                    <td>Quantitative Reasoning</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>The Pennsylvania State University Park</td>
+                                                    <td>ECON 102P</td>
+                                                    <td>Introductory Microeconomics</td>
+                                                    <td>Economics</td>
+                                                    <td>3</td>
+                                                    <td>Consumer and firm decision-making with market analysis.</td>
+                                                    <td>None</td>
+                                                    <td>Social and Behavioral Sciences</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>The Pennsylvania State University Park</td>
+                                                    <td>ECON 302P</td>
+                                                    <td>Intermediate Microeconomic Analysis</td>
+                                                    <td>Economics</td>
+                                                    <td>3</td>
+                                                    <td>Price theory with emphasis on optimization and welfare.</td>
+                                                    <td>ECON 102P</td>
+                                                    <td>Social and Behavioral Sciences</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>The Pennsylvania State University Park</td>
+                                                    <td>PSYCH 100P</td>
+                                                    <td>Introductory Psychology</td>
+                                                    <td>Psychology</td>
+                                                    <td>3</td>
+                                                    <td>Survey of psychological science including cognition and behavior.</td>
+                                                    <td>None</td>
+                                                    <td>Social and Behavioral Sciences</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>The Pennsylvania State University Park</td>
+                                                    <td>PSYCH 260P</td>
+                                                    <td>Cognitive Psychology</td>
+                                                    <td>Psychology</td>
+                                                    <td>3</td>
+                                                    <td>Information processing, attention, and memory research methods.</td>
+                                                    <td>PSYCH 100P</td>
+                                                    <td>Social and Behavioral Sciences</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of Illinois Urbana-Champaign</td>
+                                                    <td>MATH 241U</td>
+                                                    <td>Calculus III</td>
+                                                    <td>Mathematics</td>
+                                                    <td>4</td>
+                                                    <td>Sequences, series, and multivariate calculus techniques.</td>
+                                                    <td>MATH 231U</td>
+                                                    <td>Quantitative Reasoning</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of Illinois Urbana-Champaign</td>
+                                                    <td>MATH 231U</td>
+                                                    <td>Calculus II</td>
+                                                    <td>Mathematics</td>
+                                                    <td>4</td>
+                                                    <td>Integral calculus, applications, and introductory differential equations.</td>
+                                                    <td>MATH 221U</td>
+                                                    <td>Quantitative Reasoning</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of Illinois Urbana-Champaign</td>
+                                                    <td>ECON 102U</td>
+                                                    <td>Microeconomic Principles</td>
+                                                    <td>Economics</td>
+                                                    <td>3</td>
+                                                    <td>Analysis of consumers, firms, and market structures.</td>
+                                                    <td>None</td>
+                                                    <td>Social and Behavioral Sciences</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of Illinois Urbana-Champaign</td>
+                                                    <td>ECON 203U</td>
+                                                    <td>Economic Statistics I</td>
+                                                    <td>Economics</td>
+                                                    <td>3</td>
+                                                    <td>Probability, estimation, and inference for economic data.</td>
+                                                    <td>MATH 231U</td>
+                                                    <td>Statistics and Data Literacy</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of Illinois Urbana-Champaign</td>
+                                                    <td>PSYC 100U</td>
+                                                    <td>Introduction to Psychology</td>
+                                                    <td>Psychology</td>
+                                                    <td>3</td>
+                                                    <td>Foundational perspectives on human thought and behavior.</td>
+                                                    <td>None</td>
+                                                    <td>Social and Behavioral Sciences</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of Illinois Urbana-Champaign</td>
+                                                    <td>PSYC 238U</td>
+                                                    <td>Abnormal Psychology</td>
+                                                    <td>Psychology</td>
+                                                    <td>3</td>
+                                                    <td>Etiology and treatment of psychological disorders.</td>
+                                                    <td>PSYC 100U</td>
+                                                    <td>Social and Behavioral Sciences</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of Wisconsin-Madison</td>
+                                                    <td>MATH 234W</td>
+                                                    <td>Calculus-Functions of Several Variables</td>
+                                                    <td>Mathematics</td>
+                                                    <td>4</td>
+                                                    <td>Differential and integral calculus for multivariable functions.</td>
+                                                    <td>MATH 222W</td>
+                                                    <td>Quantitative Reasoning</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of Wisconsin-Madison</td>
+                                                    <td>MATH 222W</td>
+                                                    <td>Calculus and Analytic Geometry II</td>
+                                                    <td>Mathematics</td>
+                                                    <td>4</td>
+                                                    <td>Advanced integration techniques with series and polar coordinates.</td>
+                                                    <td>MATH 221W</td>
+                                                    <td>Quantitative Reasoning</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of Wisconsin-Madison</td>
+                                                    <td>ECON 101W</td>
+                                                    <td>Principles of Microeconomics</td>
+                                                    <td>Economics</td>
+                                                    <td>4</td>
+                                                    <td>Market behavior, elasticity, and government intervention.</td>
+                                                    <td>None</td>
+                                                    <td>Social and Behavioral Sciences</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of Wisconsin-Madison</td>
+                                                    <td>ECON 301W</td>
+                                                    <td>Intermediate Microeconomics</td>
+                                                    <td>Economics</td>
+                                                    <td>3</td>
+                                                    <td>Consumer theory, producer theory, and market equilibrium models.</td>
+                                                    <td>ECON 101W</td>
+                                                    <td>Social and Behavioral Sciences</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of Wisconsin-Madison</td>
+                                                    <td>PSYCH 202W</td>
+                                                    <td>Introduction to Psychology</td>
+                                                    <td>Psychology</td>
+                                                    <td>3</td>
+                                                    <td>Overview of research areas such as cognition and personality.</td>
+                                                    <td>None</td>
+                                                    <td>Social and Behavioral Sciences</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of Wisconsin-Madison</td>
+                                                    <td>PSYCH 225W</td>
+                                                    <td>Cognition</td>
+                                                    <td>Psychology</td>
+                                                    <td>3</td>
+                                                    <td>Attention, language, and decision-making processes.</td>
+                                                    <td>PSYCH 202W</td>
+                                                    <td>Social and Behavioral Sciences</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>San Francisco State University</td>
+                                                    <td>MATH 226S</td>
+                                                    <td>Calculus I</td>
+                                                    <td>Mathematics</td>
+                                                    <td>4</td>
+                                                    <td>Limits, derivatives, and applications to optimization.</td>
+                                                    <td>Pre-Calculus</td>
+                                                    <td>Quantitative Reasoning</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>San Francisco State University</td>
+                                                    <td>MATH 227S</td>
+                                                    <td>Calculus II</td>
+                                                    <td>Mathematics</td>
+                                                    <td>4</td>
+                                                    <td>Integral calculus techniques with series and parametric curves.</td>
+                                                    <td>MATH 226S</td>
+                                                    <td>Quantitative Reasoning</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>San Francisco State University</td>
+                                                    <td>ECON 101S</td>
+                                                    <td>Introduction to Microeconomic Analysis</td>
+                                                    <td>Economics</td>
+                                                    <td>3</td>
+                                                    <td>Decision-making by households and firms in various markets.</td>
+                                                    <td>None</td>
+                                                    <td>Social and Behavioral Sciences</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>San Francisco State University</td>
+                                                    <td>ECON 301S</td>
+                                                    <td>Intermediate Microeconomic Theory</td>
+                                                    <td>Economics</td>
+                                                    <td>3</td>
+                                                    <td>Game theory, externalities, and welfare implications.</td>
+                                                    <td>ECON 101S</td>
+                                                    <td>Social and Behavioral Sciences</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>San Francisco State University</td>
+                                                    <td>PSY 200S</td>
+                                                    <td>General Psychology</td>
+                                                    <td>Psychology</td>
+                                                    <td>3</td>
+                                                    <td>Introduction to core psychological concepts and methods.</td>
+                                                    <td>None</td>
+                                                    <td>Social and Behavioral Sciences</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>San Francisco State University</td>
+                                                    <td>PSY 451S</td>
+                                                    <td>Theories of Personality</td>
+                                                    <td>Psychology</td>
+                                                    <td>3</td>
+                                                    <td>Comparative study of major personality theories.</td>
+                                                    <td>PSY 200S</td>
+                                                    <td>Social and Behavioral Sciences</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of Wisconsin-Green Bay</td>
+                                                    <td>MATH 209G</td>
+                                                    <td>Calculus and Analytical Geometry I</td>
+                                                    <td>Mathematics</td>
+                                                    <td>4</td>
+                                                    <td>Differential calculus with geometric interpretation.</td>
+                                                    <td>Pre-Calculus</td>
+                                                    <td>Quantitative Reasoning</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of Wisconsin-Green Bay</td>
+                                                    <td>MATH 260G</td>
+                                                    <td>Multivariable Calculus</td>
+                                                    <td>Mathematics</td>
+                                                    <td>4</td>
+                                                    <td>Partial derivatives and multiple integrals with applications.</td>
+                                                    <td>MATH 230G</td>
+                                                    <td>Quantitative Reasoning</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of Wisconsin-Green Bay</td>
+                                                    <td>ECON 202G</td>
+                                                    <td>Macro Economic Analysis</td>
+                                                    <td>Economics</td>
+                                                    <td>3</td>
+                                                    <td>National income, inflation, unemployment, and policy tools.</td>
+                                                    <td>ECON 201G</td>
+                                                    <td>Social and Behavioral Sciences</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of Wisconsin-Green Bay</td>
+                                                    <td>ECON 302G</td>
+                                                    <td>Intermediate Microeconomics</td>
+                                                    <td>Economics</td>
+                                                    <td>3</td>
+                                                    <td>Analytical models of consumers, producers, and markets.</td>
+                                                    <td>ECON 202G</td>
+                                                    <td>Social and Behavioral Sciences</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of Wisconsin-Green Bay</td>
+                                                    <td>PSYCH 203G</td>
+                                                    <td>Foundations of Psychology</td>
+                                                    <td>Psychology</td>
+                                                    <td>3</td>
+                                                    <td>Scientific study of behavior and mental processes.</td>
+                                                    <td>None</td>
+                                                    <td>Social and Behavioral Sciences</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of Wisconsin-Green Bay</td>
+                                                    <td>PSYCH 440G</td>
+                                                    <td>Physiological Psychology</td>
+                                                    <td>Psychology</td>
+                                                    <td>3</td>
+                                                    <td>Biological bases of behavior and neural mechanisms.</td>
+                                                    <td>PSYCH 203G</td>
+                                                    <td>Natural Sciences</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Trine University</td>
+                                                    <td>MA 232T</td>
+                                                    <td>Calculus II</td>
+                                                    <td>Mathematics</td>
+                                                    <td>4</td>
+                                                    <td>Techniques of integration and sequences with engineering focus.</td>
+                                                    <td>MA 131T</td>
+                                                    <td>Quantitative Reasoning</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Trine University</td>
+                                                    <td>MA 233T</td>
+                                                    <td>Calculus III</td>
+                                                    <td>Mathematics</td>
+                                                    <td>4</td>
+                                                    <td>Vector calculus, line integrals, and surface integrals.</td>
+                                                    <td>MA 232T</td>
+                                                    <td>Quantitative Reasoning</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Trine University</td>
+                                                    <td>ECO 213T</td>
+                                                    <td>Microeconomics</td>
+                                                    <td>Economics</td>
+                                                    <td>3</td>
+                                                    <td>Demand, supply, and market efficiency analysis.</td>
+                                                    <td>None</td>
+                                                    <td>Social and Behavioral Sciences</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Trine University</td>
+                                                    <td>ECO 453T</td>
+                                                    <td>International Economics</td>
+                                                    <td>Economics</td>
+                                                    <td>3</td>
+                                                    <td>Trade theories, exchange rates, and global policy issues.</td>
+                                                    <td>ECO 213T</td>
+                                                    <td>Global Perspectives</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Trine University</td>
+                                                    <td>PSY 113T</td>
+                                                    <td>Principles of Psychology</td>
+                                                    <td>Psychology</td>
+                                                    <td>3</td>
+                                                    <td>Fundamental concepts in perception, learning, and development.</td>
+                                                    <td>None</td>
+                                                    <td>Social and Behavioral Sciences</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Trine University</td>
+                                                    <td>PSY 333T</td>
+                                                    <td>Psychology of Learning</td>
+                                                    <td>Psychology</td>
+                                                    <td>3</td>
+                                                    <td>Classical and operant conditioning with cognitive extensions.</td>
+                                                    <td>PSY 113T</td>
+                                                    <td>Social and Behavioral Sciences</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Brookdale Community College</td>
+                                                    <td>MATH 171B</td>
+                                                    <td>Calculus I</td>
+                                                    <td>Mathematics</td>
+                                                    <td>4</td>
+                                                    <td>Differential calculus for science and engineering majors.</td>
+                                                    <td>Pre-Calculus</td>
+                                                    <td>Quantitative Reasoning</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Brookdale Community College</td>
+                                                    <td>MATH 172B</td>
+                                                    <td>Calculus II</td>
+                                                    <td>Mathematics</td>
+                                                    <td>4</td>
+                                                    <td>Integral calculus with series and applications.</td>
+                                                    <td>MATH 171B</td>
+                                                    <td>Quantitative Reasoning</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Brookdale Community College</td>
+                                                    <td>ECON 105B</td>
+                                                    <td>Principles of Microeconomics</td>
+                                                    <td>Economics</td>
+                                                    <td>3</td>
+                                                    <td>Market structures, consumer theory, and government policy.</td>
+                                                    <td>None</td>
+                                                    <td>Social and Behavioral Sciences</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Brookdale Community College</td>
+                                                    <td>ECON 225B</td>
+                                                    <td>Macroeconomics</td>
+                                                    <td>Economics</td>
+                                                    <td>3</td>
+                                                    <td>GDP, monetary policy, and economic growth models.</td>
+                                                    <td>ECON 105B</td>
+                                                    <td>Social and Behavioral Sciences</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Brookdale Community College</td>
+                                                    <td>PSYC 105B</td>
+                                                    <td>Introduction to Psychology</td>
+                                                    <td>Psychology</td>
+                                                    <td>3</td>
+                                                    <td>Foundational survey of behavioral and cognitive science.</td>
+                                                    <td>None</td>
+                                                    <td>Social and Behavioral Sciences</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Brookdale Community College</td>
+                                                    <td>PSYC 215B</td>
+                                                    <td>Lifespan Development</td>
+                                                    <td>Psychology</td>
+                                                    <td>3</td>
+                                                    <td>Physical, cognitive, and social development across the lifespan.</td>
+                                                    <td>PSYC 105B</td>
+                                                    <td>Social and Behavioral Sciences</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Arizona State University</td>
+                                                    <td>MAT 265A</td>
+                                                    <td>Calculus for Engineers I</td>
+                                                    <td>Mathematics</td>
+                                                    <td>3</td>
+                                                    <td>Differential calculus emphasizing engineering applications.</td>
+                                                    <td>MAT 170A</td>
+                                                    <td>Quantitative Reasoning</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Arizona State University</td>
+                                                    <td>MAT 266A</td>
+                                                    <td>Calculus for Engineers II</td>
+                                                    <td>Mathematics</td>
+                                                    <td>3</td>
+                                                    <td>Integral calculus, series, and Laplace transforms for engineers.</td>
+                                                    <td>MAT 265A</td>
+                                                    <td>Quantitative Reasoning</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Arizona State University</td>
+                                                    <td>ECN 211A</td>
+                                                    <td>Macroeconomic Principles</td>
+                                                    <td>Economics</td>
+                                                    <td>3</td>
+                                                    <td>Aggregate economic activity, fiscal, and monetary policy.</td>
+                                                    <td>None</td>
+                                                    <td>Social and Behavioral Sciences</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Arizona State University</td>
+                                                    <td>ECN 312A</td>
+                                                    <td>Intermediate Microeconomic Theory</td>
+                                                    <td>Economics</td>
+                                                    <td>3</td>
+                                                    <td>Consumer and producer theory with competitive analysis.</td>
+                                                    <td>ECN 211A</td>
+                                                    <td>Social and Behavioral Sciences</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Arizona State University</td>
+                                                    <td>PSY 101A</td>
+                                                    <td>Introduction to Psychology</td>
+                                                    <td>Psychology</td>
+                                                    <td>3</td>
+                                                    <td>Behavioral, biological, and cognitive foundations of psychology.</td>
+                                                    <td>None</td>
+                                                    <td>Social and Behavioral Sciences</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Arizona State University</td>
+                                                    <td>PSY 230A</td>
+                                                    <td>Introductory Statistics for Psychology</td>
+                                                    <td>Psychology</td>
+                                                    <td>3</td>
+                                                    <td>Quantitative methods for psychological research.</td>
+                                                    <td>PSY 101A</td>
+                                                    <td>Statistics and Data Literacy</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of California, Davis</td>
+                                                    <td>MAT 21A D</td>
+                                                    <td>Differential Calculus</td>
+                                                    <td>Mathematics</td>
+                                                    <td>4</td>
+                                                    <td>Differentiation techniques with scientific applications.</td>
+                                                    <td>Pre-Calculus</td>
+                                                    <td>Quantitative Reasoning</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of California, Davis</td>
+                                                    <td>MAT 21B D</td>
+                                                    <td>Integral Calculus</td>
+                                                    <td>Mathematics</td>
+                                                    <td>4</td>
+                                                    <td>Integration, sequences, and series for physical sciences.</td>
+                                                    <td>MAT 21A D</td>
+                                                    <td>Quantitative Reasoning</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of California, Davis</td>
+                                                    <td>ECN 1A D</td>
+                                                    <td>Principles of Microeconomics</td>
+                                                    <td>Economics</td>
+                                                    <td>4</td>
+                                                    <td>Consumer behavior, production, and market equilibrium.</td>
+                                                    <td>None</td>
+                                                    <td>Social and Behavioral Sciences</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of California, Davis</td>
+                                                    <td>ECN 102 D</td>
+                                                    <td>Analysis of Microeconomic Data</td>
+                                                    <td>Economics</td>
+                                                    <td>4</td>
+                                                    <td>Empirical tools for microeconomic research and policy.</td>
+                                                    <td>ECN 1A D</td>
+                                                    <td>Statistics and Data Literacy</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of California, Davis</td>
+                                                    <td>PSC 1 D</td>
+                                                    <td>General Psychology</td>
+                                                    <td>Psychology</td>
+                                                    <td>4</td>
+                                                    <td>Comprehensive overview of psychological science.</td>
+                                                    <td>None</td>
+                                                    <td>Social and Behavioral Sciences</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of California, Davis</td>
+                                                    <td>PSC 121 D</td>
+                                                    <td>Human Emotion</td>
+                                                    <td>Psychology</td>
+                                                    <td>4</td>
+                                                    <td>Physiological and cognitive aspects of emotion.</td>
+                                                    <td>PSC 1 D</td>
+                                                    <td>Social and Behavioral Sciences</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of California, Los Angeles</td>
+                                                    <td>MATH 31A L</td>
+                                                    <td>Differential and Integral Calculus</td>
+                                                    <td>Mathematics</td>
+                                                    <td>4</td>
+                                                    <td>Limits, derivatives, integrals, and applications.</td>
+                                                    <td>Pre-Calculus</td>
+                                                    <td>Quantitative Reasoning</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of California, Los Angeles</td>
+                                                    <td>MATH 31B L</td>
+                                                    <td>Integration and Infinite Series</td>
+                                                    <td>Mathematics</td>
+                                                    <td>4</td>
+                                                    <td>Integral applications, sequences, and series for engineers.</td>
+                                                    <td>MATH 31A L</td>
+                                                    <td>Quantitative Reasoning</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of California, Los Angeles</td>
+                                                    <td>ECON 11 L</td>
+                                                    <td>Microeconomic Theory</td>
+                                                    <td>Economics</td>
+                                                    <td>4</td>
+                                                    <td>Foundations of consumer and producer theory.</td>
+                                                    <td>None</td>
+                                                    <td>Social and Behavioral Sciences</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of California, Los Angeles</td>
+                                                    <td>ECON 101 L</td>
+                                                    <td>Price Theory</td>
+                                                    <td>Economics</td>
+                                                    <td>4</td>
+                                                    <td>Advanced topics in market equilibrium and welfare analysis.</td>
+                                                    <td>ECON 11 L</td>
+                                                    <td>Social and Behavioral Sciences</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of California, Los Angeles</td>
+                                                    <td>PSYCH 10 L</td>
+                                                    <td>Introduction to Behavioral Science</td>
+                                                    <td>Psychology</td>
+                                                    <td>4</td>
+                                                    <td>Survey of psychological theories with research emphasis.</td>
+                                                    <td>None</td>
+                                                    <td>Social and Behavioral Sciences</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>University of California, Los Angeles</td>
+                                                    <td>PSYCH 115 L</td>
+                                                    <td>Principles of Behavioral Neuroscience</td>
+                                                    <td>Psychology</td>
+                                                    <td>4</td>
+                                                    <td>Neural mechanisms underlying behavior and cognition.</td>
+                                                    <td>PSYCH 10 L</td>
+                                                    <td>Natural Sciences</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
@@ -3841,7 +4594,15 @@
                                     <option value="expired">已过期</option>
                                 </select>
                             </div>
-                            <button class="filter-reset-btn" onclick="resetSubscriptionFilters()">重置筛选</button>
+                            <div class="filter-item">
+                                <label for="deadline-sort">截止日期排序：</label>
+                                <select id="deadline-sort" class="filter-select" onchange="sortCardsByDeadline()">
+                                    <option value="">默认</option>
+                                    <option value="asc">升序 (最近的在前)</option>
+                                    <option value="desc">降序 (最远的在前)</option>
+                                </select>
+                            </div>
+                            <button class="filter-reset-btn" onclick="resetSubscriptionFilters()">重置</button>
                         </div>
                         
                         <div class="subscription-cards-container">
@@ -4562,19 +5323,36 @@
         // 学生中心左侧边栏功能项点击
         document.querySelectorAll('.student-sidebar .sidebar-title').forEach(item => {
             item.addEventListener('click', function() {
-                // 移除所有选中状态
                 document.querySelectorAll('.student-sidebar .sidebar-title').forEach(i => i.classList.remove('active'));
-                // 添加当前项的选中状态
                 this.classList.add('active');
-                
-                // 隐藏所有子内容
-                document.querySelectorAll('.sub-content').forEach(content => {
+
+                document.querySelectorAll('#student-center .sub-content').forEach(content => {
                     content.style.display = 'none';
                 });
-                
-                // 显示对应子内容
+
                 const target = this.getAttribute('data-target');
-                document.getElementById(target).style.display = 'block';
+                const targetElement = document.getElementById(target);
+                if (targetElement) {
+                    targetElement.style.display = 'block';
+                }
+            });
+        });
+
+        // 大学中心左侧边栏功能项点击
+        document.querySelectorAll('.university-sidebar .sidebar-title').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.university-sidebar .sidebar-title').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+
+                document.querySelectorAll('#university-center .sub-content').forEach(content => {
+                    content.style.display = 'none';
+                });
+
+                const target = this.getAttribute('data-target');
+                const targetElement = document.getElementById(target);
+                if (targetElement) {
+                    targetElement.style.display = 'block';
+                }
             });
         });
         
@@ -6076,7 +6854,66 @@
         function resetSubscriptionFilters() {
             document.getElementById('subscription-type-filter').value = '';
             document.getElementById('status-filter').value = '';
+            document.getElementById('deadline-sort').value = '';
             filterCards();
+            resetCardOrder();
+        }
+        
+        // 🎯 按截止日期排序功能
+        function sortCardsByDeadline() {
+            const sortValue = document.getElementById('deadline-sort').value;
+            const container = document.querySelector('.subscription-cards-container');
+            const cards = Array.from(container.querySelectorAll('.subscription-card'));
+            
+            if (sortValue === '') {
+                resetCardOrder();
+                return;
+            }
+            
+            // 提取并解析截止日期
+            cards.forEach(card => {
+                const deadlineElement = card.querySelector('.deadline-date');
+                if (deadlineElement) {
+                    const deadlineText = deadlineElement.textContent.trim();
+                    // 将日期字符串转换为Date对象进行排序
+                    card.deadlineDate = new Date(deadlineText);
+                } else {
+                    // 如果没有截止日期，设置为很远的未来日期
+                    card.deadlineDate = new Date('9999-12-31');
+                }
+            });
+            
+            // 根据选择的排序方式排序
+            cards.sort((a, b) => {
+                if (sortValue === 'asc') {
+                    return a.deadlineDate - b.deadlineDate; // 升序：最近的在前
+                } else if (sortValue === 'desc') {
+                    return b.deadlineDate - a.deadlineDate; // 降序：最远的在前
+                }
+                return 0;
+            });
+            
+            // 重新排列DOM元素
+            cards.forEach(card => {
+                container.appendChild(card);
+            });
+        }
+        
+        // 重置卡片顺序为原始顺序
+        function resetCardOrder() {
+            const container = document.querySelector('.subscription-cards-container');
+            const cards = Array.from(container.querySelectorAll('.subscription-card'));
+            
+            // 按原始ID顺序排序
+            cards.sort((a, b) => {
+                const aId = a.id || '';
+                const bId = b.id || '';
+                return aId.localeCompare(bId);
+            });
+            
+            cards.forEach(card => {
+                container.appendChild(card);
+            });
         }
         
         // 初始化订阅筛选功能（已改为卡片筛选，不再需要表格筛选初始化）
@@ -6136,6 +6973,33 @@
                 // Show or hide the card
                 card.style.display = showCard ? '' : 'none';
             });
+            
+            // 🎯 筛选后重新应用排序
+            const currentSort = document.getElementById('deadline-sort').value;
+            if (currentSort !== '') {
+                sortCardsByDeadline();
+            }
+        }
+        
+        // 🧪 测试排序功能
+        function testDeadlineSorting() {
+            console.log('🧪 测试截止日期排序功能...');
+            
+            const cards = document.querySelectorAll('.subscription-card');
+            console.log(`📋 找到 ${cards.length} 张卡片`);
+            
+            cards.forEach((card, index) => {
+                const deadlineElement = card.querySelector('.deadline-date');
+                const title = card.querySelector('.course-title')?.textContent || `卡片${index + 1}`;
+                if (deadlineElement) {
+                    const deadline = deadlineElement.textContent.trim();
+                    console.log(`📅 ${title}: ${deadline}`);
+                } else {
+                    console.log(`❓ ${title}: 未找到截止日期`);
+                }
+            });
+            
+            console.log('✅ 排序功能测试完成');
         }
         
         function toggleDetails(button) {
