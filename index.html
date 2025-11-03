@@ -57,7 +57,9 @@
             background: white;
             color: var(--text-primary);
             padding: 15px 20px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            border: 1px solid #e1e5e9;
+            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
             position: fixed;
             top: 0;
             left: 0;
@@ -65,7 +67,7 @@
             z-index: 1000;
             border-bottom: 1px solid #f1f3f5;
         }
-        
+
         .logo {
             font-size: 24px;
             font-weight: bold;
@@ -73,32 +75,32 @@
             color: var(--primary-green);
             text-shadow: none;
         }
-        
+
         .breadcrumb {
             font-size: 14px;
             margin-top: 5px;
             color: var(--primary-green);
             opacity: 0.8;
         }
-        
+
         .main-layout {
             display: flex;
             margin-top: 80px;
             min-height: calc(100vh - 80px);
         }
-        
+
         .student-layout {
             display: flex;
             min-height: calc(100vh - 160px);
         }
-        
+
         .student-sidebar {
             width: 220px;
             background: white;
             border-right: 1px solid #ddd;
             padding: 20px;
         }
-        
+
         .student-content {
             flex: 1;
         }
@@ -165,15 +167,6 @@
 
         .product-table tbody tr:hover td {
             background: #e8f1fe;
-        }
-
-        .university-table-container {
-            margin: 20px 0;
-            padding: 16px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            border: 1px solid #e1e5e9;
-            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
         }
 
         .university-table {
@@ -4557,120 +4550,7 @@
                                                     <th>状态</th>
                                                 </tr>
                                             </thead>
-                                            <tbody>
-                                                <!-- Baoyan Han - 第一门意向课程的三个产品课程 -->
-                                                <tr>
-                                                    <td><input type="checkbox" class="course-checkbox" /></td>
-                                                    <td class="student-name" rowspan="3">Baoyan Han</td>
-                                                    <td rowspan="3">The Ohio State University</td>
-                                                    <td rowspan="3" class="course-cell">
-                                                        <span class="course-link">HTHRHSC 3400</span> (Introduction to Health Promotion and Disease Prevention)
-                                                        <button class="course-subscribe-btn home-course" onclick="subscribeSingleCourse(this, 'home')" title="订阅本校意向课程">订阅</button>
-                                                    </td>
-                                                    <td class="course-cell">
-                                                        <span class="course-link">EXSC 221</span> (Science of Wellness) - Brigham Young University
-                                                        <button class="course-subscribe-btn" onclick="subscribeSingleCourse(this, 'product')" title="订阅产品课程">订阅</button>
-                                                    </td>
-                                                    <td>Self-Paced, Asynchronous ⚠️</td>
-                                                    <td>2025-09-18 到 2026-09-18</td>
-                                                    <td>EXSC 22108</td>
-                                                    <td><span class="status completed">认证成功 已确认</span></td>
-                                                </tr>
-                                                <tr>
-                                                    <td><input type="checkbox" class="course-checkbox" /></td>
-                                                    <td class="course-cell">
-                                                        <span class="course-link">HLTH 2010</span> (Personal Health and Wellness) - Arizona State University
-                                                        <button class="course-subscribe-btn" onclick="subscribeSingleCourse(this, 'product')" title="订阅产品课程">订阅</button>
-                                                    </td>
-                                                    <td>Scheduled, Synchronous</td>
-                                                    <td>2025-11-01 到 2026-05-01</td>
-                                                    <td>HLTH 20103</td>
-                                                    <td><span class="status pending">待认证</span></td>
-                                                </tr>
-                                                <tr>
-                                                    <td><input type="checkbox" class="course-checkbox" /></td>
-                                                    <td class="course-cell">
-                                                        <span class="course-link">KINE 1304</span> (Health and Fitness for Life) - Utah State University
-                                                        <button class="course-subscribe-btn" onclick="subscribeSingleCourse(this, 'product')" title="订阅产品课程">订阅</button>
-                                                    </td>
-                                                    <td>Self-Paced, Asynchronous</td>
-                                                    <td>2025-12-01 到 2026-06-01</td>
-                                                    <td>KINE 13042</td>
-                                                    <td><span class="status active">进行中</span></td>
-                                                </tr>
-                                                
-                                                <!-- Sarah Johnson - 第一门意向课程 -->
-                                                <tr>
-                                                    <td><input type="checkbox" class="course-checkbox" /></td>
-                                                    <td class="student-name" rowspan="3">Sarah Johnson</td>
-                                                    <td rowspan="3">University of California, Berkeley</td>
-                                                    <td class="course-cell">
-                                                        <span class="course-link">PSYC 2145</span> (Cognitive Psychology)
-                                                        <button class="course-subscribe-btn home-course" onclick="subscribeSingleCourse(this, 'home')" title="订阅本校意向课程">订阅</button>
-                                                    </td>
-                                                    <td class="course-cell">
-                                                        <span class="course-link">PSYC 111</span> (Introduction to Psychology) - Arizona State University
-                                                        <button class="course-subscribe-btn" onclick="subscribeSingleCourse(this, 'product')" title="订阅产品课程">订阅</button>
-                                                    </td>
-                                                    <td>Scheduled, Synchronous</td>
-                                                    <td>2025-08-25 到 2025-12-15</td>
-                                                    <td>PSYC 11103</td>
-                                                    <td><span class="status active">进行中</span></td>
-                                                </tr>
-                                                
-                                                <!-- Sarah Johnson - 第二门意向课程 -->
-                                                <tr>
-                                                    <td><input type="checkbox" class="course-checkbox" /></td>
-                                                    <td class="course-cell">
-                                                        <span class="course-link">STAT 3021</span> (Statistical Methods)
-                                                        <button class="course-subscribe-btn home-course" onclick="subscribeSingleCourse(this, 'home')" title="订阅本校意向课程">订阅</button>
-                                                    </td>
-                                                    <td class="course-cell">
-                                                        <span class="course-link">STAT 1040</span> (Introduction to Statistics) - Brigham Young University
-                                                        <button class="course-subscribe-btn" onclick="subscribeSingleCourse(this, 'product')" title="订阅产品课程">订阅</button>
-                                                    </td>
-                                                    <td>Self-Paced, Asynchronous</td>
-                                                    <td>2025-10-15 到 2026-04-15</td>
-                                                    <td>STAT 10401</td>
-                                                    <td><span class="status pending">待认证</span></td>
-                                                </tr>
-                                                
-                                                <!-- Sarah Johnson - 第三门意向课程 -->
-                                                <tr>
-                                                    <td><input type="checkbox" class="course-checkbox" /></td>
-                                                    <td class="course-cell">
-                                                        <span class="course-link">BIOL 1A03</span> (Introductory Biology)
-                                                        <button class="course-subscribe-btn home-course" onclick="subscribeSingleCourse(this, 'home')" title="订阅本校意向课程">订阅</button>
-                                                    </td>
-                                                    <td class="course-cell">
-                                                        <span class="course-link">BIOL 1010</span> (General Biology) - Utah State University
-                                                        <button class="course-subscribe-btn" onclick="subscribeSingleCourse(this, 'product')" title="订阅产品课程">订阅</button>
-                                                    </td>
-                                                    <td>Scheduled, Synchronous</td>
-                                                    <td>2025-09-01 到 2025-12-20</td>
-                                                    <td>BIOL 10105</td>
-                                                    <td><span class="status completed">认证成功 已确认</span></td>
-                                                </tr>
-                                                
-                                                <!-- Michael Chen -->
-                                                <tr>
-                                                    <td><input type="checkbox" class="course-checkbox" /></td>
-                                                    <td class="student-name">Michael Chen</td>
-                                                    <td>Massachusetts Institute of Technology</td>
-                                                    <td class="course-cell">
-                                                        <span class="course-link">CS 6.006</span> (Introduction to Algorithms)
-                                                        <button class="course-subscribe-btn home-course" onclick="subscribeSingleCourse(this, 'home')" title="订阅本校意向课程">订阅</button>
-                                                    </td>
-                                                    <td class="course-cell">
-                                                        <span class="course-link">CS 1400</span> (Computer Science I) - Utah State University
-                                                        <button class="course-subscribe-btn" onclick="subscribeSingleCourse(this, 'product')" title="订阅产品课程">订阅</button>
-                                                    </td>
-                                                    <td>Self-Paced, Asynchronous</td>
-                                                    <td>2025-10-01 到 2026-04-01</td>
-                                                    <td>CS 140002</td>
-                                                    <td><span class="status pending">待认证</span></td>
-                                                </tr>
-                                            </tbody>
+                                            <tbody id="studentServiceTableBody"></tbody>
                                         </table>
                                     </div>
                         
@@ -5278,6 +5158,9 @@
         // 默认显示学生中心
         document.getElementById('student-center').style.display = 'block';
         
+    // 渲染学生服务表格数据
+    renderStudentServiceTable();
+
         // 初始化批量订阅按钮状态
         updateBatchSubscribeButton();
         
@@ -5385,11 +5268,285 @@
                 dropdownMenu.classList.add('disabled');
             }
         }
+
+        function attachCourseCheckboxListeners() {
+            const checkboxes = document.querySelectorAll('.course-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.removeEventListener('change', updateBatchSubscribeButton);
+                checkbox.addEventListener('change', updateBatchSubscribeButton);
+            });
+        }
+
+        function createStudentServiceSubscribeButton(type) {
+            const button = document.createElement('button');
+            button.className = type === 'home' ? 'course-subscribe-btn home-course' : 'course-subscribe-btn';
+            button.setAttribute('onclick', type === 'home'
+                ? "subscribeSingleCourse(this, 'home')"
+                : "subscribeSingleCourse(this, 'product')");
+            button.title = type === 'home' ? '订阅本校意向课程' : '订阅产品课程';
+            button.textContent = '订阅';
+            return button;
+        }
+
+        function getStudentServiceStatusMeta(course, product) {
+            const defaultMeta = { text: '待匹配', className: 'pending' };
+
+            if (!product) {
+                if (course && course.status === 'serving') {
+                    return { text: '服务中', className: 'active' };
+                }
+                if (course && course.status === 'completed') {
+                    return { text: '已完成', className: 'completed' };
+                }
+                if (course && course.status === 'potential') {
+                    return { text: '潜在价值', className: 'pending' };
+                }
+                return defaultMeta;
+            }
+
+            const verification = product.verificationOutcome || '';
+            if (verification) {
+                if (verification.includes('成功')) {
+                    return { text: verification, className: 'completed' };
+                }
+                if (verification.includes('失败')) {
+                    return { text: verification, className: 'pending' };
+                }
+                return { text: verification, className: product.isOnSale ? 'active' : 'pending' };
+            }
+
+            const alignment = product.alignmentStatus || '';
+            if (alignment) {
+                return {
+                    text: product.isOnSale ? `${alignment} · 在售` : alignment,
+                    className: product.isOnSale ? 'active' : 'pending'
+                };
+            }
+
+            if (product.isOnSale) {
+                return { text: '在售课程单元', className: 'active' };
+            }
+
+            if (course && course.status === 'serving') {
+                return { text: '服务中', className: 'active' };
+            }
+
+            return defaultMeta;
+        }
+
+        function buildStudentIdentityCells(row, studentInfo, rowSpan) {
+            const spanValue = Math.max(rowSpan, 1);
+
+            const nameCell = document.createElement('td');
+            nameCell.className = 'student-name';
+            nameCell.rowSpan = spanValue;
+            nameCell.textContent = studentInfo && studentInfo.name ? studentInfo.name : '未知学生';
+            row.appendChild(nameCell);
+
+            const schoolCell = document.createElement('td');
+            schoolCell.rowSpan = spanValue;
+            schoolCell.textContent = studentInfo && studentInfo.school ? studentInfo.school : '未知学校';
+            row.appendChild(schoolCell);
+        }
+
+        function createStudentServiceHomeCell(course, rowSpan) {
+            const cell = document.createElement('td');
+            cell.className = 'course-cell';
+            if (rowSpan > 1) {
+                cell.rowSpan = rowSpan;
+            }
+
+            const link = document.createElement('span');
+            link.className = 'course-link';
+            link.textContent = course && course.homeCourse ? course.homeCourse : '待配置课程';
+            cell.appendChild(link);
+
+            if (course && course.homeCourseName) {
+                cell.appendChild(document.createTextNode(` (${course.homeCourseName})`));
+            }
+
+            if (course) {
+                cell.appendChild(document.createTextNode(' '));
+                cell.appendChild(createStudentServiceSubscribeButton('home'));
+            }
+
+            return cell;
+        }
+
+        function createStudentServiceProductCell(product) {
+            const cell = document.createElement('td');
+            cell.className = 'course-cell';
+
+            const link = document.createElement('span');
+            link.className = 'course-link';
+            link.textContent = product && product.code ? product.code : '待匹配课程';
+            cell.appendChild(link);
+
+            if (product && product.name) {
+                cell.appendChild(document.createTextNode(` (${product.name})`));
+            }
+
+            if (product && product.school) {
+                cell.appendChild(document.createTextNode(` - ${product.school}`));
+            }
+
+            if (product) {
+                cell.appendChild(document.createTextNode(' '));
+                cell.appendChild(createStudentServiceSubscribeButton('product'));
+            }
+
+            return cell;
+        }
+
+        function createStudentServiceModalityCell(product) {
+            const cell = document.createElement('td');
+            cell.textContent = product && product.modality ? product.modality : '待匹配';
+            return cell;
+        }
+
+        function createStudentServicePeriodCell(product) {
+            const cell = document.createElement('td');
+            if (product && product.startDate && product.endDate) {
+                cell.textContent = `${product.startDate} 到 ${product.endDate}`;
+            } else {
+                cell.textContent = '-';
+            }
+            return cell;
+        }
+
+        function createStudentServiceClassCodeCell(product) {
+            const cell = document.createElement('td');
+            cell.textContent = product && product.classCode ? product.classCode : '-';
+            return cell;
+        }
+
+        function createStudentServiceStatusCell(course, product) {
+            const cell = document.createElement('td');
+            const meta = getStudentServiceStatusMeta(course, product);
+            const badge = document.createElement('span');
+            badge.className = `status ${meta.className}`.trim();
+            badge.textContent = meta.text;
+            cell.appendChild(badge);
+            return cell;
+        }
+
+        function createStudentServiceCheckboxCell() {
+            const cell = document.createElement('td');
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.className = 'course-checkbox';
+            cell.appendChild(checkbox);
+            return cell;
+        }
+
+        function renderStudentServiceTable() {
+            const tbody = document.getElementById('studentServiceTableBody');
+            if (!tbody) {
+                return;
+            }
+
+            const repository = getStudentRepository();
+            if (!repository) {
+                tbody.innerHTML = `<tr><td colspan="9" class="empty-state-cell">学生数据未加载</td></tr>`;
+                return;
+            }
+
+            let snapshot = [];
+            if (typeof repository.getStudentServiceSnapshot === 'function') {
+                snapshot = repository.getStudentServiceSnapshot();
+            } else {
+                const students = repository.getAllFollowUps();
+                snapshot = students.map(student => ({
+                    student: {
+                        id: student.id,
+                        name: student.name,
+                        school: student.school
+                    },
+                    courses: repository.getSelectedCourses(student.id)
+                }));
+            }
+
+            if (!snapshot.length) {
+                tbody.innerHTML = `<tr><td colspan="9" class="empty-state-cell">暂未找到在售课程</td></tr>`;
+                attachCourseCheckboxListeners();
+                updateBatchSubscribeButton();
+                return;
+            }
+
+            const fragment = document.createDocumentFragment();
+            let renderedRowCount = 0;
+
+            snapshot.forEach(entry => {
+                const studentInfo = entry.student || {};
+                const rawCourses = Array.isArray(entry.courses) ? entry.courses : [];
+
+                // Only render courses that have at least one on-sale product unit.
+                const visibleCourses = rawCourses.reduce((acc, course) => {
+                    if (!course) {
+                        return acc;
+                    }
+
+                    const productList = Array.isArray(course.productCourses)
+                        ? course.productCourses.filter(product => product && product.isOnSale)
+                        : [];
+
+                    if (!productList.length) {
+                        return acc;
+                    }
+
+                    acc.push({ course, productList });
+                    return acc;
+                }, []);
+
+                if (!visibleCourses.length) {
+                    return;
+                }
+
+                const totalRows = visibleCourses.reduce((sum, item) => sum + item.productList.length, 0);
+                let studentCellsRendered = false;
+
+                visibleCourses.forEach(({ course, productList }) => {
+                    const courseRowSpan = productList.length;
+
+                    productList.forEach((product, index) => {
+                        const row = document.createElement('tr');
+                        row.appendChild(createStudentServiceCheckboxCell());
+
+                        if (!studentCellsRendered) {
+                            buildStudentIdentityCells(row, studentInfo, totalRows);
+                            studentCellsRendered = true;
+                        }
+
+                        if (index === 0) {
+                            row.appendChild(createStudentServiceHomeCell(course, courseRowSpan));
+                        }
+
+                        row.appendChild(createStudentServiceProductCell(product));
+                        row.appendChild(createStudentServiceModalityCell(product));
+                        row.appendChild(createStudentServicePeriodCell(product));
+                        row.appendChild(createStudentServiceClassCodeCell(product));
+                        row.appendChild(createStudentServiceStatusCell(course, product));
+                        fragment.appendChild(row);
+                        renderedRowCount += 1;
+                    });
+                });
+            });
+
+            if (!renderedRowCount) {
+                tbody.innerHTML = `<tr><td colspan="9" class="empty-state-cell">暂未找到在售课程</td></tr>`;
+                attachCourseCheckboxListeners();
+                updateBatchSubscribeButton();
+                return;
+            }
+
+            tbody.innerHTML = '';
+            tbody.appendChild(fragment);
+            attachCourseCheckboxListeners();
+            updateBatchSubscribeButton();
+        }
         
         // 为所有课程复选框添加事件监听器
-        document.querySelectorAll('.course-checkbox').forEach(checkbox => {
-            checkbox.addEventListener('change', updateBatchSubscribeButton);
-        });
+        attachCourseCheckboxListeners();
         
         // 批量订阅按钮点击事件（现在只是阻止默认行为，实际功能由下拉菜单处理）
         document.getElementById('batchSubscribeBtn').addEventListener('click', function(e) {
@@ -6159,6 +6316,7 @@
         // 学生选课分析页面Tab切换功能
         document.addEventListener('DOMContentLoaded', function() {
             renderStudentFollowTable();
+            renderStudentServiceTable();
             updateBatchSubscribeButton();
 
             const analysisTabBtns = document.querySelectorAll('.analysis-tab-btn');

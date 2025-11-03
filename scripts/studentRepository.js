@@ -147,7 +147,7 @@
         return records;
     };
 
-    const buildSelectedCoursesFromRuntime = (student) => {
+    const buildSelectedCoursesFromRuntime = (student, sharedCaches = {}) => {
         if (!student) {
             return [];
         }
@@ -158,8 +158,16 @@
             return [];
         }
 
-        const unitMap = collectProductUnits();
-        const mappingRecords = collectCourseMappings().filter(record => record.schoolName === student.school);
+        const unitMap = sharedCaches.unitMap instanceof Map ? sharedCaches.unitMap : collectProductUnits();
+        let mappingRecords = [];
+
+        if (sharedCaches.mappingBySchool instanceof Map) {
+            mappingRecords = sharedCaches.mappingBySchool.get(student.school) || [];
+        } else if (Array.isArray(sharedCaches.allMappings)) {
+            mappingRecords = sharedCaches.allMappings.filter(record => record.schoolName === student.school);
+        } else {
+            mappingRecords = collectCourseMappings().filter(record => record.schoolName === student.school);
+        }
 
         return plan.map(planCourse => {
             const relevantRecords = mappingRecords.filter(record => record.courseCode === (planCourse.code || ''));
@@ -276,6 +284,114 @@
 
             const details = getStudentDetails(student);
             return details.selectedCourses;
+        },
+
+        getStudentServiceSnapshot() {
+            const students = getFollowUpCollection();
+            if (!Array.isArray(students) || !students.length) {
+                return [];
+            }
+
+            const unitMap = collectProductUnits();
+            const allMappings = collectCourseMappings();
+            const mappingBySchool = allMappings.reduce((acc, record) => {
+                if (!record || !record.schoolName) {
+                    return acc;
+                }
+                if (!acc.has(record.schoolName)) {
+                    acc.set(record.schoolName, []);
+                }
+                acc.get(record.schoolName).push(record);
+                return acc;
+            }, new Map());
+
+            return students.reduce((entries, student) => {
+                if (!student) {
+                    return entries;
+                }
+
+                const runtimeSelected = buildSelectedCoursesFromRuntime(student, {
+                    unitMap,
+                    mappingBySchool
+                });
+
+                const selectedCourses = runtimeSelected.length
+                    ? runtimeSelected
+                    : getStudentDetails(student).selectedCourses;
+
+                const normalizedCourses = Array.isArray(selectedCourses)
+                    ? selectedCourses.reduce((acc, rawCourse) => {
+                        const course = cloneEntity(rawCourse) || {};
+                        const rawProducts = Array.isArray(rawCourse.productCourses)
+                            ? rawCourse.productCourses
+                            : [];
+                        const seenProducts = new Set();
+
+                        // Filter down to unique on-sale product units while hydrating with latest unit data.
+                        const productCourses = rawProducts.reduce((list, rawProduct) => {
+                            if (!rawProduct) {
+                                return list;
+                            }
+
+                            const unitKey = makeUnitKey(rawProduct.school, rawProduct.code);
+                            const unit = unitMap.get(unitKey);
+                            const isOnSale = typeof rawProduct.isOnSale === 'boolean'
+                                ? rawProduct.isOnSale
+                                : Boolean(unit?.isOnSale);
+
+                            if (!isOnSale) {
+                                return list;
+                            }
+
+                            if (seenProducts.has(unitKey)) {
+                                return list;
+                            }
+                            seenProducts.add(unitKey);
+
+                            const productClone = cloneEntity(rawProduct) || {};
+                            productClone.isOnSale = true;
+
+                            if (unit) {
+                                productClone.name = unit.courseName || productClone.name || '';
+                                productClone.school = unit.schoolName || productClone.school || '';
+                                productClone.startDate = unit.startDate || productClone.startDate || '';
+                                productClone.endDate = unit.endDate || productClone.endDate || '';
+                                productClone.modality = unit.courseModality || productClone.modality || '';
+                                productClone.duration = unit.courseDuration || productClone.duration || '';
+                                productClone.classCode = unit.academicTerm || productClone.classCode || '';
+                                productClone.price = unit.coursePrice || productClone.price || '';
+                            }
+
+                            list.push(productClone);
+                            return list;
+                        }, []);
+
+                        if (!productCourses.length) {
+                            return acc;
+                        }
+
+                        course.productCourses = productCourses;
+                        acc.push(course);
+                        return acc;
+                    }, [])
+                    : [];
+
+                if (!normalizedCourses.length) {
+                    return entries;
+                }
+
+                entries.push({
+                    student: {
+                        id: student.id,
+                        name: student.name,
+                        school: student.school,
+                        status: cloneEntity(student.status)
+                    },
+                    courses: normalizedCourses
+                });
+
+                return entries;
+            }, []);
         },
 
         getReports(studentId) {
