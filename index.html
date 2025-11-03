@@ -4698,118 +4698,7 @@
                                                     <th class="action-col">操作</th>
                                                 </tr>
                                             </thead>
-                                            <tbody id="studentFollowTableBody">
-                                                <tr class="student-row">
-                                                    <td><input type="checkbox" class="student-checkbox" value="1"></td>
-                                                    <td class="student-name">张明</td>
-                                                    <td class="school-name">The Pennsylvania State University Park</td>
-                                                    <td class="entry-time">2024-10-15 14:30</td>
-                                                    <td class="next-follow">2024-10-28 10:00</td>
-                                                    <td class="status">
-                                                        <span class="status-badge status-pending">待跟进</span>
-                                                    </td>
-                                                    <td class="wechat-name">明明学习</td>
-                                                    <td class="report-status">
-                                                        <button class="btn-link" onclick="viewReport(1)">查看报告</button>
-                                                    </td>
-                                                    <td class="subscription-info">
-                                                        <button class="btn-link" onclick="viewSubscriptionInfo('张明')">查看订阅信息</button>
-                                                    </td>
-                                                    <td class="actions">
-                                                        <button class="btn-edit" onclick="editStudent(1)" title="编辑">✏️</button>
-                                                        <button class="btn-follow" onclick="addFollowRecord(1)" title="跟进">📝</button>
-                                                        <button class="btn-delete" onclick="deleteStudent(1)" title="删除">🗑️</button>
-                                                    </td>
-                                                </tr>
-                                                <tr class="student-row">
-                                                    <td><input type="checkbox" class="student-checkbox" value="2"></td>
-                                                    <td class="student-name">李小雨</td>
-                                                    <td class="school-name">University of Illinois Urbana-Champaign</td>
-                                                    <td class="entry-time">2024-10-18 09:20</td>
-                                                    <td class="next-follow">2024-10-29 15:30</td>
-                                                    <td class="status">
-                                                        <span class="status-badge status-following">跟进中</span>
-                                                    </td>
-                                                    <td class="wechat-name">雨天学习</td>
-                                                    <td class="report-status">
-                                                        <button class="btn-link" onclick="viewReport(2)">查看报告</button>
-                                                    </td>
-                                                    <td class="subscription-info">
-                                                        <button class="btn-link" onclick="viewSubscriptionInfo('李小雨')">查看订阅信息</button>
-                                                    </td>
-                                                    <td class="actions">
-                                                        <button class="btn-edit" onclick="editStudent(2)" title="编辑">✏️</button>
-                                                        <button class="btn-follow" onclick="addFollowRecord(2)" title="跟进">📝</button>
-                                                        <button class="btn-delete" onclick="deleteStudent(2)" title="删除">🗑️</button>
-                                                    </td>
-                                                </tr>
-                                                <tr class="student-row">
-                                                    <td><input type="checkbox" class="student-checkbox" value="3"></td>
-                                                    <td class="student-name">王晓华</td>
-                                                    <td class="school-name">University of Wisconsin-Madison</td>
-                                                    <td class="entry-time">2024-10-20 16:45</td>
-                                                    <td class="next-follow">2024-10-30 11:00</td>
-                                                    <td class="status">
-                                                        <span class="status-badge status-completed">已完成</span>
-                                                    </td>
-                                                    <td class="wechat-name">小华同学</td>
-                                                    <td class="report-status">
-                                                        <button class="btn-link" onclick="viewReport(3)">查看报告</button>
-                                                    </td>
-                                                    <td class="subscription-info">
-                                                        <button class="btn-link" onclick="viewSubscriptionInfo('王晓华')">查看订阅信息</button>
-                                                    </td>
-                                                    <td class="actions">
-                                                        <button class="btn-edit" onclick="editStudent(3)" title="编辑">✏️</button>
-                                                        <button class="btn-follow" onclick="addFollowRecord(3)" title="跟进">📝</button>
-                                                        <button class="btn-delete" onclick="deleteStudent(3)" title="删除">🗑️</button>
-                                                    </td>
-                                                </tr>
-                                                <tr class="student-row">
-                                                    <td><input type="checkbox" class="student-checkbox" value="4"></td>
-                                                    <td class="student-name">陈思远</td>
-                                                    <td class="school-name">University of California, Davis</td>
-                                                    <td class="entry-time">2024-10-22 13:15</td>
-                                                    <td class="next-follow">2024-10-31 14:00</td>
-                                                    <td class="status">
-                                                        <span class="status-badge status-pending">待跟进</span>
-                                                    </td>
-                                                    <td class="wechat-name">思远学子</td>
-                                                    <td class="report-status">
-                                                        <button class="btn-link" onclick="viewReport(4)">查看报告</button>
-                                                    </td>
-                                                    <td class="subscription-info">
-                                                        <button class="btn-link" onclick="viewSubscriptionInfo('陈思远')">查看订阅信息</button>
-                                                    </td>
-                                                    <td class="actions">
-                                                        <button class="btn-edit" onclick="editStudent(4)" title="编辑">✏️</button>
-                                                        <button class="btn-follow" onclick="addFollowRecord(4)" title="跟进">📝</button>
-                                                        <button class="btn-delete" onclick="deleteStudent(4)" title="删除">🗑️</button>
-                                                    </td>
-                                                </tr>
-                                                <tr class="student-row">
-                                                    <td><input type="checkbox" class="student-checkbox" value="5"></td>
-                                                    <td class="student-name">刘佳妮</td>
-                                                    <td class="school-name">University of California, Los Angeles</td>
-                                                    <td class="entry-time">2024-10-25 10:30</td>
-                                                    <td class="next-follow">2024-11-01 09:30</td>
-                                                    <td class="status">
-                                                        <span class="status-badge status-following">跟进中</span>
-                                                    </td>
-                                                    <td class="wechat-name">佳妮加油</td>
-                                                    <td class="report-status">
-                                                        <button class="btn-link" onclick="viewReport(5)">查看报告</button>
-                                                    </td>
-                                                    <td class="subscription-info">
-                                                        <button class="btn-link" onclick="viewSubscriptionInfo('刘佳妮')">查看订阅信息</button>
-                                                    </td>
-                                                    <td class="actions">
-                                                        <button class="btn-edit" onclick="editStudent(5)" title="编辑">✏️</button>
-                                                        <button class="btn-follow" onclick="addFollowRecord(5)" title="跟进">📝</button>
-                                                        <button class="btn-delete" onclick="deleteStudent(5)" title="删除">🗑️</button>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
+                                            <tbody id="studentFollowTableBody"></tbody>
                                         </table>
                                     </div>
                                     
@@ -4957,147 +4846,10 @@
                                     <th>课程名称</th>
                                     <th>本校通识类别</th>
                                     <th>课程对应</th>
-                                    <th>课程类型</th>
                                     <th>对应在售课程单元</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
-                                    <td class="course-code-cell">MATH 21A</td>
-                                    <td class="course-name-cell">Multivariable Calculus</td>
-                                    <td class="general-category-cell">数学与逻辑推理</td>
-                                    <td class="correspondence-cell correspondence-available">对应(20)</td>
-                                    <td><span class="course-type-badge type-lecture">Lecture</span></td>
-                                    <td class="available-units-cell units-available">可售(153)</td>
-                                </tr>
-                                <tr>
-                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
-                                    <td class="course-code-cell">CHEM 17</td>
-                                    <td class="course-name-cell">Principles of General Chemistry</td>
-                                    <td class="general-category-cell">自然科学</td>
-                                    <td class="correspondence-cell correspondence-available">对应(15)</td>
-                                    <td><span class="course-type-badge type-lecture">Lecture</span></td>
-                                    <td class="available-units-cell units-available">可售(87)</td>
-                                </tr>
-                                <tr>
-                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
-                                    <td class="course-code-cell">CHEM 17L</td>
-                                    <td class="course-name-cell">General Chemistry Laboratory</td>
-                                    <td class="general-category-cell">自然科学</td>
-                                    <td class="correspondence-cell correspondence-available">对应(6)</td>
-                                    <td><span class="course-type-badge type-lab">Lab</span></td>
-                                    <td class="available-units-cell units-available">可售(45)</td>
-                                </tr>
-                                <tr>
-                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
-                                    <td class="course-code-cell">PSYC 1</td>
-                                    <td class="course-name-cell">Introduction to Psychology</td>
-                                    <td class="general-category-cell">社会科学</td>
-                                    <td class="correspondence-cell correspondence-available">对应(12)</td>
-                                    <td><span class="course-type-badge type-lecture">Lecture</span></td>
-                                    <td class="available-units-cell units-available">可售(92)</td>
-                                </tr>
-                                <tr>
-                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
-                                    <td class="course-code-cell">ENGL 10A</td>
-                                    <td class="course-name-cell">Expository Writing</td>
-                                    <td class="general-category-cell">语言文学</td>
-                                    <td class="correspondence-cell correspondence-available">对应(8)</td>
-                                    <td><span class="course-type-badge type-studio">Studio</span></td>
-                                    <td class="available-units-cell units-available">可售(67)</td>
-                                </tr>
-                                <tr>
-                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
-                                    <td class="course-code-cell">PHIL 144</td>
-                                    <td class="course-name-cell">Philosophy of Mind</td>
-                                    <td class="general-category-cell">哲学思辨</td>
-                                    <td class="correspondence-cell correspondence-none">暂无</td>
-                                    <td><span class="course-type-badge type-lecture">Lecture</span></td>
-                                    <td class="available-units-cell units-none">暂无可售</td>
-                                </tr>
-                                <tr>
-                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
-                                    <td class="course-code-cell">STAT 104</td>
-                                    <td class="course-name-cell">Introduction to Statistics</td>
-                                    <td class="general-category-cell">数学与逻辑推理</td>
-                                    <td class="correspondence-cell correspondence-available">对应(18)</td>
-                                    <td><span class="course-type-badge type-lecture">Lecture</span></td>
-                                    <td class="available-units-cell units-available">可售(124)</td>
-                                </tr>
-                                <tr>
-                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
-                                    <td class="course-code-cell">HIST 1430</td>
-                                    <td class="course-name-cell">The United States in the World</td>
-                                    <td class="general-category-cell">历史文化</td>
-                                    <td class="correspondence-cell correspondence-available">对应(10)</td>
-                                    <td><span class="course-type-badge type-lecture">Lecture</span></td>
-                                    <td class="available-units-cell units-available">可售(73)</td>
-                                </tr>
-                                <tr>
-                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
-                                    <td class="course-code-cell">VES 10A</td>
-                                    <td class="course-name-cell">Drawing I</td>
-                                    <td class="general-category-cell">艺术审美</td>
-                                    <td class="correspondence-cell correspondence-available">对应(4)</td>
-                                    <td><span class="course-type-badge type-studio">Studio</span></td>
-                                    <td class="available-units-cell units-available">可售(28)</td>
-                                </tr>
-                                <tr>
-                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
-                                    <td class="course-code-cell">ECON 10A</td>
-                                    <td class="course-name-cell">Principles of Economics</td>
-                                    <td class="general-category-cell">社会科学</td>
-                                    <td class="correspondence-cell correspondence-available">对应(25)</td>
-                                    <td><span class="course-type-badge type-lecture">Lecture</span></td>
-                                    <td class="available-units-cell units-available">可售(156)</td>
-                                </tr>
-                                <tr>
-                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
-                                    <td class="course-code-cell">BIOL 50</td>
-                                    <td class="course-name-cell">Introductory Biology</td>
-                                    <td class="general-category-cell">自然科学</td>
-                                    <td class="correspondence-cell correspondence-available">对应(14)</td>
-                                    <td><span class="course-type-badge type-lecture">Lecture</span></td>
-                                    <td class="available-units-cell units-available">可售(98)</td>
-                                </tr>
-                                <tr>
-                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
-                                    <td class="course-code-cell">BIOL 50L</td>
-                                    <td class="course-name-cell">Introductory Biology Laboratory</td>
-                                    <td class="general-category-cell">自然科学</td>
-                                    <td class="correspondence-cell correspondence-available">对应(6)</td>
-                                    <td><span class="course-type-badge type-lab">Lab</span></td>
-                                    <td class="available-units-cell units-available">可售(42)</td>
-                                </tr>
-                                <tr>
-                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
-                                    <td class="course-code-cell">GENED 1001</td>
-                                    <td class="course-name-cell">Stories from the End of the World</td>
-                                    <td class="general-category-cell">跨学科研究</td>
-                                    <td class="correspondence-cell correspondence-none">暂无</td>
-                                    <td><span class="course-type-badge type-lecture">Lecture</span></td>
-                                    <td class="available-units-cell units-none">暂无可售</td>
-                                </tr>
-                                <tr>
-                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
-                                    <td class="course-code-cell">CS 50</td>
-                                    <td class="course-name-cell">Introduction to Computer Science</td>
-                                    <td class="general-category-cell">计算思维</td>
-                                    <td class="correspondence-cell correspondence-available">对应(22)</td>
-                                    <td><span class="course-type-badge type-lecture">Lecture</span></td>
-                                    <td class="available-units-cell units-available">可售(189)</td>
-                                </tr>
-                                <tr>
-                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
-                                    <td class="course-code-cell">PHYS 11</td>
-                                    <td class="course-name-cell">Mechanics and Relativity</td>
-                                    <td class="general-category-cell">自然科学</td>
-                                    <td class="correspondence-cell correspondence-available">对应(16)</td>
-                                    <td><span class="course-type-badge type-lecture">Lecture</span></td>
-                                    <td class="available-units-cell units-available">可售(76)</td>
-                                </tr>
-                            </tbody>
+                            <tbody id="autonomousCourseTableBody"></tbody>
                         </table>
                     </div>
                 </div>
@@ -5121,172 +4873,19 @@
                                     <th>课程时长</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <!-- MATH 21A 对应的多门产品课程 -->
-                                <tr>
-                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
-                                    <td class="home-course-cell merged-cell" rowspan="2">MATH 21A</td>
-                                    <td class="merged-cell" rowspan="2"><span class="course-category-badge category-required">专业必修课</span></td>
-                                    <td class="merged-cell status-serving" rowspan="2">服务中</td>
-                                    <td class="merged-cell" rowspan="2"><span class="audit-status-text audit-ai-passed">AI审核通过</span></td>
-                                    <td class="product-course-cell">
-                                        <span class="product-course-code">MATH 2210</span>
-                                        <span class="product-course-name">Multivariable Calculus</span>
-                                    </td>
-                                    <td class="product-school-cell">University of Toronto</td>
-                                    <td class="date-cell">2025-10-20~2025-12-13</td>
-                                    <td class="price-cell">1500美元</td>
-                                    <td class="code-cell">001</td>
-                                    <td class="duration-cell">8周</td>
-                                </tr>
-                                <tr>
-                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
-                                    <td class="product-course-cell">
-                                        <span class="product-course-code">MATH 264</span>
-                                        <span class="product-course-name">Vector Calculus</span>
-                                    </td>
-                                    <td class="product-school-cell">McGill University</td>
-                                    <td class="date-cell">2025-11-05~2025-12-28</td>
-                                    <td class="price-cell">1380美元</td>
-                                    <td class="code-cell">002</td>
-                                    <td class="duration-cell">8周</td>
-                                </tr>
-                                
-                                <!-- CHEM 17 单门产品课程 -->
-                                <tr>
-                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
-                                    <td class="home-course-cell">CHEM 17</td>
-                                    <td><span class="course-category-badge category-required">专业必修课</span></td>
-                                    <td class="status-potential">潜在价值</td>
-                                    <td><span class="audit-status-text audit-not-submitted">未提交审核</span></td>
-                                    <td class="product-course-cell">
-                                        <span class="product-course-code">CHEM 1000</span>
-                                        <span class="product-course-name">Chemical Principles</span>
-                                    </td>
-                                    <td class="product-school-cell">University of British Columbia</td>
-                                    <td class="date-cell">2025-11-12~2026-02-15</td>
-                                    <td class="price-cell">1680美元</td>
-                                    <td class="code-cell">003</td>
-                                    <td class="duration-cell">14周</td>
-                                </tr>
-                                
-                                <!-- PSYC 1 对应的三门产品课程 -->
-                                <tr>
-                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
-                                    <td class="home-course-cell merged-cell" rowspan="3">PSYC 1</td>
-                                    <td class="merged-cell" rowspan="3"><span class="course-category-badge category-general">通识课</span></td>
-                                    <td class="merged-cell status-serving" rowspan="3">服务中</td>
-                                    <td class="merged-cell" rowspan="3"><span class="audit-status-text audit-ai-passed">AI审核通过</span></td>
-                                    <td class="product-course-cell">
-                                        <span class="product-course-code">PSYC 100</span>
-                                        <span class="product-course-name">Introduction to Psychology</span>
-                                    </td>
-                                    <td class="product-school-cell">Stanford University</td>
-                                    <td class="date-cell">2025-10-28~2025-12-20</td>
-                                    <td class="price-cell">1420美元</td>
-                                    <td class="code-cell">004</td>
-                                    <td class="duration-cell">8周</td>
-                                </tr>
-                                <tr>
-                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
-                                    <td class="product-course-cell">
-                                        <span class="product-course-code">PSYC 1001</span>
-                                        <span class="product-course-name">Psychology Fundamentals</span>
-                                    </td>
-                                    <td class="product-school-cell">University of Toronto</td>
-                                    <td class="date-cell">2025-11-15~2026-01-10</td>
-                                    <td class="price-cell">1350美元</td>
-                                    <td class="code-cell">005</td>
-                                    <td class="duration-cell">8周</td>
-                                </tr>
-                                <tr>
-                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
-                                    <td class="product-course-cell">
-                                        <span class="product-course-code">PSYC 101</span>
-                                        <span class="product-course-name">Basic Psychology</span>
-                                    </td>
-                                    <td class="product-school-cell">McGill University</td>
-                                    <td class="date-cell">2025-12-01~2026-01-25</td>
-                                    <td class="price-cell">1290美元</td>
-                                    <td class="code-cell">006</td>
-                                    <td class="duration-cell">8周</td>
-                                </tr>
-                                
-                                <!-- ENGL 10A 单门产品课程 -->
-                                <tr>
-                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
-                                    <td class="home-course-cell">ENGL 10A</td>
-                                    <td><span class="course-category-badge category-elective">专业选修课</span></td>
-                                    <td class="status-potential">潜在价值</td>
-                                    <td><span class="audit-status-text audit-ai-rejected">AI审核驳回</span></td>
-                                    <td class="product-course-cell">
-                                        <span class="product-course-code">ENGL 1100</span>
-                                        <span class="product-course-name">Academic Writing</span>
-                                    </td>
-                                    <td class="product-school-cell">University of British Columbia</td>
-                                    <td class="date-cell">2025-11-20~2026-01-15</td>
-                                    <td class="price-cell">1200美元</td>
-                                    <td class="code-cell">007</td>
-                                    <td class="duration-cell">8周</td>
-                                </tr>
-                                
-                                <!-- STAT 104 对应的两门产品课程 -->
-                                <tr>
-                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
-                                    <td class="home-course-cell merged-cell" rowspan="2">STAT 104</td>
-                                    <td class="merged-cell" rowspan="2"><span class="course-category-badge category-free">自由选修课</span></td>
-                                    <td class="merged-cell status-serving" rowspan="2">服务中</td>
-                                    <td class="merged-cell" rowspan="2"><span class="audit-status-text audit-ai-passed">AI审核通过</span></td>
-                                    <td class="product-course-cell">
-                                        <span class="product-course-code">STAT 2040</span>
-                                        <span class="product-course-name">Statistics for Scientists</span>
-                                    </td>
-                                    <td class="product-school-cell">University of Toronto</td>
-                                    <td class="date-cell">2025-10-15~2025-12-10</td>
-                                    <td class="price-cell">1600美元</td>
-                                    <td class="code-cell">008</td>
-                                    <td class="duration-cell">8周</td>
-                                </tr>
-                                <tr>
-                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
-                                    <td class="product-course-cell">
-                                        <span class="product-course-code">MATH 204</span>
-                                        <span class="product-course-name">Probability and Statistics</span>
-                                    </td>
-                                    <td class="product-school-cell">McGill University</td>
-                                    <td class="date-cell">2025-11-01~2025-12-24</td>
-                                    <td class="price-cell">1450美元</td>
-                                    <td class="code-cell">009</td>
-                                    <td class="duration-cell">8周</td>
-                                </tr>
-                                
-                                <!-- CS 50 单门产品课程 -->
-                                <tr>
-                                    <td class="checkbox-cell"><input type="checkbox" class="course-checkbox" /></td>
-                                    <td class="home-course-cell">CS 50</td>
-                                    <td><span class="course-category-badge category-elective">专业选修课</span></td>
-                                    <td class="status-serving">服务中</td>
-                                    <td><span class="audit-status-text audit-ai-passed">AI审核通过</span></td>
-                                    <td class="product-course-cell">
-                                        <span class="product-course-code">CPSC 110</span>
-                                        <span class="product-course-name">Computation, Programs, and Programming</span>
-                                    </td>
-                                    <td class="product-school-cell">University of British Columbia</td>
-                                    <td class="date-cell">2025-12-05~2026-02-28</td>
-                                    <td class="price-cell">1800美元</td>
-                                    <td class="code-cell">010</td>
-                                    <td class="duration-cell">12周</td>
-                                </tr>
-                            </tbody>
+                            <tbody id="selectedCoursesTableBody"></tbody>
                         </table>
                     </div>
                 </div>
                 
                 <!-- 选课报告管理 -->
                 <div id="report-management" class="analysis-tab-content">
-                    <div class="content-placeholder">
-                        <h3>选课报告管理</h3>
-                        <p>生成、查看和管理学生的选课分析报告</p>
+                    <div class="report-management-container">
+                        <div class="report-list-header">
+                            <h3>选课报告管理</h3>
+                            <p>生成、查看和管理学生的选课分析报告</p>
+                        </div>
+                        <div id="reportListContainer" class="report-card-list"></div>
                     </div>
                 </div>
                 
@@ -5326,363 +4925,7 @@
                             <button class="filter-reset-btn" onclick="resetSubscriptionFilters()">重置</button>
                         </div>
                         
-                        <div class="subscription-cards-container">
-                            <!-- 等待上架状态 -->
-                            <div class="subscription-card" id="card-waiting" data-status="waiting">
-                                <div class="card-header">
-                                    <div class="course-main-info">
-                                        <h3 class="course-title">CHEM 1000</h3>
-                                        <p class="course-subtitle">Chemical Principles</p>
-                                        <p class="university-name">University of British Columbia</p>
-                                    </div>
-                                    <div class="subscription-type-badge type-product">产品课程</div>
-                                </div>
-                                
-                                <div class="card-body">
-                                    <div class="status-section">
-                                        <div class="status-badge status-waiting">
-                                            <span class="status-icon">⏳</span>
-                                            <span class="status-text">等待上架</span>
-                                        </div>
-                                        <div class="deadline-info urgent">
-                                            <span class="deadline-label">截止时间</span>
-                                            <span class="deadline-date">2025-11-05</span>
-                                            <span class="deadline-warning">⚠️ 剩7天</span>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="subscription-summary">
-                                        <span class="summary-text">2025-Winter, 线下</span>
-                                        <button class="details-toggle" onclick="toggleDetails('card-waiting')">查看详情</button>
-                                    </div>
-                                    
-                                    <div class="subscription-details" style="display: none;">
-                                        <div class="detail-item">
-                                            <span class="detail-label">学期：</span>
-                                            <span class="detail-value">2025-Winter</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">上课形式：</span>
-                                            <span class="detail-value">线下</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">时长：</span>
-                                            <span class="detail-value">12-16周</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">价格：</span>
-                                            <span class="detail-value">≤2000美元</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">创建日期：</span>
-                                            <span class="detail-value">2025-08-15</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="card-actions">
-                                    <button class="btn-edit">编辑条件</button>
-                                    <button class="btn-renew">续期</button>
-                                    <button class="btn-destructive">取消订阅</button>
-                                </div>
-                            </div>
-
-                            <!-- 已匹配状态 -->
-                            <div class="subscription-card" id="card-matched" data-status="matched">
-                                <div class="card-header">
-                                    <div class="course-main-info">
-                                        <h3 class="course-title">MATH 2210</h3>
-                                        <p class="course-subtitle">Multivariable Calculus</p>
-                                        <p class="university-name">University of Toronto</p>
-                                    </div>
-                                    <div class="subscription-type-badge type-product">产品课程</div>
-                                </div>
-                                
-                                <div class="card-body">
-                                    <div class="status-section">
-                                        <div class="status-badge status-matched">
-                                            <span class="status-icon">✅</span>
-                                            <span class="status-text">已匹配</span>
-                                        </div>
-                                        <div class="deadline-info">
-                                            <span class="deadline-label">截止时间</span>
-                                            <span class="deadline-date">2025-12-15</span>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="subscription-summary">
-                                        <span class="summary-text">2025-Fall, 线上直播</span>
-                                        <button class="details-toggle" onclick="toggleDetails(this)">查看详情</button>
-                                    </div>
-                                    
-                                    <div class="subscription-details" style="display: none;">
-                                        <div class="detail-item">
-                                            <span class="detail-label">学期：</span>
-                                            <span class="detail-value">2025-Fall</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">上课形式：</span>
-                                            <span class="detail-value">线上直播</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">时长：</span>
-                                            <span class="detail-value">≥8周</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">价格：</span>
-                                            <span class="detail-value">≤1600美元</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">创建日期：</span>
-                                            <span class="detail-value">2025-09-10</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="card-actions">
-                                    <button class="btn-primary-action">跳转选课</button>
-                                    <button class="btn-view">查看匹配课程</button>
-                                </div>
-                            </div>
-
-                            <!-- 已通知状态 -->
-                            <div class="subscription-card" id="card-notified" data-status="notified">
-                                <div class="card-header">
-                                    <div class="course-main-info">
-                                        <h3 class="course-title">PSYC 1</h3>
-                                        <p class="course-subtitle">Introduction to Psychology</p>
-                                        <p class="university-name">Harvard University</p>
-                                    </div>
-                                    <div class="subscription-type-badge type-home">本校课程</div>
-                                </div>
-                                
-                                <div class="card-body">
-                                    <div class="status-section">
-                                        <div class="status-badge status-notified">
-                                            <span class="status-icon">📧</span>
-                                            <span class="status-text">已通知</span>
-                                        </div>
-                                        <div class="deadline-info">
-                                            <span class="deadline-label">截止时间</span>
-                                            <span class="deadline-date">2025-12-20</span>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="subscription-summary">
-                                        <span class="summary-text">任意学期, 不限形式</span>
-                                        <button class="details-toggle" onclick="toggleDetails(this)">查看详情</button>
-                                    </div>
-                                    
-                                    <div class="subscription-details" style="display: none;">
-                                        <div class="detail-item">
-                                            <span class="detail-label">学期：</span>
-                                            <span class="detail-value">任意学期</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">上课形式：</span>
-                                            <span class="detail-value">不限</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">时长：</span>
-                                            <span class="detail-value">不限</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">价格：</span>
-                                            <span class="detail-value">≤1500美元</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">创建日期：</span>
-                                            <span class="detail-value">2025-07-20</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="card-actions">
-                                    <button class="btn-primary-action">跳转选课</button>
-                                    <button class="btn-view">查看匹配课程</button>
-                                    <button class="btn-view">查看通知详情</button>
-                                </div>
-                            </div>
-
-                            <!-- 已查看状态 -->
-                            <div class="subscription-card" id="card-viewed" data-status="viewed">
-                                <div class="card-header">
-                                    <div class="course-main-info">
-                                        <h3 class="course-title">ENGL 1100</h3>
-                                        <p class="course-subtitle">Academic Writing</p>
-                                        <p class="university-name">University of British Columbia</p>
-                                    </div>
-                                    <div class="subscription-type-badge type-product">产品课程</div>
-                                </div>
-                                
-                                <div class="card-body">
-                                    <div class="status-section">
-                                        <div class="status-badge status-viewed">
-                                            <span class="status-icon">👁️</span>
-                                            <span class="status-text">已查看</span>
-                                        </div>
-                                        <div class="deadline-info">
-                                            <span class="deadline-label">截止时间</span>
-                                            <span class="deadline-date">2025-11-30</span>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="subscription-summary">
-                                        <span class="summary-text">2025-Fall, 任意形式</span>
-                                        <button class="details-toggle" onclick="toggleDetails(this)">查看详情</button>
-                                    </div>
-                                    
-                                    <div class="subscription-details" style="display: none;">
-                                        <div class="detail-item">
-                                            <span class="detail-label">学期：</span>
-                                            <span class="detail-value">2025-Fall</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">上课形式：</span>
-                                            <span class="detail-value">任意</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">时长：</span>
-                                            <span class="detail-value">≥6周</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">价格：</span>
-                                            <span class="detail-value">≤1200美元</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">创建日期：</span>
-                                            <span class="detail-value">2025-08-25</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="card-actions">
-                                    <button class="btn-primary-action">跳转选课</button>
-                                    <button class="btn-view">查看匹配课程</button>
-                                </div>
-                            </div>
-
-                            <!-- 已转化状态 -->
-                            <div class="subscription-card" id="card-converted" data-status="converted">
-                                <div class="card-header">
-                                    <div class="course-main-info">
-                                        <h3 class="course-title">CS 50</h3>
-                                        <p class="course-subtitle">Introduction to Computer Science</p>
-                                        <p class="university-name">Harvard University</p>
-                                    </div>
-                                    <div class="subscription-type-badge type-home">本校课程</div>
-                                </div>
-                                
-                                <div class="card-body">
-                                    <div class="status-section">
-                                        <div class="status-badge status-converted">
-                                            <span class="status-icon">🎉</span>
-                                            <span class="status-text">已转化</span>
-                                        </div>
-                                        <div class="deadline-info">
-                                            <span class="deadline-label">截止时间</span>
-                                            <span class="deadline-date">2025-10-15</span>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="subscription-summary">
-                                        <span class="summary-text">2025-Spring, 线上非直播</span>
-                                        <button class="details-toggle" onclick="toggleDetails(this)">查看详情</button>
-                                    </div>
-                                    
-                                    <div class="subscription-details" style="display: none;">
-                                        <div class="detail-item">
-                                            <span class="detail-label">学期：</span>
-                                            <span class="detail-value">2025-Spring</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">上课形式：</span>
-                                            <span class="detail-value">线上非直播</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">时长：</span>
-                                            <span class="detail-value">8-12周</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">价格：</span>
-                                            <span class="detail-value">≤1800美元</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">学分：</span>
-                                            <span class="detail-value">≥3学分</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">创建日期：</span>
-                                            <span class="detail-value">2025-06-15</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="card-actions">
-                                    <div class="completion-note">
-                                        <span class="completion-icon">✅</span>
-                                        <span class="completion-text">订阅已完成</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- 已过期状态 -->
-                            <div class="subscription-card" id="card-expired" data-status="expired">
-                                <div class="card-header">
-                                    <div class="course-main-info">
-                                        <h3 class="course-title">STAT 2040</h3>
-                                        <p class="course-subtitle">Statistics for Scientists</p>
-                                        <p class="university-name">University of Toronto</p>
-                                    </div>
-                                    <div class="subscription-type-badge type-product">产品课程</div>
-                                </div>
-                                
-                                <div class="card-body">
-                                    <div class="status-section">
-                                        <div class="status-badge status-expired">
-                                            <span class="status-icon">⏰</span>
-                                            <span class="status-text">已过期</span>
-                                        </div>
-                                        <div class="deadline-info expired">
-                                            <span class="deadline-label">截止时间</span>
-                                            <span class="deadline-date">2025-10-28</span>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="subscription-summary">
-                                        <span class="summary-text">2025-Fall, 线上直播</span>
-                                        <button class="details-toggle" onclick="toggleDetails(this)">查看详情</button>
-                                    </div>
-                                    
-                                    <div class="subscription-details" style="display: none;">
-                                        <div class="detail-item">
-                                            <span class="detail-label">学期：</span>
-                                            <span class="detail-value">2025-Fall</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">上课形式：</span>
-                                            <span class="detail-value">线上直播</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">时长：</span>
-                                            <span class="detail-value">8周</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">价格：</span>
-                                            <span class="detail-value">≤1600美元</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">创建日期：</span>
-                                            <span class="detail-value">2025-05-15</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="card-actions">
-                                    <button class="btn-renew">续期</button>
-                                </div>
-                            </div>
-                        </div>
+                        <div class="subscription-cards-container" id="subscriptionCardsContainer"></div>
                     </div>
                 </div>
             </div>
@@ -5973,7 +5216,10 @@
                 <button type="button" class="btn btn-save" onclick="submitSubscribe()">确认订阅</button>
             </div>
         </div>
-    </div>    <script>
+    </div>
+    <script src="data/students.js"></script>
+    <script src="scripts/studentRepository.js"></script>
+    <script>
 
         
         // 顶部导航标签切换
@@ -6657,7 +5903,8 @@
         }
         
         function refreshStudents() {
-            alert('数据已刷新');
+            renderStudentFollowTable();
+            alert('学生列表已刷新');
         }
         
         function searchStudents() {
@@ -6693,78 +5940,6 @@
             }
         }
         
-        function viewReport(studentId) {
-            // 获取学生信息
-            const studentRow = document.querySelector(`input[value="${studentId}"]`).closest('.student-row');
-            const studentName = studentRow.querySelector('.student-name').textContent;
-            const studentSchool = studentRow.querySelector('.school-name').textContent;
-            
-            // 存储当前学生信息到全局变量
-            window.currentStudentInfo = {
-                id: studentId,
-                name: studentName,
-                school: studentSchool
-            };
-            
-            // 更新分析页面标题
-            document.getElementById('student-analysis-title').textContent = `${studentName} - 学生选课分析`;
-            
-            // 立即更新学生档案数据
-            updateStudentProfileData();
-            
-            // 隐藏主页面，显示分析页面
-            document.querySelector('.main-layout').style.display = 'none';
-            document.getElementById('student-analysis-page').style.display = 'block';
-        }
-        
-        // 查看订阅信息功能
-        function viewSubscriptionInfo(studentName) {
-            // 获取学生行信息
-            const studentRows = document.querySelectorAll('.student-row');
-            let studentInfo = null;
-            
-            for (let row of studentRows) {
-                if (row.querySelector('.student-name').textContent === studentName) {
-                    studentInfo = {
-                        name: studentName,
-                        school: row.querySelector('.school-name').textContent,
-                        id: row.querySelector('.student-checkbox').value
-                    };
-                    break;
-                }
-            }
-            
-            if (studentInfo) {
-                // 存储当前学生信息到全局变量
-                window.currentStudentInfo = studentInfo;
-                
-                // 更新分析页面标题
-                document.getElementById('student-analysis-title').textContent = `${studentName} - 学生选课分析`;
-                
-                // 隐藏主页面，显示分析页面
-                document.querySelector('.main-layout').style.display = 'none';
-                document.getElementById('student-analysis-page').style.display = 'block';
-                
-                // 直接切换到课程订阅中心tab
-                const subscriptionTab = document.querySelector('[data-target="subscription-info"]');
-                if (subscriptionTab) {
-                    // 移除所有tab的active状态
-                    document.querySelectorAll('.analysis-tab-btn').forEach(tab => {
-                        tab.classList.remove('active');
-                    });
-                    
-                    // 隐藏所有tab内容
-                    document.querySelectorAll('.analysis-tab-content').forEach(content => {
-                        content.classList.remove('active');
-                    });
-                    
-                    // 激活订阅中心tab
-                    subscriptionTab.classList.add('active');
-                    document.getElementById('subscription-info').classList.add('active');
-                }
-            }
-        }
-        
         // 搜索框回车事件
         document.getElementById('studentSearch').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
@@ -6774,6 +5949,7 @@
         
         // 返回学生跟进页面
         function backToStudentFollow() {
+            StudentAnalysisController.setCurrentStudent(null);
             document.getElementById('student-analysis-page').style.display = 'none';
             document.querySelector('.main-layout').style.display = 'block';
         }
@@ -6953,51 +6129,1135 @@
         
         // 学生选课分析页面Tab切换功能
         document.addEventListener('DOMContentLoaded', function() {
-            // 绑定分析页面Tab切换事件
+            renderStudentFollowTable();
+            updateBatchSubscribeButton();
+
             const analysisTabBtns = document.querySelectorAll('.analysis-tab-btn');
             analysisTabBtns.forEach(btn => {
                 btn.addEventListener('click', function() {
-                    // 移除所有active状态
-                    analysisTabBtns.forEach(b => b.classList.remove('active'));
-                    document.querySelectorAll('.analysis-tab-content').forEach(content => {
-                        content.classList.remove('active');
-                    });
-                    
-                    // 添加当前选中的active状态
-                    this.classList.add('active');
                     const target = this.getAttribute('data-target');
-                    document.getElementById(target).classList.add('active');
-                    
-                    // 如果切换到学生档案页面，更新学生信息
-                    if (target === 'student-profile') {
-                        updateStudentProfileData();
-                    }
-                    
-                    // 如果切换到自主选课页面，部署订阅功能
-                    if (target === 'autonomous-selection') {
-                        initAutonomousSelectionSubscription();
+                    activateAnalysisTab(target);
+
+                    switch (target) {
+                        case 'student-profile':
+                            renderStudentProfileSection();
+                            break;
+                        case 'autonomous-selection':
+                            renderAutonomousSelectionSection();
+                            break;
+                        case 'selected-courses':
+                            renderSelectedCoursesSection();
+                            break;
+                        case 'report-management':
+                            renderReportSection();
+                            break;
+                        case 'subscription-info':
+                            renderSubscriptionSection();
+                            break;
+                        default:
+                            break;
                     }
                 });
             });
-            
-            // 初始化文件上传功能
+
             initFileUpload();
-            
-            // 初始化学生档案表单
             initStudentProfileForm();
-            
-            // 页面加载时检查是否需要更新学生档案数据
-            updateStudentProfileData();
-            
-            // 如果当前页面显示的是自主选课，初始化订阅功能
-            setTimeout(() => {
-                const autonomousSection = document.getElementById('autonomous-selection');
-                if (autonomousSection && autonomousSection.classList.contains('active')) {
-                    initAutonomousSelectionSubscription();
-                }
-            }, 500); // 延迟确保DOM完全加载
+            renderStudentProfileSection();
         });
         
+        const StudentRuntimeStore = (() => {
+            const profileOverrides = new Map();
+
+            return {
+                setProfile(studentId, profile) {
+                    if (!studentId || !profile) {
+                        return;
+                    }
+                    const key = String(studentId);
+                    profileOverrides.set(key, {
+                        creditTransfer: profile.creditTransfer || 'yes',
+                        coursePurpose: Array.isArray(profile.coursePurpose) ? [...profile.coursePurpose] : []
+                    });
+                },
+                getMergedProfile(studentId, baseProfile = {}) {
+                    if (!studentId) {
+                        return { ...baseProfile };
+                    }
+                    const key = String(studentId);
+                    const override = profileOverrides.get(key);
+                    if (!override) {
+                        return { ...baseProfile };
+                    }
+                    const merged = { ...baseProfile };
+                    if (override.creditTransfer) {
+                        merged.creditTransfer = override.creditTransfer;
+                    }
+                    if (override.coursePurpose && override.coursePurpose.length > 0) {
+                        merged.coursePurpose = [...override.coursePurpose];
+                    }
+                    return merged;
+                }
+            };
+        })();
+
+        function activateAnalysisTab(targetId) {
+            const tabButtons = document.querySelectorAll('.analysis-tab-btn');
+            const tabContents = document.querySelectorAll('.analysis-tab-content');
+
+            tabButtons.forEach(btn => {
+                const isActive = btn.getAttribute('data-target') === targetId;
+                if (isActive) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            tabContents.forEach(content => {
+                if (content.id === targetId) {
+                    content.classList.add('active');
+                } else {
+                    content.classList.remove('active');
+                }
+            });
+        }
+
+        function resetAnalysisTabs(defaultTabId = 'student-profile') {
+            activateAnalysisTab(defaultTabId);
+        }
+
+        function clearUploadedFileState() {
+            uploadedFiles = [];
+            updateUploadedFilesList();
+            const fileInput = document.getElementById('graduationReqFile');
+            if (fileInput) {
+                fileInput.value = '';
+            }
+        }
+
+        function resetModalState() {
+            if (typeof closeSingleCourseModal === 'function') {
+                closeSingleCourseModal();
+            }
+            if (typeof closeSubscribeModal === 'function') {
+                closeSubscribeModal();
+            }
+            window.currentBatchContext = null;
+            window.currentSubscribeButton = null;
+            window.currentSingleCourseData = null;
+        }
+
+        function resetIndependentForms() {
+            const subscribeForm = document.getElementById('subscribeForm');
+            if (subscribeForm) {
+                subscribeForm.reset();
+            }
+            const courseItems = document.getElementById('courseItems');
+            if (courseItems) {
+                courseItems.innerHTML = '';
+            }
+        }
+
+        const StudentAnalysisController = (() => {
+            let currentStudent = null;
+            let refreshPending = false;
+
+            function updateTitle() {
+                const titleEl = document.getElementById('student-analysis-title');
+                if (!titleEl) {
+                    return;
+                }
+                if (currentStudent) {
+                    titleEl.textContent = `${currentStudent.name} - 学生选课分析`;
+                } else {
+                    titleEl.textContent = '学生选课分析';
+                }
+            }
+
+            function refreshCurrentStudent() {
+                if (!currentStudent) {
+                    return;
+                }
+                renderStudentProfileSection();
+                renderAutonomousSelectionSection();
+                renderSelectedCoursesSection();
+                renderSubscriptionSection();
+                renderReportSection();
+            }
+
+            function scheduleRefresh() {
+                if (refreshPending) {
+                    return;
+                }
+                refreshPending = true;
+                requestAnimationFrame(() => {
+                    refreshPending = false;
+                    refreshCurrentStudent();
+                });
+            }
+
+            return {
+                setCurrentStudent(student, options = {}) {
+                    currentStudent = student
+                        ? {
+                            id: student.id,
+                            name: student.name,
+                            school: student.school
+                        }
+                        : null;
+
+                    window.currentStudentInfo = currentStudent ? { ...currentStudent } : null;
+                    resetAnalysisTabs(options.activeTab || 'student-profile');
+                    clearUploadedFileState();
+                    resetModalState();
+                    resetIndependentForms();
+                    updateTitle();
+
+                    if (currentStudent) {
+                        refreshCurrentStudent();
+                    }
+                },
+                refreshCurrentStudent,
+                scheduleRefresh,
+                notifyDataChanged() {
+                    scheduleRefresh();
+                },
+                getCurrentStudent() {
+                    return currentStudent ? { ...currentStudent } : null;
+                }
+            };
+        })();
+
+        function renderStudentProfileSection() {
+            const profileForm = document.getElementById('studentProfileForm');
+            if (!profileForm) {
+                return;
+            }
+
+            const nameInput = document.getElementById('studentName');
+            const schoolInput = document.getElementById('studentSchool');
+            const creditYes = document.getElementById('creditTransferYes');
+            const creditNo = document.getElementById('creditTransferNo');
+            const purposeInputs = profileForm.querySelectorAll('input[name="coursePurpose"]');
+
+            const student = StudentAnalysisController.getCurrentStudent();
+            if (!student) {
+                if (nameInput) nameInput.value = '';
+                if (schoolInput) schoolInput.value = '';
+                if (creditYes) creditYes.checked = true;
+                if (creditNo) creditNo.checked = false;
+                purposeInputs.forEach(input => {
+                    input.checked = false;
+                });
+                return;
+            }
+
+            if (nameInput) nameInput.value = student.name || '';
+            if (schoolInput) schoolInput.value = student.school || '';
+
+            const repository = window.StudentRepository;
+            if (!repository || typeof repository.getStudentProfile !== 'function') {
+                return;
+            }
+
+            const profileRecord = repository.getStudentProfile(student.id);
+            const baseProfile = profileRecord && profileRecord.profile ? profileRecord.profile : {};
+            const mergedProfile = StudentRuntimeStore.getMergedProfile(student.id, baseProfile);
+
+            const creditTransfer = mergedProfile.creditTransfer === 'no' ? 'no' : 'yes';
+            if (creditYes) {
+                creditYes.checked = creditTransfer === 'yes';
+            }
+            if (creditNo) {
+                creditNo.checked = creditTransfer === 'no';
+            }
+
+            const purposes = Array.isArray(mergedProfile.coursePurpose) ? mergedProfile.coursePurpose : [];
+            purposeInputs.forEach(input => {
+                input.checked = purposes.includes(input.value);
+            });
+        }
+
+        function getCourseCorrespondenceSummary(schoolName, courseCode) {
+            const emptyResult = { matched: 0, unmatched: 0, total: 0 };
+            if (!schoolName || !courseCode) {
+                return emptyResult;
+            }
+
+            const mappingTable = document.querySelector('#product-course-mapping table');
+            if (!mappingTable) {
+                return emptyResult;
+            }
+
+            const rows = mappingTable.querySelectorAll('tbody tr');
+            let currentSchool = '';
+            let currentCourse = '';
+            let matched = 0;
+            let unmatched = 0;
+
+            rows.forEach(row => {
+                const cells = Array.from(row.cells);
+                if (!cells.length) {
+                    return;
+                }
+
+                if (cells.length >= 9) {
+                    const schoolText = cells[0].textContent.trim();
+                    const courseText = cells[1] ? cells[1].textContent.trim() : '';
+
+                    if (schoolText) {
+                        currentSchool = schoolText;
+                    }
+                    if (courseText) {
+                        currentCourse = courseText;
+                    }
+                }
+
+                if (!currentSchool || !currentCourse) {
+                    return;
+                }
+
+                if (currentSchool !== schoolName || currentCourse !== courseCode) {
+                    return;
+                }
+
+                const statusText = cells
+                    .map(cell => cell.textContent.trim())
+                    .find(text => text === '对应' || text === '不对应');
+
+                if (statusText === '对应') {
+                    matched += 1;
+                } else if (statusText === '不对应') {
+                    unmatched += 1;
+                }
+            });
+
+            return {
+                matched,
+                unmatched,
+                total: matched + unmatched
+            };
+        }
+
+        function getAlignedProductCourseCodes(schoolName, courseCode) {
+            const result = new Set();
+            if (!schoolName || !courseCode) {
+                return result;
+            }
+
+            const mappingTable = document.querySelector('#product-course-mapping table');
+            if (!mappingTable) {
+                return result;
+            }
+
+            const rows = mappingTable.querySelectorAll('tbody tr');
+            let currentSchool = '';
+            let currentCourse = '';
+
+            rows.forEach(row => {
+                const cells = Array.from(row.cells);
+                if (!cells.length) {
+                    return;
+                }
+
+                if (cells.length >= 9) {
+                    const schoolText = cells[0].textContent.trim();
+                    const courseText = cells[1] ? cells[1].textContent.trim() : '';
+
+                    if (schoolText) {
+                        currentSchool = schoolText;
+                    }
+                    if (courseText) {
+                        currentCourse = courseText;
+                    }
+                }
+
+                if (!currentSchool || !currentCourse || currentSchool !== schoolName || currentCourse !== courseCode) {
+                    return;
+                }
+
+                const alignmentStatus = cells[7]
+                    ? cells[7].textContent.trim()
+                    : (cells.map(cell => cell.textContent.trim()).find(text => text === '对应' || text === '不对应') || '');
+                const productCourseCode = cells[5] ? cells[5].textContent.trim() : '';
+
+                if (alignmentStatus === '对应' && productCourseCode) {
+                    result.add(productCourseCode);
+                }
+            });
+
+            return result;
+        }
+
+        function getOnSaleUnitSummary(schoolName, courseCode) {
+            const alignedCodes = getAlignedProductCourseCodes(schoolName, courseCode);
+            const summary = {
+                hasAlignedProducts: alignedCodes.size > 0,
+                onSaleCount: 0
+            };
+
+            if (!summary.hasAlignedProducts) {
+                return summary;
+            }
+
+            const unitTable = document.querySelector('#product-unit-management table');
+            if (!unitTable) {
+                return summary;
+            }
+
+            const rows = unitTable.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                const cells = Array.from(row.cells);
+                if (cells.length < 3) {
+                    return;
+                }
+
+                const productCode = cells[2] ? cells[2].textContent.trim() : '';
+                if (!productCode || !alignedCodes.has(productCode)) {
+                    return;
+                }
+
+                const seatsText = cells[8] ? cells[8].textContent.trim() : cells.map(cell => cell.textContent.trim())[8] || '';
+                const seats = parseInt(seatsText, 10);
+                if (!Number.isNaN(seats) && seats > 0) {
+                    summary.onSaleCount += 1;
+                }
+            });
+
+            return summary;
+        }
+
+        function renderAutonomousSelectionSection() {
+            const tbody = document.getElementById('autonomousCourseTableBody');
+            if (!tbody) {
+                return;
+            }
+
+            tbody.innerHTML = '';
+            const student = StudentAnalysisController.getCurrentStudent();
+            if (!student) {
+                return;
+            }
+
+            const repository = window.StudentRepository;
+            if (!repository || typeof repository.getAutonomousPlan !== 'function') {
+                return;
+            }
+
+            const plan = repository.getAutonomousPlan(student.id) || [];
+            if (!plan.length) {
+                const emptyRow = document.createElement('tr');
+                const emptyCell = document.createElement('td');
+                emptyCell.colSpan = 6;
+                emptyCell.className = 'empty-state-cell';
+                emptyCell.textContent = '暂未添加自主选课意向';
+                emptyRow.appendChild(emptyCell);
+                tbody.appendChild(emptyRow);
+                return;
+            }
+
+            plan.forEach((item, index) => {
+                const row = document.createElement('tr');
+
+                const selectCell = document.createElement('td');
+                selectCell.className = 'checkbox-cell';
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.className = 'course-checkbox';
+                checkbox.setAttribute('data-course-code', item.code || '');
+                checkbox.setAttribute('data-course-name', item.name || '');
+                selectCell.appendChild(checkbox);
+                row.appendChild(selectCell);
+
+                const codeCell = document.createElement('td');
+                codeCell.className = 'course-code-cell';
+                codeCell.textContent = item.code || `COURSE-${index + 1}`;
+                row.appendChild(codeCell);
+
+                const nameCell = document.createElement('td');
+                nameCell.className = 'course-name-cell';
+                nameCell.textContent = item.name || '待定课程';
+                row.appendChild(nameCell);
+
+                const categoryCell = document.createElement('td');
+                categoryCell.className = 'general-category-cell';
+                categoryCell.textContent = item.category || '未分类';
+                row.appendChild(categoryCell);
+
+                const correspondenceCell = document.createElement('td');
+                correspondenceCell.className = 'correspondence-cell';
+                const correspondenceSummary = getCourseCorrespondenceSummary(student.school, item.code || '');
+
+                if (correspondenceSummary.total > 0) {
+                    correspondenceCell.textContent = `对应(${correspondenceSummary.matched})不对应(${correspondenceSummary.unmatched})`;
+                } else if (Object.prototype.hasOwnProperty.call(item, 'correspondences')) {
+                    const value = item.correspondences;
+                    if (value === null || value === undefined || value === '') {
+                        correspondenceCell.textContent = '暂无对应记录';
+                    } else {
+                        correspondenceCell.textContent = value;
+                    }
+                } else {
+                    correspondenceCell.textContent = '-';
+                }
+                row.appendChild(correspondenceCell);
+
+                const unitCell = document.createElement('td');
+                unitCell.className = 'available-units-cell';
+                const unitSummary = getOnSaleUnitSummary(student.school, item.code || '');
+                if (unitSummary.hasAlignedProducts) {
+                    if (unitSummary.onSaleCount > 0) {
+                        unitCell.textContent = `在售(${unitSummary.onSaleCount})`;
+                    } else {
+                        unitCell.textContent = '暂无在售课程单元';
+                    }
+                } else if (Object.prototype.hasOwnProperty.call(item, 'availableUnits')) {
+                    const units = item.availableUnits;
+                    unitCell.textContent = typeof units === 'number' ? units : (units || '');
+                } else {
+                    unitCell.textContent = '-';
+                }
+                row.appendChild(unitCell);
+
+                tbody.appendChild(row);
+            });
+
+            initAutonomousSelectionSubscription();
+        }
+
+        function renderSelectedCoursesSection() {
+            const tbody = document.getElementById('selectedCoursesTableBody');
+            if (!tbody) {
+                return;
+            }
+
+            tbody.innerHTML = '';
+            const student = StudentAnalysisController.getCurrentStudent();
+            if (!student) {
+                return;
+            }
+
+            const repository = window.StudentRepository;
+            if (!repository || typeof repository.getSelectedCourses !== 'function') {
+                return;
+            }
+
+            const selected = repository.getSelectedCourses(student.id) || [];
+            if (!selected.length) {
+                const emptyRow = document.createElement('tr');
+                const emptyCell = document.createElement('td');
+                emptyCell.colSpan = 11;
+                emptyCell.className = 'empty-state-cell';
+                emptyCell.textContent = '暂未记录选课数据';
+                emptyRow.appendChild(emptyCell);
+                tbody.appendChild(emptyRow);
+                return;
+            }
+
+            const statusMap = {
+                serving: { text: '服务中', className: 'status-serving' },
+                potential: { text: '潜在价值', className: 'status-potential' },
+                completed: { text: '已完成', className: 'status-completed' }
+            };
+
+            const auditMap = {
+                aiPassed: { text: 'AI审核通过', className: 'audit-ai-passed' },
+                notSubmitted: { text: '未提交审核', className: 'audit-not-submitted' },
+                aiRejected: { text: 'AI审核驳回', className: 'audit-ai-rejected' }
+            };
+
+            const categoryClassMap = {
+                '专业必修课': 'category-required',
+                '专业选修课': 'category-elective',
+                '通识课': 'category-general',
+                '自由选修课': 'category-free'
+            };
+
+            selected.forEach(course => {
+                const productCourses = Array.isArray(course.productCourses) ? course.productCourses : [];
+                const rowSpan = Math.max(productCourses.length, 1);
+
+                const statusInfo = statusMap[course.status] || { text: '未知状态', className: '' };
+                const auditInfo = auditMap[course.audit] || { text: '未设置', className: '' };
+                const categoryBadgeClass = categoryClassMap[course.category] || 'category-general';
+
+                const ensureRow = (index) => {
+                    if (productCourses.length === 0) {
+                        return document.createElement('tr');
+                    }
+                    return index < productCourses.length ? document.createElement('tr') : null;
+                };
+
+                if (!productCourses.length) {
+                    const row = document.createElement('tr');
+                    appendSelectedCourseRowCells(row, {
+                        isFirst: true,
+                        rowSpan,
+                        course,
+                        categoryBadgeClass,
+                        statusInfo,
+                        auditInfo,
+                        product: null
+                    });
+                    tbody.appendChild(row);
+                    return;
+                }
+
+                productCourses.forEach((product, index) => {
+                    const row = ensureRow(index);
+                    appendSelectedCourseRowCells(row, {
+                        isFirst: index === 0,
+                        rowSpan,
+                        course,
+                        categoryBadgeClass,
+                        statusInfo,
+                        auditInfo,
+                        product
+                    });
+                    tbody.appendChild(row);
+                });
+            });
+        }
+
+        function appendSelectedCourseRowCells(row, context) {
+            if (!row || !context) {
+                return;
+            }
+
+            const {
+                isFirst,
+                rowSpan,
+                course,
+                categoryBadgeClass,
+                statusInfo,
+                auditInfo,
+                product
+            } = context;
+
+            const checkboxCell = document.createElement('td');
+            checkboxCell.className = 'checkbox-cell';
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.className = 'course-checkbox';
+            checkboxCell.appendChild(checkbox);
+            row.appendChild(checkboxCell);
+
+            if (isFirst) {
+                const homeCourseCell = document.createElement('td');
+                homeCourseCell.className = rowSpan > 1 ? 'home-course-cell merged-cell' : 'home-course-cell';
+                homeCourseCell.rowSpan = rowSpan;
+                homeCourseCell.textContent = course.homeCourse || '未知课程';
+                row.appendChild(homeCourseCell);
+
+                const categoryCell = document.createElement('td');
+                categoryCell.className = rowSpan > 1 ? 'merged-cell' : '';
+                const categoryBadge = document.createElement('span');
+                categoryBadge.className = `course-category-badge ${categoryBadgeClass}`;
+                categoryBadge.textContent = course.category || '未分类';
+                categoryCell.appendChild(categoryBadge);
+                categoryCell.rowSpan = rowSpan;
+                row.appendChild(categoryCell);
+
+                const statusCell = document.createElement('td');
+                statusCell.className = `${rowSpan > 1 ? 'merged-cell ' : ''}${statusInfo.className}`.trim();
+                statusCell.rowSpan = rowSpan;
+                statusCell.textContent = statusInfo.text;
+                row.appendChild(statusCell);
+
+                const auditCell = document.createElement('td');
+                auditCell.className = rowSpan > 1 ? 'merged-cell' : '';
+                const auditBadge = document.createElement('span');
+                auditBadge.className = `audit-status-text ${auditInfo.className}`.trim();
+                auditBadge.textContent = auditInfo.text;
+                auditCell.appendChild(auditBadge);
+                auditCell.rowSpan = rowSpan;
+                row.appendChild(auditCell);
+            }
+
+            const productCell = document.createElement('td');
+            productCell.className = 'product-course-cell';
+            if (product) {
+                const codeSpan = document.createElement('span');
+                codeSpan.className = 'product-course-code';
+                codeSpan.textContent = product.code || '';
+                const nameSpan = document.createElement('span');
+                nameSpan.className = 'product-course-name';
+                nameSpan.textContent = product.name || '';
+                productCell.appendChild(codeSpan);
+                productCell.appendChild(nameSpan);
+            } else {
+                productCell.textContent = '暂未匹配产品课程';
+            }
+            row.appendChild(productCell);
+
+            const schoolCell = document.createElement('td');
+            schoolCell.className = 'product-school-cell';
+            schoolCell.textContent = product && product.school ? product.school : '-';
+            row.appendChild(schoolCell);
+
+            const dateCell = document.createElement('td');
+            dateCell.className = 'date-cell';
+            if (product && product.startDate && product.endDate) {
+                dateCell.textContent = `${product.startDate}~${product.endDate}`;
+            } else {
+                dateCell.textContent = '-';
+            }
+            row.appendChild(dateCell);
+
+            const priceCell = document.createElement('td');
+            priceCell.className = 'price-cell';
+            priceCell.textContent = product && product.price ? product.price : '-';
+            row.appendChild(priceCell);
+
+            const codeCell = document.createElement('td');
+            codeCell.className = 'code-cell';
+            codeCell.textContent = product && product.classCode ? product.classCode : '-';
+            row.appendChild(codeCell);
+
+            const durationCell = document.createElement('td');
+            durationCell.className = 'duration-cell';
+            durationCell.textContent = product && product.duration ? product.duration : '-';
+            row.appendChild(durationCell);
+        }
+
+        function renderReportSection() {
+            const listContainer = document.getElementById('reportListContainer');
+            if (!listContainer) {
+                return;
+            }
+
+            listContainer.innerHTML = '';
+            const student = StudentAnalysisController.getCurrentStudent();
+            if (!student) {
+                return;
+            }
+
+            const repository = window.StudentRepository;
+            if (!repository || typeof repository.getReports !== 'function') {
+                return;
+            }
+
+            const reports = repository.getReports(student.id) || [];
+            if (!reports.length) {
+                const empty = document.createElement('div');
+                empty.className = 'report-empty-state';
+                empty.textContent = '暂无选课报告，可在服务中生成新的分析报告。';
+                listContainer.appendChild(empty);
+                return;
+            }
+
+            const statusConfig = {
+                completed: { text: '已完成', className: 'report-status-completed' },
+                inProgress: { text: '进行中', className: 'report-status-progress' }
+            };
+
+            reports.forEach(report => {
+                const card = document.createElement('div');
+                card.className = 'report-card';
+
+                const header = document.createElement('div');
+                header.className = 'report-card-header';
+
+                const title = document.createElement('h4');
+                title.className = 'report-title';
+                title.textContent = report.title || '未命名报告';
+
+                const statusBadge = document.createElement('span');
+                const statusInfo = statusConfig[report.status] || { text: '未开始', className: 'report-status-pending' };
+                statusBadge.className = `report-status-badge ${statusInfo.className}`.trim();
+                statusBadge.textContent = statusInfo.text;
+
+                header.appendChild(title);
+                header.appendChild(statusBadge);
+
+                const body = document.createElement('div');
+                body.className = 'report-card-body';
+
+                const description = document.createElement('p');
+                description.className = 'report-description';
+                description.textContent = report.description || '暂无报告描述';
+
+                const footer = document.createElement('div');
+                footer.className = 'report-card-footer';
+
+                const createdAt = document.createElement('span');
+                createdAt.className = 'report-date';
+                createdAt.textContent = `创建时间：${report.createdAt || '-'}`;
+
+                const actionBtn = document.createElement('button');
+                actionBtn.type = 'button';
+                actionBtn.className = 'report-action-btn';
+                actionBtn.textContent = '查看报告';
+                actionBtn.onclick = () => {
+                    alert(`报告「${report.title}」暂未接入查看功能`);
+                };
+
+                body.appendChild(description);
+                footer.appendChild(createdAt);
+                footer.appendChild(actionBtn);
+
+                card.appendChild(header);
+                card.appendChild(body);
+                card.appendChild(footer);
+
+                listContainer.appendChild(card);
+            });
+        }
+
+        function renderSubscriptionSection() {
+            const container = document.getElementById('subscriptionCardsContainer');
+            if (!container) {
+                return;
+            }
+
+            container.innerHTML = '';
+            const student = StudentAnalysisController.getCurrentStudent();
+            if (!student) {
+                return;
+            }
+
+            const repository = window.StudentRepository;
+            if (!repository || typeof repository.getSubscriptions !== 'function') {
+                return;
+            }
+
+            const subscriptions = repository.getSubscriptions(student.id) || [];
+            if (!subscriptions.length) {
+                const emptyState = document.createElement('div');
+                emptyState.className = 'subscription-empty-state';
+                emptyState.textContent = '暂未创建订阅，请在课程表中设置订阅条件。';
+                container.appendChild(emptyState);
+                return;
+            }
+
+            const statusConfig = {
+                waiting: { text: '等待上架', className: 'status-waiting', icon: '⏳' },
+                matched: { text: '已匹配', className: 'status-matched', icon: '✅' },
+                notified: { text: '已通知', className: 'status-notified', icon: '📧' },
+                viewed: { text: '已查看', className: 'status-viewed', icon: '👁️' },
+                converted: { text: '已转化', className: 'status-converted', icon: '🎉' },
+                expired: { text: '已过期', className: 'status-expired', icon: '⏰' }
+            };
+
+            const typeConfig = {
+                product: { text: '产品课程', className: 'type-product' },
+                home: { text: '本校课程', className: 'type-home' }
+            };
+
+            subscriptions.forEach((sub, index) => {
+                const statusInfo = statusConfig[sub.status] || { text: '未知状态', className: '', icon: 'ℹ️' };
+                const typeInfo = typeConfig[sub.type] || { text: '未分类', className: '' };
+
+                const card = document.createElement('div');
+                card.className = 'subscription-card';
+                card.dataset.status = sub.status || '';
+                card.dataset.type = sub.type || '';
+                card.dataset.deadline = sub.deadline || '';
+                card.dataset.index = String(index);
+
+                const header = document.createElement('div');
+                header.className = 'card-header';
+
+                const info = document.createElement('div');
+                info.className = 'course-main-info';
+
+                const title = document.createElement('h3');
+                title.className = 'course-title';
+                title.textContent = sub.course?.code || '未命名课程';
+
+                const subtitle = document.createElement('p');
+                subtitle.className = 'course-subtitle';
+                subtitle.textContent = sub.course?.name || '-';
+
+                const school = document.createElement('p');
+                school.className = 'university-name';
+                school.textContent = sub.course?.school || '-';
+
+                info.appendChild(title);
+                info.appendChild(subtitle);
+                info.appendChild(school);
+
+                const typeBadge = document.createElement('div');
+                typeBadge.className = `subscription-type-badge ${typeInfo.className}`.trim();
+                typeBadge.textContent = typeInfo.text;
+
+                header.appendChild(info);
+                header.appendChild(typeBadge);
+
+                const body = document.createElement('div');
+                body.className = 'card-body';
+
+                const statusSection = document.createElement('div');
+                statusSection.className = 'status-section';
+
+                const statusBadge = document.createElement('div');
+                statusBadge.className = `status-badge ${statusInfo.className}`.trim();
+                const statusIcon = document.createElement('span');
+                statusIcon.className = 'status-icon';
+                statusIcon.textContent = statusInfo.icon;
+                const statusText = document.createElement('span');
+                statusText.className = 'status-text';
+                statusText.textContent = statusInfo.text;
+                statusBadge.appendChild(statusIcon);
+                statusBadge.appendChild(statusText);
+
+                const deadlineInfo = document.createElement('div');
+                deadlineInfo.className = `deadline-info ${sub.status === 'expired' ? 'expired' : ''}`.trim();
+                const deadlineLabel = document.createElement('span');
+                deadlineLabel.className = 'deadline-label';
+                deadlineLabel.textContent = '截止时间';
+                const deadlineDate = document.createElement('span');
+                deadlineDate.className = 'deadline-date';
+                deadlineDate.textContent = sub.deadline || '-';
+                deadlineInfo.appendChild(deadlineLabel);
+                deadlineInfo.appendChild(deadlineDate);
+
+                if (sub.warning) {
+                    const warning = document.createElement('span');
+                    warning.className = 'deadline-warning';
+                    warning.textContent = `⚠️ ${sub.warning}`;
+                    deadlineInfo.appendChild(warning);
+                }
+
+                statusSection.appendChild(statusBadge);
+                statusSection.appendChild(deadlineInfo);
+
+                const summary = document.createElement('div');
+                summary.className = 'subscription-summary';
+                const summaryText = document.createElement('span');
+                summaryText.className = 'summary-text';
+                summaryText.textContent = sub.summary || '尚未设置摘要';
+                const detailButton = document.createElement('button');
+                detailButton.className = 'details-toggle';
+                detailButton.type = 'button';
+                detailButton.textContent = '查看详情';
+                detailButton.onclick = function() {
+                    toggleDetails(this);
+                };
+                summary.appendChild(summaryText);
+                summary.appendChild(detailButton);
+
+                const details = document.createElement('div');
+                details.className = 'subscription-details';
+                details.style.display = 'none';
+
+                const detailMap = [
+                    { label: '学期：', value: sub.term || '-' },
+                    { label: '上课形式：', value: sub.modality || '-' },
+                    { label: '时长：', value: sub.duration || '-' },
+                    { label: '价格：', value: sub.price || '-' },
+                    { label: '创建日期：', value: sub.createdAt || '-' }
+                ];
+
+                detailMap.forEach(item => {
+                    const detailItem = document.createElement('div');
+                    detailItem.className = 'detail-item';
+                    const label = document.createElement('span');
+                    label.className = 'detail-label';
+                    label.textContent = item.label;
+                    const value = document.createElement('span');
+                    value.className = 'detail-value';
+                    value.textContent = item.value;
+                    detailItem.appendChild(label);
+                    detailItem.appendChild(value);
+                    details.appendChild(detailItem);
+                });
+
+                body.appendChild(statusSection);
+                body.appendChild(summary);
+                body.appendChild(details);
+
+                const actions = document.createElement('div');
+                actions.className = 'card-actions';
+
+                if (sub.status === 'converted') {
+                    const completion = document.createElement('div');
+                    completion.className = 'completion-note';
+                    const icon = document.createElement('span');
+                    icon.className = 'completion-icon';
+                    icon.textContent = '✅';
+                    const text = document.createElement('span');
+                    text.className = 'completion-text';
+                    text.textContent = '订阅已完成';
+                    completion.appendChild(icon);
+                    completion.appendChild(text);
+                    actions.appendChild(completion);
+                } else {
+                    const primaryBtn = document.createElement('button');
+                    primaryBtn.className = 'btn-primary-action';
+                    primaryBtn.type = 'button';
+                    primaryBtn.textContent = '跳转选课';
+                    primaryBtn.onclick = () => handleAction('jump', sub.id);
+                    actions.appendChild(primaryBtn);
+
+                    const viewBtn = document.createElement('button');
+                    viewBtn.className = 'btn-view';
+                    viewBtn.type = 'button';
+                    viewBtn.textContent = '查看匹配课程';
+                    viewBtn.onclick = () => handleAction('view', sub.id);
+                    actions.appendChild(viewBtn);
+
+                    if (sub.status === 'notified') {
+                        const notifyBtn = document.createElement('button');
+                        notifyBtn.className = 'btn-view';
+                        notifyBtn.type = 'button';
+                        notifyBtn.textContent = '查看通知详情';
+                        notifyBtn.onclick = () => handleAction('notifyDetail', sub.id);
+                        actions.appendChild(notifyBtn);
+                    }
+
+                    if (sub.status === 'waiting') {
+                        const editBtn = document.createElement('button');
+                        editBtn.className = 'btn-edit';
+                        editBtn.type = 'button';
+                        editBtn.textContent = '编辑条件';
+                        editBtn.onclick = () => handleAction('edit', sub.id);
+                        actions.appendChild(editBtn);
+
+                        const renewBtn = document.createElement('button');
+                        renewBtn.className = 'btn-renew';
+                        renewBtn.type = 'button';
+                        renewBtn.textContent = '续期';
+                        renewBtn.onclick = () => handleAction('renew', sub.id);
+                        actions.appendChild(renewBtn);
+
+                        const cancelBtn = document.createElement('button');
+                        cancelBtn.className = 'btn-destructive';
+                        cancelBtn.type = 'button';
+                        cancelBtn.textContent = '取消订阅';
+                        cancelBtn.onclick = () => handleAction('cancel', sub.id);
+                        actions.appendChild(cancelBtn);
+                    }
+
+                    if (sub.status === 'expired') {
+                        const renewBtn = document.createElement('button');
+                        renewBtn.className = 'btn-renew';
+                        renewBtn.type = 'button';
+                        renewBtn.textContent = '续期';
+                        renewBtn.onclick = () => handleAction('renew', sub.id);
+                        actions.appendChild(renewBtn);
+                    }
+                }
+
+                card.appendChild(header);
+                card.appendChild(body);
+                card.appendChild(actions);
+
+                container.appendChild(card);
+            });
+
+            // 重新应用现有筛选与排序配置
+            filterCards();
+            const sortValue = document.getElementById('deadline-sort');
+            if (sortValue && sortValue.value) {
+                sortCardsByDeadline();
+            }
+        }
+
+        function formatUploadedFileSize(bytes) {
+            if (!Number.isFinite(bytes) || bytes <= 0) {
+                return '0 Bytes';
+            }
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.min(Math.floor(Math.log(bytes) / Math.log(k)), sizes.length - 1);
+            const converted = bytes / Math.pow(k, i);
+            return `${converted.toFixed(converted >= 100 || converted % 1 === 0 ? 0 : 2)} ${sizes[i]}`;
+        }
+
+        function updateUploadedFilesList() {
+            const uploadedFilesContainer = document.getElementById('uploadedFiles');
+            if (!uploadedFilesContainer) {
+                return;
+            }
+
+            if (!uploadedFiles || uploadedFiles.length === 0) {
+                uploadedFilesContainer.innerHTML = '';
+                uploadedFilesContainer.style.display = 'none';
+                return;
+            }
+
+            uploadedFilesContainer.style.display = 'block';
+            uploadedFilesContainer.innerHTML = uploadedFiles.map((file, index) => `
+                <div class="uploaded-file-item">
+                    <span class="uploaded-file-name">${file.name} (${formatUploadedFileSize(file.size)})</span>
+                    <button type="button" class="uploaded-file-remove" onclick="removeUploadedFile(${index})" title="删除文件">✖</button>
+                </div>
+            `).join('');
+        }
+
+        function handleUploadedFiles(files) {
+            if (!files || files.length === 0) {
+                return;
+            }
+
+            const allowedTypes = ['.pdf', '.doc', '.docx', '.jpg', '.jpeg', '.png', '.gif'];
+            Array.from(files).forEach(file => {
+                const extension = '.' + file.name.split('.').pop().toLowerCase();
+                if (!allowedTypes.includes(extension)) {
+                    alert(`文件 "${file.name}" 格式不支持`);
+                    return;
+                }
+
+                if (file.size > 10 * 1024 * 1024) {
+                    alert(`文件 "${file.name}" 超过10MB限制`);
+                    return;
+                }
+
+                if (uploadedFiles.some(item => item.name === file.name && item.size === file.size)) {
+                    alert(`文件 "${file.name}" 已存在`);
+                    return;
+                }
+
+                uploadedFiles.push(file);
+            });
+
+            updateUploadedFilesList();
+        }
+
+        function initFileUpload() {
+            const dropArea = document.querySelector('.file-upload-area');
+            const fileInput = document.getElementById('graduationReqFile');
+
+            if (!dropArea || !fileInput) {
+                return;
+            }
+
+            dropArea.addEventListener('click', () => fileInput.click());
+
+            fileInput.addEventListener('change', event => {
+                handleUploadedFiles(event.target.files);
+            });
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropArea.addEventListener(eventName, event => {
+                    event.preventDefault();
+                    dropArea.classList.add('drag-over');
+                });
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, event => {
+                    event.preventDefault();
+                    dropArea.classList.remove('drag-over');
+                });
+            });
+
+            dropArea.addEventListener('drop', event => {
+                if (event.dataTransfer && event.dataTransfer.files) {
+                    handleUploadedFiles(event.dataTransfer.files);
+                }
+            });
+        }
+
+        window.removeUploadedFile = function(index) {
+            if (!Array.isArray(uploadedFiles)) {
+                uploadedFiles = [];
+            }
+            uploadedFiles.splice(index, 1);
+            updateUploadedFilesList();
+        };
+
         // 初始化自主选课页面的订阅功能
         function initAutonomousSelectionSubscription() {
             // 仅使用自定义插入逻辑，精确控制订阅按钮只在课程代码列出现
@@ -7077,27 +7337,31 @@
             });
             
             // 🎯 批量订阅按钮点击事件 - 连接到现有的模态框系统
-            batchBtn.addEventListener('click', function() {
-                const selectedCount = document.querySelectorAll('#autonomous-selection .course-checkbox:checked').length;
-                
-                if (selectedCount < 2) {
-                    alert('请至少选择2门课程进行批量订阅');
-                    return;
-                }
-                
-                // 构建符合现有系统格式的课程数据
-                const selectedCourses = getAutonomousSelectedCourses();
-                
-                if (selectedCourses.length === 0) {
-                    alert('未找到有效的课程信息');
-                    return;
-                }
-                
-                // 🚀 直接调用现有的批量订阅模态框
-                openAutonomousBatchModal(selectedCourses);
-            });
+            if (batchBtn.dataset.batchInitialized !== 'true') {
+                batchBtn.addEventListener('click', function() {
+                    const selectedCount = document.querySelectorAll('#autonomous-selection .course-checkbox:checked').length;
+                    
+                    if (selectedCount < 2) {
+                        alert('请至少选择2门课程进行批量订阅');
+                        return;
+                    }
+                    
+                    // 构建符合现有系统格式的课程数据
+                    const selectedCourses = getAutonomousSelectedCourses();
+                    
+                    if (selectedCourses.length === 0) {
+                        alert('未找到有效的课程信息');
+                        return;
+                    }
+                    
+                    // 🚀 直接调用现有的批量订阅模态框
+                    openAutonomousBatchModal(selectedCourses);
+                });
+                batchBtn.dataset.batchInitialized = 'true';
+            }
             
             console.log('✅ 自主选课页面：批量订阅功能已初始化并连接到现有模态框系统');
+            updateBatchButton();
         }
         
         // 获取自主选课页面选中的课程（格式化为现有系统格式）
@@ -7263,200 +7527,107 @@
             };
         }
         
-        // 更新学生档案数据
+        function getStudentRepository() {
+            if (!window.StudentRepository) {
+                console.warn('StudentRepository 未初始化');
+                return null;
+            }
+            return window.StudentRepository;
+        }
+
+        function getFollowUpStudents() {
+            const repository = getStudentRepository();
+            if (!repository) {
+                return [];
+            }
+            return repository.getAllFollowUps();
+        }
+
+        function getFollowUpStudentById(studentId) {
+            const repository = getStudentRepository();
+            if (!repository) {
+                return null;
+            }
+            return repository.getFollowUpById(studentId);
+        }
+
+        function renderStudentFollowTable() {
+            const tbody = document.getElementById('studentFollowTableBody');
+            if (!tbody) {
+                return;
+            }
+
+            const students = getFollowUpStudents();
+
+            if (students.length === 0) {
+                tbody.innerHTML = `<tr class="student-row empty"><td colspan="10">暂无学生数据</td></tr>`;
+                return;
+            }
+
+            const rowsHtml = students.map(student => {
+                const statusBadgeClass = student.status && student.status.badgeClass ? student.status.badgeClass : '';
+                const statusLabel = student.status && student.status.label ? student.status.label : '未知状态';
+                const reportButton = student.report && student.report.available
+                    ? `<button class="btn-link" onclick="viewReport('${student.id}')">查看报告</button>`
+                    : '<span class="text-muted">暂无</span>';
+
+                return `
+                    <tr class="student-row" data-student-id="${student.id}">
+                        <td><input type="checkbox" class="student-checkbox" value="${student.id}"></td>
+                        <td class="student-name">${student.name}</td>
+                        <td class="school-name">${student.school}</td>
+                        <td class="entry-time">${student.entryTime || ''}</td>
+                        <td class="next-follow">${student.nextFollow || ''}</td>
+                        <td class="status"><span class="status-badge ${statusBadgeClass}">${statusLabel}</span></td>
+                        <td class="wechat-name">${student.wechatName || ''}</td>
+                        <td class="report-status">${reportButton}</td>
+                        <td class="subscription-info">
+                            <button class="btn-link" onclick="viewSubscriptionInfo('${student.id}')">查看订阅信息</button>
+                        </td>
+                        <td class="actions">
+                            <button class="btn-edit" onclick="editStudent('${student.id}')" title="编辑">✏️</button>
+                            <button class="btn-follow" onclick="addFollowRecord('${student.id}')" title="跟进">📝</button>
+                            <button class="btn-delete" onclick="deleteStudent('${student.id}')" title="删除">🗑️</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            tbody.innerHTML = rowsHtml;
+        }
+
         function updateStudentProfileData() {
-            let studentData = null;
-            
-            // 优先使用存储的当前学生信息
-            if (window.currentStudentInfo) {
-                studentData = getStudentDataByName(window.currentStudentInfo.name);
-                if (document.getElementById('studentName')) {
-                    document.getElementById('studentName').value = window.currentStudentInfo.name;
-                    document.getElementById('studentSchool').value = window.currentStudentInfo.school;
-                }
-            } else {
-                // 备用方案：从分析页面标题中获取学生信息
-                const titleElement = document.getElementById('student-analysis-title');
-                if (titleElement) {
-                    const currentStudentName = titleElement.textContent.split(' - ')[0];
-                    studentData = getStudentDataByName(currentStudentName);
-                    
-                    if (studentData && document.getElementById('studentName')) {
-                        document.getElementById('studentName').value = studentData.name;
-                        document.getElementById('studentSchool').value = studentData.school;
-                    }
-                }
-            }
-            
-            // 更新个性化档案选项
-            if (studentData) {
-                updateStudentProfileOptions(studentData);
-            }
+            renderStudentProfileSection();
         }
-        
-        // 更新学生档案选项（转学分需求和上课目的）
-        function updateStudentProfileOptions(studentData) {
-            // 更新转学分需求
-            if (studentData.creditTransfer) {
-                const creditTransferRadio = document.querySelector(`input[name="creditTransfer"][value="${studentData.creditTransfer}"]`);
-                if (creditTransferRadio) {
-                    // 清除所有选中状态
-                    document.querySelectorAll('input[name="creditTransfer"]').forEach(radio => {
-                        radio.checked = false;
-                    });
-                    // 设置对应选项为选中
-                    creditTransferRadio.checked = true;
-                }
+
+        function viewReport(studentId) {
+            const studentRecord = getFollowUpStudentById(studentId);
+            if (!studentRecord) {
+                alert('未找到学生信息');
+                return;
             }
-            
-            // 更新上课目的
-            if (studentData.coursePurpose && Array.isArray(studentData.coursePurpose)) {
-                // 先清除所有选中状态
-                document.querySelectorAll('input[name="coursePurpose"]').forEach(checkbox => {
-                    checkbox.checked = false;
-                });
-                
-                // 设置对应选项为选中
-                studentData.coursePurpose.forEach(purpose => {
-                    const purposeCheckbox = document.querySelector(`input[name="coursePurpose"][value="${purpose}"]`);
-                    if (purposeCheckbox) {
-                        purposeCheckbox.checked = true;
-                    }
-                });
-            }
+
+            StudentAnalysisController.setCurrentStudent(studentRecord, {
+                activeTab: 'report-management'
+            });
+
+            document.querySelector('.main-layout').style.display = 'none';
+            document.getElementById('student-analysis-page').style.display = 'block';
         }
-        
-        // 根据学生姓名获取学生数据
-        function getStudentDataByName(studentName) {
-            // 预设的学生数据映射，包含个性化档案信息
-            const studentDataMap = {
-                '张明': { 
-                    name: '张明', 
-                    school: 'The Pennsylvania State University Park',
-                    creditTransfer: 'yes',
-                    coursePurpose: ['graduation', 'gradschool']
-                },
-                '李小雨': { 
-                    name: '李小雨', 
-                    school: 'University of Illinois Urbana-Champaign',
-                    creditTransfer: 'no',
-                    coursePurpose: ['transfer', 'studyabroad']
-                },
-                '王晓华': { 
-                    name: '王晓华', 
-                    school: 'University of Wisconsin-Madison',
-                    creditTransfer: 'yes',
-                    coursePurpose: ['graduation']
-                },
-                '陈思远': { 
-                    name: '陈思远', 
-                    school: 'University of California, Davis',
-                    creditTransfer: 'yes',
-                    coursePurpose: ['graduation', 'transfer', 'gradschool']
-                },
-                '刘佳妮': { 
-                    name: '刘佳妮', 
-                    school: 'University of California, Los Angeles',
-                    creditTransfer: 'no',
-                    coursePurpose: ['gradschool', 'studyabroad']
-                }
-            };
-            
-            return studentDataMap[studentName] || { 
-                name: studentName, 
-                school: '未知学校',
-                creditTransfer: 'yes',
-                coursePurpose: ['graduation']
-            };
-        }
-        
-        // 初始化文件上传功能
-        function initFileUpload() {
-            const fileInput = document.getElementById('graduationReqFile');
-            const uploadArea = document.querySelector('.file-upload-area');
-            const uploadedFilesContainer = document.getElementById('uploadedFiles');
-            let uploadedFiles = [];
-            
-            // 文件选择事件
-            fileInput.addEventListener('change', function(e) {
-                handleFiles(e.target.files);
-            });
-            
-            // 拖拽上传功能
-            uploadArea.addEventListener('dragover', function(e) {
-                e.preventDefault();
-                this.classList.add('dragover');
-            });
-            
-            uploadArea.addEventListener('dragleave', function(e) {
-                e.preventDefault();
-                this.classList.remove('dragover');
-            });
-            
-            uploadArea.addEventListener('drop', function(e) {
-                e.preventDefault();
-                this.classList.remove('dragover');
-                handleFiles(e.dataTransfer.files);
-            });
-            
-            // 处理文件
-            function handleFiles(files) {
-                Array.from(files).forEach(file => {
-                    // 文件大小检查 (10MB)
-                    if (file.size > 10 * 1024 * 1024) {
-                        alert(`文件 "${file.name}" 超过10MB限制`);
-                        return;
-                    }
-                    
-                    // 文件类型检查
-                    const allowedTypes = ['.pdf', '.doc', '.docx', '.jpg', '.jpeg', '.png', '.gif'];
-                    const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
-                    if (!allowedTypes.includes(fileExtension)) {
-                        alert(`文件 "${file.name}" 格式不支持`);
-                        return;
-                    }
-                    
-                    // 检查文件是否已存在
-                    if (uploadedFiles.some(f => f.name === file.name && f.size === file.size)) {
-                        alert(`文件 "${file.name}" 已存在`);
-                        return;
-                    }
-                    
-                    uploadedFiles.push(file);
-                    updateUploadedFilesList();
-                });
+
+        function viewSubscriptionInfo(studentId) {
+            const studentRecord = getFollowUpStudentById(studentId);
+            if (!studentRecord) {
+                alert('未找到学生信息');
+                return;
             }
-            
-            // 更新已上传文件列表
-            function updateUploadedFilesList() {
-                if (uploadedFiles.length === 0) {
-                    uploadedFilesContainer.style.display = 'none';
-                    return;
-                }
-                
-                uploadedFilesContainer.style.display = 'block';
-                uploadedFilesContainer.innerHTML = uploadedFiles.map((file, index) => `
-                    <div class="uploaded-file-item">
-                        <span class="uploaded-file-name">${file.name} (${formatFileSize(file.size)})</span>
-                        <button type="button" class="uploaded-file-remove" onclick="removeUploadedFile(${index})" title="删除文件">✖</button>
-                    </div>
-                `).join('');
-            }
-            
-            // 删除已上传文件
-            window.removeUploadedFile = function(index) {
-                uploadedFiles.splice(index, 1);
-                updateUploadedFilesList();
-            };
-            
-            // 格式化文件大小
-            function formatFileSize(bytes) {
-                if (bytes === 0) return '0 Bytes';
-                const k = 1024;
-                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-                const i = Math.floor(Math.log(bytes) / Math.log(k));
-                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-            }
+
+            StudentAnalysisController.setCurrentStudent(studentRecord, {
+                activeTab: 'subscription-info'
+            });
+
+            document.querySelector('.main-layout').style.display = 'none';
+            document.getElementById('student-analysis-page').style.display = 'block';
         }
         
         // 初始化学生档案表单
@@ -7499,10 +7670,24 @@
         
         // 提交学生档案
         function submitStudentProfile(formData) {
+            const runtimeProfile = {
+                creditTransfer: formData.get('creditTransfer') || 'yes',
+                coursePurpose: (formData.get('coursePurpose') || '')
+                    .split(',')
+                    .map(item => item.trim())
+                    .filter(Boolean)
+            };
+
+            const currentStudent = StudentAnalysisController.getCurrentStudent();
+            if (currentStudent) {
+                StudentRuntimeStore.setProfile(currentStudent.id, runtimeProfile);
+                StudentAnalysisController.scheduleRefresh();
+            }
+
             // 显示提交成功消息
             const studentName = formData.get('studentName');
-            const creditTransfer = formData.get('creditTransfer') === 'yes' ? '需要' : '不需要';
-            const purposes = formData.get('coursePurpose').split(',').map(p => {
+            const creditTransfer = runtimeProfile.creditTransfer === 'yes' ? '需要' : '不需要';
+            const purposes = (runtimeProfile.coursePurpose.length ? runtimeProfile.coursePurpose : ['未选择']).map(p => {
                 const purposeMap = {
                     'graduation': '毕业',
                     'transfer': '转学',
@@ -7528,8 +7713,8 @@
             console.log('学生档案数据:', {
                 studentName: formData.get('studentName'),
                 studentSchool: formData.get('studentSchool'),
-                creditTransfer: formData.get('creditTransfer'),
-                coursePurpose: formData.get('coursePurpose'),
+                creditTransfer: runtimeProfile.creditTransfer,
+                coursePurpose: runtimeProfile.coursePurpose,
                 fileCount: fileCount
             });
         }
@@ -7601,6 +7786,9 @@
         function sortCardsByDeadline() {
             const sortValue = document.getElementById('deadline-sort').value;
             const container = document.querySelector('.subscription-cards-container');
+            if (!container) {
+                return;
+            }
             const cards = Array.from(container.querySelectorAll('.subscription-card'));
             
             if (sortValue === '') {
@@ -7610,15 +7798,8 @@
             
             // 提取并解析截止日期
             cards.forEach(card => {
-                const deadlineElement = card.querySelector('.deadline-date');
-                if (deadlineElement) {
-                    const deadlineText = deadlineElement.textContent.trim();
-                    // 将日期字符串转换为Date对象进行排序
-                    card.deadlineDate = new Date(deadlineText);
-                } else {
-                    // 如果没有截止日期，设置为很远的未来日期
-                    card.deadlineDate = new Date('9999-12-31');
-                }
+                const deadlineText = card.dataset.deadline || '';
+                card.deadlineDate = deadlineText ? new Date(deadlineText) : new Date('9999-12-31');
             });
             
             // 根据选择的排序方式排序
@@ -7640,13 +7821,15 @@
         // 重置卡片顺序为原始顺序
         function resetCardOrder() {
             const container = document.querySelector('.subscription-cards-container');
+            if (!container) {
+                return;
+            }
             const cards = Array.from(container.querySelectorAll('.subscription-card'));
             
-            // 按原始ID顺序排序
             cards.sort((a, b) => {
-                const aId = a.id || '';
-                const bId = b.id || '';
-                return aId.localeCompare(bId);
+                const aIndex = Number(a.dataset.index || 0);
+                const bIndex = Number(b.dataset.index || 0);
+                return aIndex - bIndex;
             });
             
             cards.forEach(card => {
@@ -7665,47 +7848,15 @@
             const typeFilter = document.getElementById('subscription-type-filter').value;
             const cards = document.querySelectorAll('.subscription-card');
             
-            // Map filter values to actual status text
-            const statusMap = {
-                'waiting': '等待上架',
-                'matched': '已匹配',
-                'notified': '已通知',
-                'viewed': '已查看',
-                'converted': '已转化',
-                'expired': '已过期'
-            };
-            
-            // Map subscription type filter values to badge text
-            const typeMap = {
-                'product': '产品课程',
-                'home': '本校课程'
-            };
-            
             cards.forEach(card => {
                 let showCard = true;
                 
-                // Check status filter
-                if (statusFilter !== '') {
-                    const statusBadge = card.querySelector('.status-badge .status-text');
-                    if (statusBadge) {
-                        const statusText = statusBadge.textContent.trim();
-                        const expectedStatus = statusMap[statusFilter];
-                        if (statusText !== expectedStatus) {
-                            showCard = false;
-                        }
-                    }
+                if (statusFilter !== '' && card.dataset.status !== statusFilter) {
+                    showCard = false;
                 }
                 
-                // Check subscription type filter
-                if (typeFilter !== '' && showCard) {
-                    const typeBadge = card.querySelector('.subscription-type-badge');
-                    if (typeBadge) {
-                        const typeText = typeBadge.textContent.trim();
-                        const expectedType = typeMap[typeFilter];
-                        if (typeText !== expectedType) {
-                            showCard = false;
-                        }
-                    }
+                if (typeFilter !== '' && card.dataset.type !== typeFilter) {
+                    showCard = false;
                 }
                 
                 // Show or hide the card
