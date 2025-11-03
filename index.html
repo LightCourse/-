@@ -1652,6 +1652,18 @@
             color: #2c3e50;
             background-color: white !important;
         }
+
+        .home-course-cell .home-course-code {
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .home-course-cell .home-course-name {
+            font-size: 11px;
+            color: #6c757d;
+            margin-top: 2px;
+            font-weight: 500;
+        }
         
         /* 课程满足类别样式 */
         .course-category-badge {
@@ -1730,12 +1742,29 @@
             margin-top: 2px;
             display: block;
         }
+
+        .product-course-meta {
+            display: block;
+            font-size: 10px;
+            color: #94a3b8;
+            margin-top: 2px;
+            font-weight: 500;
+        }
         
         /* 产品学校样式 */
         .product-school-cell {
             font-weight: 500;
             color: #495057;
             font-size: 10px;
+        }
+
+        .product-school-onsale {
+            color: #0f9d58;
+            font-weight: 600;
+        }
+
+        .product-school-soldout {
+            color: #6c757d;
         }
         
         /* 日期、价格等信息样式 */
@@ -6556,6 +6585,20 @@
                 return;
             }
 
+            const selectedSnapshot = repository.getSelectedCourses(student.id) || [];
+            const selectedByCode = new Map();
+            selectedSnapshot.forEach(selectedCourse => {
+                if (!selectedCourse) {
+                    return;
+                }
+                const key = typeof selectedCourse.homeCourse === 'string'
+                    ? selectedCourse.homeCourse.trim()
+                    : '';
+                if (key) {
+                    selectedByCode.set(key, selectedCourse);
+                }
+            });
+
             plan.forEach((item, index) => {
                 const row = document.createElement('tr');
 
@@ -6604,18 +6647,31 @@
 
                 const unitCell = document.createElement('td');
                 unitCell.className = 'available-units-cell';
-                const unitSummary = getOnSaleUnitSummary(student.school, item.code || '');
-                if (unitSummary.hasAlignedProducts) {
-                    if (unitSummary.onSaleCount > 0) {
-                        unitCell.textContent = `在售(${unitSummary.onSaleCount})`;
-                    } else {
-                        unitCell.textContent = '暂无在售课程单元';
-                    }
-                } else if (Object.prototype.hasOwnProperty.call(item, 'availableUnits')) {
+                const courseKey = typeof item.code === 'string' ? item.code.trim() : '';
+                const runtimeCourse = courseKey ? selectedByCode.get(courseKey) : null;
+                const runtimeProducts = Array.isArray(runtimeCourse?.productCourses)
+                    ? runtimeCourse.productCourses.filter(Boolean)
+                    : [];
+
+                if (runtimeProducts.length) {
+                    const onSaleCount = runtimeProducts.filter(product => product.isOnSale).length;
+                    unitCell.textContent = onSaleCount > 0
+                        ? `在售(${onSaleCount})`
+                        : '暂无在售课程单元';
+                } else {
+                    const unitSummary = getOnSaleUnitSummary(student.school, courseKey);
+                    if (unitSummary.hasAlignedProducts) {
+                        if (unitSummary.onSaleCount > 0) {
+                            unitCell.textContent = `在售(${unitSummary.onSaleCount})`;
+                        } else {
+                            unitCell.textContent = '暂无在售课程单元';
+                        }
+                    } else if (Object.prototype.hasOwnProperty.call(item, 'availableUnits')) {
                     const units = item.availableUnits;
                     unitCell.textContent = typeof units === 'number' ? units : (units || '');
-                } else {
-                    unitCell.textContent = '-';
+                    } else {
+                        unitCell.textContent = '-';
+                    }
                 }
                 row.appendChild(unitCell);
 
@@ -6746,7 +6802,18 @@
                 const homeCourseCell = document.createElement('td');
                 homeCourseCell.className = rowSpan > 1 ? 'home-course-cell merged-cell' : 'home-course-cell';
                 homeCourseCell.rowSpan = rowSpan;
-                homeCourseCell.textContent = course.homeCourse || '未知课程';
+                const homeCourseCode = document.createElement('div');
+                homeCourseCode.className = 'home-course-code';
+                homeCourseCode.textContent = course.homeCourse || '未知课程';
+                homeCourseCell.appendChild(homeCourseCode);
+
+                if (course.homeCourseName) {
+                    const homeCourseName = document.createElement('div');
+                    homeCourseName.className = 'home-course-name';
+                    homeCourseName.textContent = course.homeCourseName;
+                    homeCourseCell.appendChild(homeCourseName);
+                }
+
                 row.appendChild(homeCourseCell);
 
                 const categoryCell = document.createElement('td');
@@ -6785,13 +6852,31 @@
                 nameSpan.textContent = product.name || '';
                 productCell.appendChild(codeSpan);
                 productCell.appendChild(nameSpan);
+
+                if (product.alignmentStatus || product.verificationOutcome) {
+                    const metaSpan = document.createElement('span');
+                    metaSpan.className = 'product-course-meta';
+                    const metaParts = [];
+                    if (product.alignmentStatus) {
+                        metaParts.push(product.alignmentStatus);
+                    }
+                    if (product.verificationOutcome) {
+                        metaParts.push(product.verificationOutcome);
+                    }
+                    metaSpan.textContent = metaParts.join(' · ');
+                    productCell.appendChild(metaSpan);
+                }
             } else {
                 productCell.textContent = '暂未匹配产品课程';
             }
             row.appendChild(productCell);
 
             const schoolCell = document.createElement('td');
-            schoolCell.className = 'product-school-cell';
+            const schoolClasses = ['product-school-cell'];
+            if (product) {
+                schoolClasses.push(product.isOnSale ? 'product-school-onsale' : 'product-school-soldout');
+            }
+            schoolCell.className = schoolClasses.join(' ');
             schoolCell.textContent = product && product.school ? product.school : '-';
             row.appendChild(schoolCell);
 

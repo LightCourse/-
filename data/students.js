@@ -289,82 +289,7 @@
         }
     ]);
 
-    const createSelectedCourses = () => ([
-        {
-            homeCourse: "MATH 21A",
-            category: "专业必修课",
-            status: "serving",
-            audit: "aiPassed",
-            productCourses: [
-                {
-                    code: "MATH 2210",
-                    name: "Multivariable Calculus",
-                    school: "University of Toronto",
-                    startDate: "2025-10-20",
-                    endDate: "2025-12-13",
-                    price: "1500美元",
-                    classCode: "001",
-                    duration: "8周"
-                },
-                {
-                    code: "MATH 264",
-                    name: "Vector Calculus",
-                    school: "McGill University",
-                    startDate: "2025-11-05",
-                    endDate: "2025-12-28",
-                    price: "1380美元",
-                    classCode: "002",
-                    duration: "8周"
-                }
-            ]
-        },
-        {
-            homeCourse: "CHEM 17",
-            category: "专业必修课",
-            status: "potential",
-            audit: "notSubmitted",
-            productCourses: [
-                {
-                    code: "CHEM 1000",
-                    name: "Chemical Principles",
-                    school: "University of British Columbia",
-                    startDate: "2025-11-12",
-                    endDate: "2026-02-15",
-                    price: "1680美元",
-                    classCode: "003",
-                    duration: "14周"
-                }
-            ]
-        },
-        {
-            homeCourse: "PSYC 1",
-            category: "通识课",
-            status: "serving",
-            audit: "aiPassed",
-            productCourses: [
-                {
-                    code: "PSYC 100",
-                    name: "Introduction to Psychology",
-                    school: "Stanford University",
-                    startDate: "2025-10-28",
-                    endDate: "2025-12-20",
-                    price: "1420美元",
-                    classCode: "004",
-                    duration: "8周"
-                },
-                {
-                    code: "PSYC 1001",
-                    name: "Psychology Fundamentals",
-                    school: "University of Toronto",
-                    startDate: "2025-11-15",
-                    endDate: "2026-01-10",
-                    price: "1350美元",
-                    classCode: "005",
-                    duration: "8周"
-                }
-            ]
-        }
-    ]);
+    const emptySelectedCourses = () => ([]);
 
     const createReports = () => ([
         {
@@ -459,7 +384,7 @@
             },
             details: {
                 autonomousPlan: createPennStateAutonomousPlan(),
-                selectedCourses: createSelectedCourses(),
+                selectedCourses: emptySelectedCourses(),
                 reports: createReports()
             }
         },
@@ -483,7 +408,7 @@
             },
             details: {
                 autonomousPlan: createUIUCAutonomousPlan(),
-                selectedCourses: createSelectedCourses(),
+                selectedCourses: emptySelectedCourses(),
                 reports: createReports()
             }
         },
@@ -507,7 +432,7 @@
             },
             details: {
                 autonomousPlan: createWisconsinMadisonAutonomousPlan(),
-                selectedCourses: createSelectedCourses(),
+                selectedCourses: emptySelectedCourses(),
                 reports: createReports()
             }
         },
@@ -531,7 +456,7 @@
             },
             details: {
                 autonomousPlan: createUCDavisAutonomousPlan(),
-                selectedCourses: createSelectedCourses(),
+                selectedCourses: emptySelectedCourses(),
                 reports: createReports()
             }
         },
@@ -555,7 +480,7 @@
             },
             details: {
                 autonomousPlan: createUCLAAutonomousPlan(),
-                selectedCourses: createSelectedCourses(),
+                selectedCourses: emptySelectedCourses(),
                 reports: createReports()
             }
         }
