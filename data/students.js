@@ -85,6 +85,210 @@
         }
     ]);
 
+    const createUIUCAutonomousPlan = () => ([
+        {
+            code: "MATH 241U",
+            name: "Calculus III",
+            category: "Quantitative Reasoning",
+            correspondences: "",
+            courseType: "",
+            availableUnits: ""
+        },
+        {
+            code: "MATH 231U",
+            name: "Calculus II",
+            category: "Quantitative Reasoning",
+            correspondences: "",
+            courseType: "",
+            availableUnits: ""
+        },
+        {
+            code: "ECON 102U",
+            name: "Microeconomic Principles",
+            category: "Social and Behavioral Sciences",
+            correspondences: "",
+            courseType: "",
+            availableUnits: ""
+        },
+        {
+            code: "ECON 203U",
+            name: "Economic Statistics I",
+            category: "Statistics and Data Literacy",
+            correspondences: "",
+            courseType: "",
+            availableUnits: ""
+        },
+        {
+            code: "PSYC 100U",
+            name: "Introduction to Psychology",
+            category: "Social and Behavioral Sciences",
+            correspondences: "",
+            courseType: "",
+            availableUnits: ""
+        },
+        {
+            code: "PSYC 238U",
+            name: "Abnormal Psychology",
+            category: "Social and Behavioral Sciences",
+            correspondences: "",
+            courseType: "",
+            availableUnits: ""
+        }
+    ]);
+
+    const createWisconsinMadisonAutonomousPlan = () => ([
+        {
+            code: "MATH 234W",
+            name: "Calculus-Functions of Several Variables",
+            category: "Quantitative Reasoning",
+            correspondences: "",
+            courseType: "",
+            availableUnits: ""
+        },
+        {
+            code: "MATH 222W",
+            name: "Calculus and Analytic Geometry II",
+            category: "Quantitative Reasoning",
+            correspondences: "",
+            courseType: "",
+            availableUnits: ""
+        },
+        {
+            code: "ECON 101W",
+            name: "Principles of Microeconomics",
+            category: "Social and Behavioral Sciences",
+            correspondences: "",
+            courseType: "",
+            availableUnits: ""
+        },
+        {
+            code: "ECON 301W",
+            name: "Intermediate Microeconomics",
+            category: "Social and Behavioral Sciences",
+            correspondences: "",
+            courseType: "",
+            availableUnits: ""
+        },
+        {
+            code: "PSYCH 202W",
+            name: "Introduction to Psychology",
+            category: "Social and Behavioral Sciences",
+            correspondences: "",
+            courseType: "",
+            availableUnits: ""
+        },
+        {
+            code: "PSYCH 225W",
+            name: "Cognition",
+            category: "Social and Behavioral Sciences",
+            correspondences: "",
+            courseType: "",
+            availableUnits: ""
+        }
+    ]);
+
+    const createUCDavisAutonomousPlan = () => ([
+        {
+            code: "MAT 21A D",
+            name: "Differential Calculus",
+            category: "Quantitative Reasoning",
+            correspondences: "",
+            courseType: "",
+            availableUnits: ""
+        },
+        {
+            code: "MAT 21B D",
+            name: "Integral Calculus",
+            category: "Quantitative Reasoning",
+            correspondences: "",
+            courseType: "",
+            availableUnits: ""
+        },
+        {
+            code: "ECN 1A D",
+            name: "Principles of Microeconomics",
+            category: "Social and Behavioral Sciences",
+            correspondences: "",
+            courseType: "",
+            availableUnits: ""
+        },
+        {
+            code: "ECN 102 D",
+            name: "Analysis of Microeconomic Data",
+            category: "Statistics and Data Literacy",
+            correspondences: "",
+            courseType: "",
+            availableUnits: ""
+        },
+        {
+            code: "PSC 1 D",
+            name: "General Psychology",
+            category: "Social and Behavioral Sciences",
+            correspondences: "",
+            courseType: "",
+            availableUnits: ""
+        },
+        {
+            code: "PSC 121 D",
+            name: "Human Emotion",
+            category: "Social and Behavioral Sciences",
+            correspondences: "",
+            courseType: "",
+            availableUnits: ""
+        }
+    ]);
+
+    const createUCLAAutonomousPlan = () => ([
+        {
+            code: "MATH 31A L",
+            name: "Differential and Integral Calculus",
+            category: "Quantitative Reasoning",
+            correspondences: "",
+            courseType: "",
+            availableUnits: ""
+        },
+        {
+            code: "MATH 31B L",
+            name: "Integration and Infinite Series",
+            category: "Quantitative Reasoning",
+            correspondences: "",
+            courseType: "",
+            availableUnits: ""
+        },
+        {
+            code: "ECON 11 L",
+            name: "Microeconomic Theory",
+            category: "Social and Behavioral Sciences",
+            correspondences: "",
+            courseType: "",
+            availableUnits: ""
+        },
+        {
+            code: "ECON 101 L",
+            name: "Price Theory",
+            category: "Social and Behavioral Sciences",
+            correspondences: "",
+            courseType: "",
+            availableUnits: ""
+        },
+        {
+            code: "PSYCH 10 L",
+            name: "Introduction to Behavioral Science",
+            category: "Social and Behavioral Sciences",
+            correspondences: "",
+            courseType: "",
+            availableUnits: ""
+        },
+        {
+            code: "PSYCH 115 L",
+            name: "Principles of Behavioral Neuroscience",
+            category: "Natural Sciences",
+            correspondences: "",
+            courseType: "",
+            availableUnits: ""
+        }
+    ]);
+
     const createSelectedCourses = () => ([
         {
             homeCourse: "MATH 21A",
@@ -278,7 +482,7 @@
                 coursePurpose: ["transfer", "studyabroad"]
             },
             details: {
-                autonomousPlan: createAutonomousPlan(),
+                autonomousPlan: createUIUCAutonomousPlan(),
                 selectedCourses: createSelectedCourses(),
                 reports: createReports()
             }
@@ -302,7 +506,7 @@
                 coursePurpose: ["graduation"]
             },
             details: {
-                autonomousPlan: createAutonomousPlan(),
+                autonomousPlan: createWisconsinMadisonAutonomousPlan(),
                 selectedCourses: createSelectedCourses(),
                 reports: createReports()
             }
@@ -326,7 +530,7 @@
                 coursePurpose: ["graduation", "transfer", "gradschool"]
             },
             details: {
-                autonomousPlan: createAutonomousPlan(),
+                autonomousPlan: createUCDavisAutonomousPlan(),
                 selectedCourses: createSelectedCourses(),
                 reports: createReports()
             }
@@ -350,7 +554,7 @@
                 coursePurpose: ["gradschool", "studyabroad"]
             },
             details: {
-                autonomousPlan: createAutonomousPlan(),
+                autonomousPlan: createUCLAAutonomousPlan(),
                 selectedCourses: createSelectedCourses(),
                 reports: createReports()
             }
