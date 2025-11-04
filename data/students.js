@@ -324,7 +324,42 @@
             modality: "线上直播",
             duration: "≥8周",
             price: "≤1600美元",
-            createdAt: "2025-09-10"
+            createdAt: "2025-09-10",
+            createdAtIso: "2025-09-10T09:00:00Z",
+            submissionMode: "form",
+            formSnapshot: {
+                semester: "2025-Fall",
+                format: "online",
+                durationMin: "8",
+                durationMax: "16",
+                priceMax: "1600",
+                currency: "USD"
+            },
+            history: [
+                {
+                    action: "created",
+                    timestamp: "2025-09-10T09:00:00Z",
+                    actor: "张明",
+                    details: {
+                        submissionMode: "form",
+                        courseCode: "MATH 2210"
+                    }
+                },
+                {
+                    action: "status-updated",
+                    timestamp: "2025-10-01T08:30:00Z",
+                    actor: "系统",
+                    details: {
+                        from: "waiting",
+                        to: "matched"
+                    }
+                }
+            ],
+            metadata: {
+                courseDisplay: "MATH 2210(Multivariable Calculus)",
+                createdAtIso: "2025-09-10T09:00:00Z",
+                deadlineSource: "form"
+            }
         },
         {
             id: "sub-chempending",
@@ -342,6 +377,32 @@
             duration: "12-16周",
             price: "≤2000美元",
             createdAt: "2025-08-15",
+            createdAtIso: "2025-08-15T10:00:00Z",
+            submissionMode: "form",
+            formSnapshot: {
+                semester: "2025-Winter",
+                format: "offline",
+                durationMin: "12",
+                durationMax: "16",
+                priceMax: "2000",
+                currency: "USD"
+            },
+            history: [
+                {
+                    action: "created",
+                    timestamp: "2025-08-15T10:00:00Z",
+                    actor: "张明",
+                    details: {
+                        submissionMode: "form",
+                        courseCode: "CHEM 1000"
+                    }
+                }
+            ],
+            metadata: {
+                courseDisplay: "CHEM 1000(Chemical Principles)",
+                createdAtIso: "2025-08-15T10:00:00Z",
+                deadlineSource: "form"
+            },
             warning: "剩7天"
         },
         {
@@ -359,7 +420,34 @@
             modality: "不限",
             duration: "不限",
             price: "≤1500美元",
-            createdAt: "2025-07-20"
+            createdAt: "2025-07-20",
+            createdAtIso: "2025-07-20T14:20:00Z",
+            submissionMode: "direct",
+            history: [
+                {
+                    action: "created",
+                    timestamp: "2025-07-20T14:20:00Z",
+                    actor: "张明",
+                    details: {
+                        submissionMode: "direct",
+                        courseCode: "PSYC 1"
+                    }
+                },
+                {
+                    action: "status-updated",
+                    timestamp: "2025-08-02T09:15:00Z",
+                    actor: "系统",
+                    details: {
+                        from: "waiting",
+                        to: "notified"
+                    }
+                }
+            ],
+            metadata: {
+                courseDisplay: "PSYC 1(Introduction to Psychology)",
+                createdAtIso: "2025-07-20T14:20:00Z",
+                deadlineSource: "manual"
+            }
         }
     ]);
 

@@ -40,7 +40,23 @@
 
     const subscriptionBlueprint = Object.freeze({
         required: ['id', 'type', 'status', 'course'],
-        optional: ['deadline', 'summary', 'term', 'modality', 'duration', 'price', 'createdAt', 'warning']
+        optional: [
+            'deadline',
+            'summary',
+            'term',
+            'modality',
+            'duration',
+            'price',
+            'createdAt',
+            'warning',
+            'formSnapshot',
+            'submissionMode',
+            'history',
+            'lastRenewedAt',
+            'lastRenewedBy',
+            'metadata',
+            'createdAtIso'
+        ]
     });
 
     const subscriptionErrorTypes = Object.freeze({
@@ -72,7 +88,18 @@
         'notified',
         'viewed',
         'converted',
-        'expired'
+        'expired',
+        'cancelled'
+    ]);
+
+    const submissionModeSet = new Set(['direct', 'form']);
+
+    const historyActionSet = new Set([
+        'created',
+        'edited',
+        'renewed',
+        'cancelled',
+        'status-updated'
     ]);
 
     const subscriptionTypeSet = new Set(['product', 'home']);
@@ -86,6 +113,85 @@
         subscriptionIdSeed += 1;
         const baseStudentId = typeof studentId === 'undefined' ? 'unknown' : String(studentId).trim() || 'unknown';
         return `sub-${baseStudentId}-${subscriptionIdSeed}`;
+    };
+
+    const toClonedObject = (source) => {
+        if (!source || typeof source !== 'object') {
+            return {};
+        }
+        return cloneEntity(source) || {};
+    };
+
+    const parseDateInput = (value) => {
+        if (!value || typeof value !== 'string') {
+            return null;
+        }
+
+        const parts = value.split('-');
+        if (parts.length === 3) {
+            const [year, month, day] = parts.map(part => parseInt(part, 10));
+            if (!Number.isNaN(year) && !Number.isNaN(month) && !Number.isNaN(day)) {
+                return new Date(Date.UTC(year, month - 1, day));
+            }
+        }
+
+        const direct = new Date(value);
+        if (Number.isNaN(direct.getTime())) {
+            return null;
+        }
+        return direct;
+    };
+
+    const formatDateOutput = (date) => {
+        if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
+            return '';
+        }
+        return date.toISOString().split('T')[0];
+    };
+
+    const addDays = (date, days) => {
+        if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
+            return null;
+        }
+        const clone = new Date(date.getTime());
+        clone.setUTCDate(clone.getUTCDate() + days);
+        return clone;
+    };
+
+    const normalizeFormSnapshot = (snapshot) => {
+        if (!snapshot || typeof snapshot !== 'object') {
+            return null;
+        }
+        return cloneEntity(snapshot);
+    };
+
+    const normalizeHistoryEntry = (entry) => {
+        if (!entry || typeof entry !== 'object') {
+            return null;
+        }
+
+        const action = typeof entry.action === 'string' && historyActionSet.has(entry.action)
+            ? entry.action
+            : null;
+        if (!action) {
+            return null;
+        }
+
+        const timestamp = typeof entry.timestamp === 'string' && entry.timestamp
+            ? entry.timestamp
+            : new Date().toISOString();
+
+        const actor = typeof entry.actor === 'string' ? entry.actor : '';
+        const details = entry.details && typeof entry.details === 'object'
+            ? cloneEntity(entry.details)
+            : undefined;
+
+        return {
+            action,
+            timestamp,
+            actor,
+            details
+        };
     };
 
     const normalizeCourseSnapshot = (course = {}) => {
@@ -116,6 +222,29 @@
         snapshot.status = normalizedStatus;
 
         snapshot.course = normalizeCourseSnapshot(snapshot.course);
+
+        const normalizedForm = normalizeFormSnapshot(snapshot.formSnapshot);
+        snapshot.formSnapshot = normalizedForm;
+
+        const submissionMode = typeof snapshot.submissionMode === 'string' && submissionModeSet.has(snapshot.submissionMode)
+            ? snapshot.submissionMode
+            : (normalizedForm ? 'form' : 'direct');
+        snapshot.submissionMode = submissionMode;
+
+        const historyEntries = Array.isArray(snapshot.history)
+            ? snapshot.history.map(normalizeHistoryEntry).filter(Boolean)
+            : [];
+        snapshot.history = historyEntries;
+
+        snapshot.lastRenewedAt = typeof snapshot.lastRenewedAt === 'string' ? snapshot.lastRenewedAt : '';
+        snapshot.lastRenewedBy = typeof snapshot.lastRenewedBy === 'string' ? snapshot.lastRenewedBy : '';
+        snapshot.createdAtIso = typeof snapshot.createdAtIso === 'string' ? snapshot.createdAtIso : '';
+
+        if (snapshot.metadata && typeof snapshot.metadata === 'object') {
+            snapshot.metadata = cloneEntity(snapshot.metadata);
+        } else {
+            snapshot.metadata = {};
+        }
 
         return snapshot;
     };
@@ -608,6 +737,206 @@
                 return [];
             }
             return student.subscriptions.map(subscription => normalizeSubscriptionSnapshot(subscription, studentId));
+        },
+
+        updateSubscriptionConditions(studentId, subscriptionId, options = {}) {
+            const student = getStudentForMutation(studentId);
+            const index = findSubscriptionIndex(student.subscriptions, subscriptionId);
+
+            if (index < 0) {
+                throw new SubscriptionRepositoryError(
+                    subscriptionErrorTypes.notFound,
+                    `未找到订阅 ${subscriptionId}`,
+                    { studentId, subscriptionId }
+                );
+            }
+
+            const current = normalizeSubscriptionSnapshot(student.subscriptions[index], studentId);
+            const actor = typeof options.actor === 'string' ? options.actor : '';
+            const nowIso = new Date().toISOString();
+
+            const updatedSnapshot = {
+                ...current,
+                term: options.term !== undefined ? options.term : current.term,
+                modality: options.modality !== undefined ? options.modality : current.modality,
+                duration: options.duration !== undefined ? options.duration : current.duration,
+                price: options.price !== undefined ? options.price : current.price,
+                deadline: options.deadline !== undefined ? options.deadline : current.deadline,
+                summary: options.summary !== undefined ? options.summary : current.summary,
+                submissionMode: options.submissionMode || current.submissionMode,
+                formSnapshot: options.formSnapshot === undefined
+                    ? current.formSnapshot
+                    : normalizeFormSnapshot(options.formSnapshot),
+                metadata: {
+                    ...toClonedObject(current.metadata),
+                    ...toClonedObject(options.metadata)
+                }
+            };
+
+            const changedFields = Array.isArray(options.changedFields) ? options.changedFields.slice() : [];
+            const historyEntry = normalizeHistoryEntry({
+                action: 'edited',
+                timestamp: nowIso,
+                actor,
+                details: {
+                    changedFields,
+                    submissionMode: updatedSnapshot.submissionMode,
+                    summary: updatedSnapshot.summary,
+                    deadline: updatedSnapshot.deadline
+                }
+            });
+
+            updatedSnapshot.history = historyEntry
+                ? current.history.concat(historyEntry)
+                : current.history.slice();
+
+            student.subscriptions[index] = normalizeSubscriptionSnapshot(updatedSnapshot, studentId);
+
+            eventBus.emit('subscriptions:changed', { studentId: student.id });
+            return normalizeSubscriptionSnapshot(student.subscriptions[index], studentId);
+        },
+
+        renewSubscription(studentId, subscriptionId, options = {}) {
+            const student = getStudentForMutation(studentId);
+            const index = findSubscriptionIndex(student.subscriptions, subscriptionId);
+
+            if (index < 0) {
+                throw new SubscriptionRepositoryError(
+                    subscriptionErrorTypes.notFound,
+                    `未找到订阅 ${subscriptionId}`,
+                    { studentId, subscriptionId }
+                );
+            }
+
+            const current = normalizeSubscriptionSnapshot(student.subscriptions[index], studentId);
+            const baseDeadlineDate = parseDateInput(current.deadline) || new Date();
+            const days = Number.isFinite(options.days) ? options.days : 180;
+            const nextDeadlineDate = addDays(baseDeadlineDate, days) || addDays(new Date(), days);
+            const newDeadline = formatDateOutput(nextDeadlineDate);
+            const nowIso = new Date().toISOString();
+            const actor = typeof options.actor === 'string' ? options.actor : '';
+
+            const metadata = {
+                ...toClonedObject(current.metadata),
+                lastRenewedAt: nowIso,
+                lastRenewedBy: actor,
+                renewCount: typeof current.metadata?.renewCount === 'number'
+                    ? current.metadata.renewCount + 1
+                    : 1
+            };
+
+            const historyEntry = normalizeHistoryEntry({
+                action: 'renewed',
+                timestamp: nowIso,
+                actor,
+                details: {
+                    previousDeadline: current.deadline || '',
+                    newDeadline,
+                    daysExtended: days
+                }
+            });
+
+            const updatedSnapshot = {
+                ...current,
+                deadline: newDeadline,
+                status: current.status === 'expired' ? 'waiting' : current.status,
+                lastRenewedAt: nowIso,
+                lastRenewedBy: actor,
+                history: historyEntry ? current.history.concat(historyEntry) : current.history.slice(),
+                metadata
+            };
+
+            student.subscriptions[index] = normalizeSubscriptionSnapshot(updatedSnapshot, studentId);
+
+            eventBus.emit('subscriptions:changed', { studentId: student.id });
+            return normalizeSubscriptionSnapshot(student.subscriptions[index], studentId);
+        },
+
+        cancelSubscription(studentId, subscriptionId, options = {}) {
+            const student = getStudentForMutation(studentId);
+            const index = findSubscriptionIndex(student.subscriptions, subscriptionId);
+
+            if (index < 0) {
+                throw new SubscriptionRepositoryError(
+                    subscriptionErrorTypes.notFound,
+                    `未找到订阅 ${subscriptionId}`,
+                    { studentId, subscriptionId }
+                );
+            }
+
+            const current = normalizeSubscriptionSnapshot(student.subscriptions[index], studentId);
+            if (current.status === 'cancelled') {
+                return current;
+            }
+
+            const nowIso = new Date().toISOString();
+            const actor = typeof options.actor === 'string' ? options.actor : '';
+            const reason = typeof options.reason === 'string' ? options.reason.trim() : '';
+
+            const metadata = {
+                ...toClonedObject(current.metadata),
+                cancelledAt: nowIso,
+                cancelledBy: actor,
+                cancelledReason: reason
+            };
+
+            const historyEntry = normalizeHistoryEntry({
+                action: 'cancelled',
+                timestamp: nowIso,
+                actor,
+                details: {
+                    previousStatus: current.status,
+                    reason
+                }
+            });
+
+            const updatedSnapshot = {
+                ...current,
+                status: 'cancelled',
+                warning: '',
+                history: historyEntry ? current.history.concat(historyEntry) : current.history.slice(),
+                metadata
+            };
+
+            student.subscriptions[index] = normalizeSubscriptionSnapshot(updatedSnapshot, studentId);
+
+            eventBus.emit('subscriptions:changed', { studentId: student.id });
+            return normalizeSubscriptionSnapshot(student.subscriptions[index], studentId);
+        },
+
+        resolveSubscriptionContext(studentId, subscriptionId) {
+            const student = getFollowUpCollection().find(item => String(item.id) === String(studentId));
+            if (!student || !Array.isArray(student.subscriptions)) {
+                return null;
+            }
+
+            const rawSubscription = student.subscriptions.find(item => String(item?.id) === String(subscriptionId));
+            if (!rawSubscription) {
+                return null;
+            }
+
+            const normalizedSubscription = normalizeSubscriptionSnapshot(rawSubscription, studentId);
+
+            return {
+                student: {
+                    id: student.id,
+                    name: student.name,
+                    school: student.school,
+                    status: cloneEntity(student.status)
+                },
+                subscription: normalizedSubscription,
+                course: cloneEntity(normalizedSubscription.course),
+                formSnapshot: normalizedSubscription.formSnapshot,
+                submissionMode: normalizedSubscription.submissionMode,
+                history: normalizedSubscription.history,
+                metadata: cloneEntity(normalizedSubscription.metadata),
+                createdAt: normalizedSubscription.createdAt || '',
+                deadline: normalizedSubscription.deadline || '',
+                status: normalizedSubscription.status,
+                type: normalizedSubscription.type,
+                lastRenewedAt: normalizedSubscription.lastRenewedAt || '',
+                lastRenewedBy: normalizedSubscription.lastRenewedBy || ''
+            };
         },
 
         addSubscription(studentId, payload) {

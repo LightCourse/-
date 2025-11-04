@@ -523,6 +523,112 @@
             justify-content: center;
         }
         
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 11000;
+            pointer-events: none;
+        }
+
+        .toast-message {
+            min-width: 260px;
+            max-width: 360px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+            padding: 14px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            color: #1f2937;
+            pointer-events: auto;
+            animation: toast-slide-in 0.35s ease forwards;
+        }
+
+        .toast-message.hide {
+            animation: toast-slide-out 0.25s ease forwards;
+        }
+
+        .toast-message .toast-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .toast-message .toast-description {
+            font-size: 13px;
+            color: #4b5563;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .toast-message.info {
+            border-color: #bfdbfe;
+        }
+
+        .toast-message.success {
+            border-color: #bbf7d0;
+        }
+
+        .toast-message.success .toast-title {
+            color: #166534;
+        }
+
+        .toast-message.error {
+            border-color: #fecaca;
+        }
+
+        .toast-message.error .toast-title {
+            color: #b91c1c;
+        }
+
+        .toast-actions {
+            margin-top: 4px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .toast-actions button {
+            background: none;
+            border: none;
+            color: #2563eb;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .toast-actions button:hover {
+            text-decoration: underline;
+        }
+
+        @keyframes toast-slide-in {
+            0% {
+                transform: translateX(120%);
+                opacity: 0;
+            }
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes toast-slide-out {
+            0% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(120%);
+                opacity: 0;
+            }
+        }
+
         .modal-content {
             background: white;
             border-radius: 8px;
@@ -548,6 +654,15 @@
             font-weight: var(--font-weight-bold);
             color: var(--text-primary);
         }
+
+        .modal-header.edit-mode {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffe28a 100%);
+            border-bottom-color: #ffe69c;
+        }
+
+        .modal-header.edit-mode h3 {
+            color: #8a6d3b;
+        }
         
         /* 课程订阅模态框绿色主题样式 */
         .modal-header.product-course {
@@ -567,6 +682,23 @@
         .modal-header.product-course .modal-close:hover {
             opacity: 1;
         }
+
+        .modal-header.destructive {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            border-bottom-color: #fca5a5;
+        }
+
+        .modal-header.destructive h3 {
+            color: #b91c1c;
+        }
+
+        .modal-header.destructive .modal-close {
+            color: rgba(185, 28, 28, 0.8);
+        }
+
+        .modal-header.destructive .modal-close:hover {
+            color: #7f1d1d;
+        }
         
         .modal-close {
             background: none;
@@ -582,6 +714,16 @@
             justify-content: center;
             transition: color 0.2s ease;
         }
+
+        .edit-mode-notice {
+            margin: 12px 0;
+            padding: 10px 12px;
+            background: #fff8e1;
+            border: 1px solid #ffe0a3;
+            border-radius: 6px;
+            color: #8a6d3b;
+            font-size: 13px;
+        }
         
         .modal-close:hover {
             color: white;
@@ -589,6 +731,33 @@
         
         .modal-body {
             padding: 24px;
+        }
+
+        .renew-info-block,
+        .cancel-info-block {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .destructive-note {
+            font-size: 13px;
+            line-height: 1.6;
+            color: #b91c1c;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 6px;
+            padding: 12px;
+        }
+
+        textarea.form-input {
+            resize: vertical;
+            min-height: 96px;
+            line-height: 1.5;
         }
         
         /* 顶部信息区样式 */
@@ -1108,7 +1277,15 @@
             font-weight: var(--font-weight-medium);
             white-space: nowrap;
         }
+            .status-cancelled {
+                background: rgba(128, 128, 128, 0.12);
+                color: #6c757d;
+                border-color: rgba(108, 117, 125, 0.3);
+            }
         
+            .status-cancelled .status-icon {
+                color: #6c757d;
+            }
         .status-pending {
             background: #fff3cd;
             color: #856404;
@@ -5149,6 +5326,89 @@
             </div>
         </div>
     </div>
+
+    <!-- 续期订阅模态框 -->
+    <div id="renewSubscriptionModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 420px;">
+            <div class="modal-header">
+                <h3 id="renewModalTitle">续期订阅</h3>
+                <button class="modal-close" onclick="closeRenewSubscriptionModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="renew-info-block">
+                    <div class="info-item">
+                        <label class="info-label">订阅课程</label>
+                        <div class="info-value" id="renewCourseField">-</div>
+                    </div>
+                    <div class="info-item">
+                        <label class="info-label">当前截止日期</label>
+                        <div class="info-value" id="renewCurrentDeadline">-</div>
+                    </div>
+                </div>
+                <div class="form-field" style="margin-top: 16px;">
+                    <div class="field-left">
+                        <div class="field-header">
+                            <div class="field-title-group">
+                                <label class="field-label" for="renewDeadlineInput">新的截止日期</label>
+                                <span class="field-hint">请选择续期后的日期</span>
+                            </div>
+                        </div>
+                        <div class="field-control">
+                            <input type="date" id="renewDeadlineInput" class="form-input date-input">
+                        </div>
+                        <p class="field-hint" id="renewHintText" style="margin-top: 8px; color: #6c757d;">系统默认顺延 180 天，您也可以自定义日期。</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-cancel" onclick="closeRenewSubscriptionModal()">取消</button>
+                <button type="button" class="btn btn-save" id="renewConfirmBtn" onclick="submitRenewSubscription()">确认续期</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 取消订阅模态框 -->
+    <div id="cancelSubscriptionModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 420px;">
+            <div class="modal-header destructive">
+                <h3 id="cancelModalTitle">取消订阅</h3>
+                <button class="modal-close" onclick="closeCancelSubscriptionModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="cancel-info-block">
+                    <div class="info-item">
+                        <label class="info-label">订阅课程</label>
+                        <div class="info-value" id="cancelCourseField">-</div>
+                    </div>
+                    <div class="info-item">
+                        <label class="info-label">当前状态</label>
+                        <div class="info-value" id="cancelStatusField">-</div>
+                    </div>
+                    <div class="destructive-note" id="cancelWarningText">
+                        取消后将停止课程匹配提醒，后续如需再次跟进，可重新创建订阅。
+                    </div>
+                </div>
+                <div class="form-field" style="margin-top: 16px;">
+                    <div class="field-left">
+                        <div class="field-header">
+                            <div class="field-title-group">
+                                <label class="field-label" for="cancelReasonInput">取消原因（可选）</label>
+                                <span class="field-hint">填写原因可帮助团队同步最新情况</span>
+                            </div>
+                        </div>
+                        <div class="field-control">
+                            <textarea id="cancelReasonInput" class="form-input" rows="3" placeholder="例如：学生已选上课程，暂时不需要继续提醒"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-cancel" onclick="closeCancelSubscriptionModal()">暂不取消</button>
+                <button type="button" class="btn btn-danger" id="cancelConfirmBtn" onclick="submitCancelSubscription()">确认取消</button>
+            </div>
+        </div>
+    </div>
+    <div id="toastContainer" class="toast-container" role="status" aria-live="polite"></div>
     <script src="data/students.js"></script>
     <script src="scripts/studentRepository.js"></script>
     <script>
@@ -5741,7 +6001,10 @@
             }
             
             // 只处理单门课程订阅
-            document.getElementById('modalTitle').textContent = type + '条件设置';
+            setSubscribeFormMode('create', {
+                title: type + '条件设置',
+                confirmText: '确认订阅'
+            });
             
             // 设置模态框头部样式（本校课程和产品课程都使用绿色样式）
             const modalHeader = document.querySelector('#subscribeModal .modal-header');
@@ -5776,14 +6039,35 @@
         
         // 关闭订阅模态框
         function closeSubscribeModal() {
-            document.getElementById('subscribeModal').style.display = 'none';
-            // 清理批量模式的动态内容
-            document.getElementById('courseItems').innerHTML = '';
-            // 清除模态框头部的产品课程样式
-            document.querySelector('#subscribeModal .modal-header').classList.remove('product-course');
-            // 清理单门课程订阅的状态
+            const modal = document.getElementById('subscribeModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+            setSubscribeFormMode('create');
+
+            const courseItems = document.getElementById('courseItems');
+            if (courseItems) {
+                courseItems.innerHTML = '';
+            }
+
+            const modalHeader = document.querySelector('#subscribeModal .modal-header');
+            if (modalHeader) {
+                modalHeader.classList.remove('product-course');
+            }
+
             window.currentSubscribeButton = null;
             window.currentSingleCourseSnapshot = null;
+            window.currentSubscriptionEditing = null;
+
+            setSubscribeModalProcessing(false);
+            resetSubscribeFormFields();
+
+            const submitBtn = document.querySelector('#subscribeModal .btn-save[onclick="submitSubscribe()"]');
+            if (submitBtn) {
+                submitBtn.textContent = '确认订阅';
+                submitBtn.disabled = false;
+                delete submitBtn.dataset.originalText;
+            }
         }
         
         // 获取选中的课程
@@ -6007,23 +6291,26 @@
         
         // 提交订阅
         function submitSubscribe() {
-            // 检查是否是单门课程订阅模式
+            if (window.currentSubscriptionEditing) {
+                submitSubscriptionEdit();
+                return;
+            }
+
             if (window.currentSubscribeButton) {
                 console.log('检测到单门课程订阅模式');
-                // 单门课程提交
                 submitSingleCourse();
-            } else {
-                console.log('检测到批量课程订阅模式');
-                // 批量课程提交
-                const precomputed = Array.isArray(window.batchSelectedCourses)
-                    ? window.batchSelectedCourses
-                    : [];
-                const selectedCourses = precomputed.length ? precomputed : getSelectedCourses();
-                console.log('选中的课程数量:', selectedCourses.length);
-                submitBatchCourses(selectedCourses);
-                if (precomputed.length) {
-                    window.batchSelectedCourses = [];
-                }
+                return;
+            }
+
+            console.log('检测到批量课程订阅模式');
+            const precomputed = Array.isArray(window.batchSelectedCourses)
+                ? window.batchSelectedCourses
+                : [];
+            const selectedCourses = precomputed.length ? precomputed : getSelectedCourses();
+            console.log('选中的课程数量:', selectedCourses.length);
+            submitBatchCourses(selectedCourses);
+            if (precomputed.length) {
+                window.batchSelectedCourses = [];
             }
         }
         
@@ -6048,6 +6335,150 @@
                 closeSubscribeModal();
             } else {
                 setButtonProcessingState(buttonElement, false);
+            }
+        }
+
+        function submitSubscriptionEdit() {
+            const editing = window.currentSubscriptionEditing;
+            if (!editing || !editing.studentId || !editing.subscriptionId) {
+                showActionToast({
+                    title: '编辑上下文失效',
+                    description: '请重新打开订阅编辑后再试。',
+                    type: 'error'
+                });
+                recordSubscriptionActionLog('edit', 'failed', {
+                    reason: 'missing-context'
+                });
+                return;
+            }
+
+            const repository = window.StudentRepository;
+            if (!repository || typeof repository.updateSubscriptionConditions !== 'function') {
+                showActionToast({
+                    title: '编辑暂不可用',
+                    description: '订阅服务未正确初始化，请稍后重试。',
+                    type: 'error'
+                });
+                recordSubscriptionActionLog('edit', 'failed', {
+                    studentId: editing.studentId,
+                    subscriptionId: editing.subscriptionId,
+                    reason: 'repository-missing'
+                });
+                return;
+            }
+
+            const subscribeForm = document.querySelector('#subscribeForm');
+            const formData = subscribeForm ? collectFormData(subscribeForm) : {};
+
+            setSubscribeModalProcessing(true, '保存中...');
+
+            const actor = resolveCurrentOperatorName();
+            const subscriptionContext = editing.context || {};
+            const subscription = subscriptionContext.subscription || {};
+            const course = subscriptionContext.course || subscription.course || {};
+            const courseDisplay = formatCourseDisplay(course.code, course.name);
+
+            const termText = formData.semester || '任意学期';
+            const modalityKey = formData.format || '';
+            const modalityText = modalityKey
+                ? (subscriptionModalityLabels[modalityKey] || modalityKey)
+                : '不限';
+            const durationText = formatDurationText(formData);
+            const priceText = formatPriceText(formData);
+            const deadline = formData.endDate || '';
+
+            const summaryParts = [];
+            if (termText && termText !== '任意学期') {
+                summaryParts.push(termText);
+            }
+            if (modalityText && modalityText !== '不限') {
+                summaryParts.push(modalityText);
+            }
+            if (durationText) {
+                summaryParts.push(durationText);
+            }
+            if (priceText) {
+                summaryParts.push(priceText);
+            }
+            const summary = summaryParts.length ? summaryParts.join(', ') : '无附加条件';
+
+            const originalSnapshot = subscriptionContext.formSnapshot && typeof subscriptionContext.formSnapshot === 'object'
+                ? subscriptionContext.formSnapshot
+                : {};
+
+            const changedFields = [];
+            const markChanged = (field, previous, next) => {
+                if (String(previous ?? '') !== String(next ?? '')) {
+                    if (!changedFields.includes(field)) {
+                        changedFields.push(field);
+                    }
+                }
+            };
+
+            Object.keys(formData).forEach(key => {
+                const previous = originalSnapshot[key];
+                const current = formData[key];
+                if (typeof previous === 'boolean' || typeof current === 'boolean') {
+                    if (Boolean(previous) !== Boolean(current)) {
+                        changedFields.push(key);
+                    }
+                    return;
+                }
+                if (String(previous ?? '') !== String(current ?? '')) {
+                    changedFields.push(key);
+                }
+            });
+
+            markChanged('term', subscription.term, termText);
+            markChanged('modality', subscription.modality, modalityText);
+            markChanged('duration', subscription.duration, durationText || '不限');
+            markChanged('price', subscription.price, priceText || '');
+            markChanged('deadline', subscription.deadline, deadline);
+            markChanged('summary', subscription.summary, summary);
+
+            const nowIso = new Date().toISOString();
+
+            try {
+                repository.updateSubscriptionConditions(editing.studentId, editing.subscriptionId, {
+                    term: termText,
+                    modality: modalityText,
+                    duration: durationText || '不限',
+                    price: priceText || '',
+                    deadline,
+                    summary,
+                    submissionMode: 'form',
+                    formSnapshot: formData,
+                    metadata: {
+                        courseDisplay,
+                        lastEditedAt: nowIso,
+                        lastEditedBy: actor || '',
+                        deadlineSource: deadline ? 'form' : 'none'
+                    },
+                    changedFields
+                });
+
+                if (typeof repository.resolveSubscriptionContext === 'function') {
+                    window.currentSubscriptionContext = repository.resolveSubscriptionContext(editing.studentId, editing.subscriptionId);
+                }
+                handleSubscriptionActionSuccess('edit', {
+                    studentId: editing.studentId,
+                    subscriptionId: editing.subscriptionId
+                });
+                closeSubscribeModal();
+                finishActionProcessing(editing.triggerButton);
+            } catch (error) {
+                const message = error && error.message ? error.message : '更新订阅失败，请稍后再试。';
+                showActionToast({
+                    title: '保存失败',
+                    description: message,
+                    type: 'error'
+                });
+                recordSubscriptionActionLog('edit', 'failed', {
+                    studentId: editing.studentId,
+                    subscriptionId: editing.subscriptionId,
+                    error: message
+                });
+                setSubscribeModalProcessing(false);
             }
         }
         
@@ -6139,11 +6570,169 @@
             return data;
         }
 
+        function resetSubscribeFormFields() {
+            const form = document.getElementById('subscribeForm');
+            if (!form || typeof form.reset !== 'function') {
+                return;
+            }
+            form.reset();
+        }
+
+        function normalizeSubscriptionFormatValue(rawValue, fallbackLabel = '') {
+            if (rawValue && subscriptionModalityLabels[rawValue]) {
+                return rawValue;
+            }
+            if (!rawValue && fallbackLabel && subscriptionModalityReverseMap[fallbackLabel]) {
+                return subscriptionModalityReverseMap[fallbackLabel];
+            }
+            if (rawValue && subscriptionModalityReverseMap[rawValue]) {
+                return subscriptionModalityReverseMap[rawValue];
+            }
+            if (rawValue === 'online') {
+                return 'online-live';
+            }
+            if (rawValue === 'hybrid') {
+                return 'online-live';
+            }
+            if (rawValue === 'offline') {
+                return 'offline';
+            }
+            return '';
+        }
+
+        function applyFormSnapshotToSubscribeForm(snapshot = {}, subscription = {}) {
+            const form = document.getElementById('subscribeForm');
+            if (!form) {
+                return;
+            }
+
+            resetSubscribeFormFields();
+
+            const assignValue = (name, value) => {
+                const field = form.querySelector(`[name="${name}"]`);
+                if (!field) {
+                    return;
+                }
+                if (field.type === 'checkbox') {
+                    field.checked = Boolean(value);
+                } else if (value !== undefined && value !== null) {
+                    field.value = value;
+                } else {
+                    field.value = '';
+                }
+            };
+
+            const normalizedSnapshot = snapshot && typeof snapshot === 'object' ? snapshot : {};
+
+            assignValue('semester', normalizedSnapshot.semester
+                || (subscription.term && subscription.term !== '任意学期' ? subscription.term : ''));
+            if ('semesterRequired' in normalizedSnapshot) {
+                assignValue('semesterRequired', normalizedSnapshot.semesterRequired);
+            }
+
+            const startDate = normalizedSnapshot.startDate || '';
+            const fallbackDeadline = subscription.deadline || '';
+            const endDate = normalizedSnapshot.endDate || fallbackDeadline;
+            assignValue('startDate', startDate);
+            assignValue('endDate', endDate);
+            if ('dateRequired' in normalizedSnapshot) {
+                assignValue('dateRequired', normalizedSnapshot.dateRequired);
+            } else if (startDate || endDate) {
+                assignValue('dateRequired', true);
+            }
+
+            const formatValue = normalizeSubscriptionFormatValue(
+                normalizedSnapshot.format,
+                subscription.modality || ''
+            );
+            if (formatValue) {
+                assignValue('format', formatValue);
+            }
+            if ('formatRequired' in normalizedSnapshot) {
+                assignValue('formatRequired', normalizedSnapshot.formatRequired);
+            }
+
+            let durationValue = normalizedSnapshot.duration;
+            let durationOperator = normalizedSnapshot.durationOperator || 'equal';
+            if (durationValue === undefined && (normalizedSnapshot.durationMin !== undefined || normalizedSnapshot.durationMax !== undefined)) {
+                if (normalizedSnapshot.durationMin !== undefined && normalizedSnapshot.durationMax !== undefined) {
+                    if (String(normalizedSnapshot.durationMin) === String(normalizedSnapshot.durationMax)) {
+                        durationValue = normalizedSnapshot.durationMin;
+                        durationOperator = 'equal';
+                    } else {
+                        durationValue = normalizedSnapshot.durationMin;
+                        durationOperator = 'gte';
+                    }
+                } else if (normalizedSnapshot.durationMin !== undefined) {
+                    durationValue = normalizedSnapshot.durationMin;
+                    durationOperator = 'gte';
+                } else {
+                    durationValue = normalizedSnapshot.durationMax;
+                    durationOperator = 'lte';
+                }
+            }
+            if (durationValue === undefined && subscription.duration) {
+                const match = String(subscription.duration).match(/(\d+)/);
+                if (match) {
+                    durationValue = match[1];
+                    if (subscription.duration.includes('≥')) {
+                        durationOperator = 'gte';
+                    } else if (subscription.duration.includes('≤')) {
+                        durationOperator = 'lte';
+                    } else {
+                        durationOperator = 'equal';
+                    }
+                }
+            }
+            if (durationValue !== undefined) {
+                assignValue('duration', durationValue);
+            }
+            assignValue('durationOperator', durationOperator);
+            if ('durationRequired' in normalizedSnapshot) {
+                assignValue('durationRequired', normalizedSnapshot.durationRequired);
+            } else if (durationValue !== undefined) {
+                assignValue('durationRequired', true);
+            }
+
+            if (normalizedSnapshot.credits !== undefined) {
+                assignValue('credits', normalizedSnapshot.credits);
+            }
+            if (normalizedSnapshot.creditsOperator) {
+                assignValue('creditsOperator', normalizedSnapshot.creditsOperator);
+            }
+            if ('creditsRequired' in normalizedSnapshot) {
+                assignValue('creditsRequired', normalizedSnapshot.creditsRequired);
+            }
+
+            let priceValue = normalizedSnapshot.price;
+            if (priceValue === undefined && normalizedSnapshot.priceMax !== undefined) {
+                priceValue = normalizedSnapshot.priceMax;
+            }
+            if (priceValue !== undefined) {
+                assignValue('price', priceValue);
+            }
+            if (normalizedSnapshot.priceOperator) {
+                assignValue('priceOperator', normalizedSnapshot.priceOperator);
+            }
+            if ('priceRequired' in normalizedSnapshot) {
+                assignValue('priceRequired', normalizedSnapshot.priceRequired);
+            } else if (priceValue !== undefined) {
+                assignValue('priceRequired', true);
+            }
+        }
+
         const subscriptionModalityLabels = {
             'online-live': '线上直播',
             'online-recorded': '线上非直播',
             'offline': '线下'
         };
+
+        const subscriptionModalityReverseMap = Object.entries(subscriptionModalityLabels)
+            .reduce((acc, entry) => {
+                const [value, label] = entry;
+                acc[label] = value;
+                return acc;
+            }, {});
 
         function splitCourseDisplay(display) {
             if (!display || typeof display !== 'string') {
@@ -6235,7 +6824,8 @@
             const priceText = formatPriceText(formData);
             const termText = formData.semester || '任意学期';
             const deadline = formData.endDate || '';
-            const createdAt = options.createdAt || new Date().toISOString().split('T')[0];
+            const createdAtIso = new Date().toISOString();
+            const createdAt = options.createdAt || createdAtIso.split('T')[0];
 
             const summaryParts = [];
             if (termText && termText !== '任意学期') {
@@ -6253,7 +6843,20 @@
 
             const summary = summaryParts.length ? summaryParts.join(', ') : '无附加条件';
 
-            return {
+            const submissionMode = options.submissionMode
+                || (formData && Object.keys(formData).length ? 'form' : 'direct');
+
+            let formSnapshot = null;
+            if (submissionMode === 'form' && formData && Object.keys(formData).length) {
+                try {
+                    formSnapshot = JSON.parse(JSON.stringify(formData));
+                } catch (snapshotError) {
+                    console.warn('订阅表单快照序列化失败，将使用浅拷贝', snapshotError);
+                    formSnapshot = { ...formData };
+                }
+            }
+
+            const basePayload = {
                 type: identifiers.type || 'product',
                 status: options.status || 'waiting',
                 course: {
@@ -6269,8 +6872,34 @@
                 price: priceText || '',
                 deadline,
                 summary,
-                createdAt
+                createdAt,
+                submissionMode,
+                createdAtIso,
+                history: Array.isArray(options.history) ? options.history.slice() : [],
+                metadata: {
+                    ...(options.metadata || {}),
+                    courseDisplay: options.courseDisplay || `${identifiers.code}(${identifiers.name})`,
+                    createdAtIso,
+                    deadlineSource: deadline ? 'form' : 'none'
+                }
             };
+
+            if (formSnapshot) {
+                basePayload.formSnapshot = formSnapshot;
+            }
+
+            basePayload.history.push({
+                action: 'created',
+                timestamp: createdAtIso,
+                actor: student?.name || '',
+                details: {
+                    submissionMode,
+                    courseCode: identifiers.code,
+                    courseType: identifiers.type || 'product'
+                }
+            });
+
+            return basePayload;
         }
 
         function setButtonProcessingState(buttonElement, isProcessing) {
@@ -6291,6 +6920,628 @@
                 buttonElement.disabled = false;
                 buttonElement.removeAttribute('aria-busy');
                 delete buttonElement.dataset.processingOriginalText;
+            }
+        }
+
+        function setSubscribeModalProcessing(isProcessing, label) {
+            const submitBtn = document.querySelector('#subscribeModal .btn-save[onclick="submitSubscribe()"]');
+            if (!submitBtn) {
+                return;
+            }
+
+            if (isProcessing) {
+                if (!submitBtn.dataset.originalText) {
+                    submitBtn.dataset.originalText = submitBtn.textContent.trim();
+                }
+                submitBtn.disabled = true;
+                submitBtn.textContent = label || '保存中...';
+                return;
+            }
+
+            if (submitBtn.dataset.originalText) {
+                submitBtn.textContent = submitBtn.dataset.originalText;
+                delete submitBtn.dataset.originalText;
+            }
+            submitBtn.disabled = false;
+        }
+
+        const actionRoutes = {
+            jump: {
+                path: '#/course-selection',
+                mode: 'hash',
+                processingLabel: '跳转中...'
+            },
+            view: {
+                path: '#/matched-courses',
+                mode: 'hash',
+                processingLabel: '加载中...'
+            },
+            notifyDetail: {
+                path: '#/notifications/detail',
+                mode: 'hash',
+                processingLabel: '查看中...'
+            }
+        };
+
+        function buildQueryString(params = {}) {
+            const searchParams = new URLSearchParams();
+            Object.entries(params).forEach(([key, value]) => {
+                if (value === undefined || value === null || value === '') {
+                    return;
+                }
+                searchParams.append(key, value);
+            });
+            const query = searchParams.toString();
+            return query ? `?${query}` : '';
+        }
+
+        function appendQuery(baseUrl = '', queryString = '') {
+            if (!queryString) {
+                return baseUrl || '';
+            }
+            if (!baseUrl) {
+                return queryString;
+            }
+            if (baseUrl.includes('?')) {
+                const suffix = baseUrl.endsWith('?') || baseUrl.endsWith('&') ? '' : '&';
+                return `${baseUrl}${suffix}${queryString.slice(1)}`;
+            }
+            return `${baseUrl}${queryString}`;
+        }
+
+        function buildHashUrl(path, queryString = '') {
+            const sanitized = path.startsWith('#') ? path : `#${path.replace(/^#/, '')}`;
+            return `${sanitized}${queryString}`;
+        }
+
+        function navigateTo(action, params = {}, options = {}) {
+            const routeConfig = actionRoutes[action] || null;
+            const basePath = options.path !== undefined ? options.path : routeConfig?.path;
+            const mode = options.mode || routeConfig?.mode || 'hash';
+            const queryString = buildQueryString(params);
+
+            if (!basePath && mode !== 'hash') {
+                console.warn(`navigateTo: 动作 ${action} 缺少跳转路径`);
+                if (options.unavailableMessage !== false) {
+                    alert(options.unavailableMessage || '暂未配置跳转目标，请联系管理员。');
+                }
+                return { success: false, reason: 'missing-path', mode };
+            }
+
+            if (!basePath && mode === 'hash') {
+                console.warn(`navigateTo: 动作 ${action} 在 hash 模式下缺少路径`);
+                if (options.unavailableMessage !== false) {
+                    alert(options.unavailableMessage || '暂未配置跳转目标，请联系管理员。');
+                }
+                return { success: false, reason: 'missing-path', mode };
+            }
+
+            const resolvedPath = basePath || '';
+            const finalUrl = mode === 'hash'
+                ? buildHashUrl(resolvedPath, queryString)
+                : appendQuery(resolvedPath, queryString);
+
+            try {
+                if (typeof options.onBefore === 'function') {
+                    options.onBefore({ action, params, mode, url: finalUrl });
+                }
+
+                if (mode === 'hash') {
+                    window.location.hash = finalUrl;
+                } else if (mode === 'new-tab') {
+                    window.open(finalUrl, '_blank', 'noopener,noreferrer');
+                } else {
+                    window.location.href = finalUrl;
+                }
+
+                if (typeof options.onAfter === 'function') {
+                    options.onAfter({ action, params, mode, url: finalUrl });
+                }
+
+                console.info('navigateTo', { action, url: finalUrl, params, mode });
+                return { success: true, mode, url: finalUrl };
+            } catch (error) {
+                console.error('navigateTo: 跳转失败', { action, error });
+                if (typeof options.onError === 'function') {
+                    options.onError(error);
+                }
+                if (options.errorMessage !== false) {
+                    alert(options.errorMessage || '跳转失败，请稍后再试。');
+                }
+                return { success: false, error, mode, url: finalUrl };
+            }
+        }
+
+        function startActionProcessing(button, actionName, fallbackLabel) {
+            if (!button) {
+                return null;
+            }
+            const config = actionRoutes[actionName] || {};
+            const label = fallbackLabel || config.processingLabel || '处理中...';
+            button.dataset.processingLabel = label;
+            setButtonProcessingState(button, true);
+            return config;
+        }
+
+        function finishActionProcessing(button, shouldReset = true) {
+            if (!button) {
+                return;
+            }
+            delete button.dataset.processingLabel;
+            if (shouldReset) {
+                setButtonProcessingState(button, false);
+            }
+        }
+
+        function setSubscribeFormMode(mode = 'create', options = {}) {
+            const modal = document.getElementById('subscribeModal');
+            if (!modal) {
+                return;
+            }
+
+            modal.dataset.mode = mode;
+
+            const modalHeader = modal.querySelector('.modal-header');
+            if (modalHeader) {
+                modalHeader.classList.toggle('edit-mode', mode === 'edit');
+                if (mode === 'edit') {
+                    modalHeader.classList.remove('product-course');
+                }
+            }
+
+            const titleElement = document.getElementById('modalTitle');
+            if (titleElement) {
+                if (mode === 'edit') {
+                    titleElement.textContent = options.title || '编辑订阅条件';
+                } else {
+                    titleElement.textContent = options.title || '课程订阅条件设置';
+                }
+            }
+
+            const submitBtn = document.querySelector('#subscribeModal .btn-save[onclick="submitSubscribe()"]');
+            if (submitBtn) {
+                if (mode === 'edit') {
+                    submitBtn.textContent = options.confirmText || '保存修改';
+                } else {
+                    submitBtn.textContent = options.confirmText || '确认订阅';
+                }
+                submitBtn.disabled = false;
+                delete submitBtn.dataset.originalText;
+            }
+
+            const editBadgeId = 'subscribeEditModeNotice';
+            let editBadge = document.getElementById(editBadgeId);
+            if (mode === 'edit') {
+                if (!editBadge) {
+                    editBadge = document.createElement('div');
+                    editBadge.id = editBadgeId;
+                    editBadge.className = 'edit-mode-notice';
+                    editBadge.textContent = options.notice || '当前正在编辑已存在的订阅条件。';
+                    const infoHeader = document.getElementById('singleCourseInfo');
+                    if (infoHeader) {
+                        infoHeader.parentNode.insertBefore(editBadge, infoHeader.nextSibling);
+                    }
+                } else {
+                    editBadge.textContent = options.notice || '当前正在编辑已存在的订阅条件。';
+                    editBadge.style.display = 'block';
+                }
+            } else if (editBadge) {
+                editBadge.style.display = 'none';
+            }
+        }
+
+        function handleSubscriptionActionSuccess(action, context = {}) {
+            const studentId = context.studentId || (window.currentSubscriptionContext?.student?.id);
+            if (studentId && typeof refreshSubscriptionCenter === 'function') {
+                refreshSubscriptionCenter(studentId);
+            }
+
+            if (window.SubscriptionModule && typeof window.SubscriptionModule.syncButtonStates === 'function' && studentId) {
+                window.SubscriptionModule.syncButtonStates(studentId);
+            }
+
+            recordSubscriptionActionLog(action, 'succeeded', context);
+
+            const successMap = {
+                edit: {
+                    title: '订阅条件已更新',
+                    description: '后续匹配将按新的监控条件执行。'
+                },
+                renew: {
+                    title: '续期成功',
+                    description: '系统已更新订阅截止日期，并同步订阅卡片。'
+                },
+                cancel: {
+                    title: '订阅已取消',
+                    description: '该订阅后续将不再推送课程匹配通知。'
+                }
+            };
+
+            if (successMap[action]) {
+                showActionToast({
+                    title: successMap[action].title,
+                    description: successMap[action].description,
+                    type: 'success'
+                });
+            }
+
+            console.info(`Subscription action "${action}" succeeded`, context);
+        }
+
+        function parseDateValue(value) {
+            if (!value) {
+                return null;
+            }
+            const parts = value.split('-').map(part => parseInt(part, 10));
+            if (parts.length === 3 && parts.every(num => Number.isFinite(num))) {
+                const [year, month, day] = parts;
+                const parsed = new Date(year, month - 1, day);
+                parsed.setHours(0, 0, 0, 0);
+                return Number.isNaN(parsed.getTime()) ? null : parsed;
+            }
+            const fallback = new Date(value);
+            return Number.isNaN(fallback.getTime()) ? null : fallback;
+        }
+
+        function formatDateToInput(date) {
+            if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
+                return '';
+            }
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function addDaysToDate(date, days) {
+            if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
+                return null;
+            }
+            const clone = new Date(date.getTime());
+            clone.setDate(clone.getDate() + days);
+            return clone;
+        }
+
+        function calculateRenewDefaultDate(subscription = {}) {
+            const currentDeadline = subscription.deadline ? parseDateValue(subscription.deadline) : null;
+            if (currentDeadline) {
+                const extended = addDaysToDate(currentDeadline, 180);
+                return extended || currentDeadline;
+            }
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            return addDaysToDate(today, 180) || today;
+        }
+
+        function resolveSubscriptionStatusLabel(status) {
+            const mapping = {
+                waiting: '等待匹配',
+                matched: '已匹配',
+                notified: '已通知',
+                viewed: '已查看',
+                converted: '已转化',
+                expired: '已过期',
+                cancelled: '已取消',
+                active: '进行中',
+                paused: '已暂停'
+            };
+            return mapping[status] || '未知状态';
+        }
+
+        function openRenewSubscriptionModal(context) {
+            const modal = document.getElementById('renewSubscriptionModal');
+            if (!modal) {
+                return;
+            }
+
+            const { subscription = {}, course = {} } = context;
+            const currentDeadlineDate = subscription.deadline ? parseDateValue(subscription.deadline) : null;
+            const courseDisplay = course.code && course.name
+                ? `${course.code} (${course.name})`
+                : (course.code || course.name || '未命名课程');
+
+            const courseField = document.getElementById('renewCourseField');
+            if (courseField) {
+                courseField.textContent = courseDisplay;
+            }
+
+            const currentDeadlineElement = document.getElementById('renewCurrentDeadline');
+            if (currentDeadlineElement) {
+                currentDeadlineElement.textContent = subscription.deadline || '未设置';
+            }
+
+            const defaultDate = calculateRenewDefaultDate(subscription);
+            const deadlineInput = document.getElementById('renewDeadlineInput');
+            if (deadlineInput) {
+                deadlineInput.value = formatDateToInput(defaultDate);
+                const minDateSource = currentDeadlineDate && currentDeadlineDate > new Date()
+                    ? currentDeadlineDate
+                    : new Date();
+                deadlineInput.min = formatDateToInput(minDateSource);
+            }
+
+            window.currentSubscriptionRenewal = context;
+
+            modal.style.display = 'flex';
+        }
+
+        function openCancelSubscriptionModal(context) {
+            const modal = document.getElementById('cancelSubscriptionModal');
+            if (!modal) {
+                return;
+            }
+
+            const { subscription = {}, course = {} } = context;
+            const courseDisplay = course.code && course.name
+                ? `${course.code} (${course.name})`
+                : (course.code || course.name || '未命名课程');
+
+            const courseField = document.getElementById('cancelCourseField');
+            if (courseField) {
+                courseField.textContent = courseDisplay;
+            }
+
+            const statusField = document.getElementById('cancelStatusField');
+            if (statusField) {
+                statusField.textContent = resolveSubscriptionStatusLabel(subscription.status);
+            }
+
+            const reasonInput = document.getElementById('cancelReasonInput');
+            if (reasonInput) {
+                reasonInput.value = '';
+            }
+
+            window.currentSubscriptionCancellation = context;
+            modal.style.display = 'flex';
+        }
+
+        function closeRenewSubscriptionModal() {
+            const modal = document.getElementById('renewSubscriptionModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+            setRenewModalProcessing(false);
+            const deadlineInput = document.getElementById('renewDeadlineInput');
+            if (deadlineInput) {
+                deadlineInput.value = '';
+            }
+            window.currentSubscriptionRenewal = null;
+        }
+
+        function closeCancelSubscriptionModal() {
+            const modal = document.getElementById('cancelSubscriptionModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+            setCancelModalProcessing(false);
+            const reasonInput = document.getElementById('cancelReasonInput');
+            if (reasonInput) {
+                reasonInput.value = '';
+            }
+            window.currentSubscriptionCancellation = null;
+        }
+
+        function setRenewModalProcessing(isProcessing, label) {
+            const confirmBtn = document.getElementById('renewConfirmBtn');
+            if (!confirmBtn) {
+                return;
+            }
+
+            if (isProcessing) {
+                if (!confirmBtn.dataset.originalText) {
+                    confirmBtn.dataset.originalText = confirmBtn.textContent.trim();
+                }
+                confirmBtn.disabled = true;
+                confirmBtn.textContent = label || '续期中...';
+                return;
+            }
+
+            confirmBtn.disabled = false;
+            if (confirmBtn.dataset.originalText) {
+                confirmBtn.textContent = confirmBtn.dataset.originalText;
+                delete confirmBtn.dataset.originalText;
+            }
+        }
+
+        function setCancelModalProcessing(isProcessing, label) {
+            const confirmBtn = document.getElementById('cancelConfirmBtn');
+            if (!confirmBtn) {
+                return;
+            }
+
+            if (isProcessing) {
+                if (!confirmBtn.dataset.originalText) {
+                    confirmBtn.dataset.originalText = confirmBtn.textContent.trim();
+                }
+                confirmBtn.disabled = true;
+                confirmBtn.textContent = label || '取消中...';
+                return;
+            }
+
+            confirmBtn.disabled = false;
+            if (confirmBtn.dataset.originalText) {
+                confirmBtn.textContent = confirmBtn.dataset.originalText;
+                delete confirmBtn.dataset.originalText;
+            }
+        }
+
+        function submitRenewSubscription() {
+            const context = window.currentSubscriptionRenewal;
+            if (!context || !context.studentId || !context.subscriptionId) {
+                showActionToast({
+                    title: '续期上下文失效',
+                    description: '请重新打开续期窗口后再试一次。',
+                    type: 'error'
+                });
+                recordSubscriptionActionLog('renew', 'failed', {
+                    reason: 'missing-context'
+                });
+                return;
+            }
+
+            const repository = window.StudentRepository;
+            if (!repository || typeof repository.renewSubscription !== 'function') {
+                showActionToast({
+                    title: '续期暂不可用',
+                    description: '订阅服务未正确初始化，请稍后重试。',
+                    type: 'error'
+                });
+                recordSubscriptionActionLog('renew', 'failed', {
+                    studentId: context.studentId,
+                    subscriptionId: context.subscriptionId,
+                    reason: 'repository-missing'
+                });
+                return;
+            }
+
+            const deadlineInput = document.getElementById('renewDeadlineInput');
+            if (!deadlineInput || !deadlineInput.value) {
+                showActionToast({
+                    title: '缺少截止日期',
+                    description: '请选择续期后的截止日期。',
+                    type: 'error'
+                });
+                recordSubscriptionActionLog('renew', 'failed', {
+                    studentId: context.studentId,
+                    subscriptionId: context.subscriptionId,
+                    reason: 'missing-deadline'
+                });
+                return;
+            }
+
+            const newDeadlineDate = parseDateValue(deadlineInput.value);
+            if (!newDeadlineDate) {
+                showActionToast({
+                    title: '日期格式无效',
+                    description: '请选择有效的日期后再试。',
+                    type: 'error'
+                });
+                recordSubscriptionActionLog('renew', 'failed', {
+                    studentId: context.studentId,
+                    subscriptionId: context.subscriptionId,
+                    reason: 'invalid-date'
+                });
+                return;
+            }
+
+            const subscription = context.subscription || {};
+            const currentDeadlineDate = subscription.deadline ? parseDateValue(subscription.deadline) : null;
+
+            if (currentDeadlineDate && newDeadlineDate < currentDeadlineDate) {
+                showActionToast({
+                    title: '续期日期需晚于当前值',
+                    description: '请选择不早于当前截止日期的时间。',
+                    type: 'error'
+                });
+                recordSubscriptionActionLog('renew', 'failed', {
+                    studentId: context.studentId,
+                    subscriptionId: context.subscriptionId,
+                    reason: 'deadline-earlier'
+                });
+                return;
+            }
+
+            const baseDate = currentDeadlineDate || new Date();
+            const dayMilliseconds = 24 * 60 * 60 * 1000;
+            const diffMs = newDeadlineDate.getTime() - baseDate.getTime();
+            const days = Math.max(0, Math.round(diffMs / dayMilliseconds));
+
+            setRenewModalProcessing(true, '续期中...');
+
+            try {
+                const updated = repository.renewSubscription(context.studentId, context.subscriptionId, {
+                    days,
+                    actor: resolveCurrentOperatorName()
+                });
+                if (typeof repository.resolveSubscriptionContext === 'function') {
+                    window.currentSubscriptionContext = repository.resolveSubscriptionContext(context.studentId, context.subscriptionId);
+                }
+                handleSubscriptionActionSuccess('renew', {
+                    studentId: context.studentId,
+                    subscriptionId: context.subscriptionId
+                });
+                closeRenewSubscriptionModal();
+                finishActionProcessing(context.triggerButton);
+            } catch (error) {
+                const message = error && error.message ? error.message : '续期失败，请稍后再试。';
+                showActionToast({
+                    title: '续期失败',
+                    description: message,
+                    type: 'error'
+                });
+                recordSubscriptionActionLog('renew', 'failed', {
+                    studentId: context.studentId,
+                    subscriptionId: context.subscriptionId,
+                    error: message
+                });
+                setRenewModalProcessing(false);
+                finishActionProcessing(context.triggerButton);
+            }
+        }
+
+        function submitCancelSubscription() {
+            const context = window.currentSubscriptionCancellation;
+            if (!context || !context.studentId || !context.subscriptionId) {
+                showActionToast({
+                    title: '取消上下文失效',
+                    description: '请重新打开取消窗口后再试。',
+                    type: 'error'
+                });
+                recordSubscriptionActionLog('cancel', 'failed', {
+                    reason: 'missing-context'
+                });
+                return;
+            }
+
+            const repository = window.StudentRepository;
+            if (!repository || typeof repository.cancelSubscription !== 'function') {
+                showActionToast({
+                    title: '取消暂不可用',
+                    description: '订阅服务未正确初始化，请稍后重试。',
+                    type: 'error'
+                });
+                recordSubscriptionActionLog('cancel', 'failed', {
+                    studentId: context.studentId,
+                    subscriptionId: context.subscriptionId,
+                    reason: 'repository-missing'
+                });
+                return;
+            }
+
+            const reasonInput = document.getElementById('cancelReasonInput');
+            const reason = reasonInput ? reasonInput.value.trim() : '';
+
+            setCancelModalProcessing(true, '取消中...');
+
+            try {
+                const updated = repository.cancelSubscription(context.studentId, context.subscriptionId, {
+                    actor: resolveCurrentOperatorName(),
+                    reason
+                });
+                if (typeof repository.resolveSubscriptionContext === 'function') {
+                    window.currentSubscriptionContext = repository.resolveSubscriptionContext(context.studentId, context.subscriptionId);
+                }
+                handleSubscriptionActionSuccess('cancel', {
+                    studentId: context.studentId,
+                    subscriptionId: context.subscriptionId
+                });
+                const triggerButton = context.triggerButton;
+                closeCancelSubscriptionModal();
+                finishActionProcessing(triggerButton);
+            } catch (error) {
+                const message = error?.message || '取消订阅失败，请稍后再试。';
+                showActionToast({
+                    title: '取消失败',
+                    description: message,
+                    type: 'error'
+                });
+                recordSubscriptionActionLog('cancel', 'failed', {
+                    studentId: context.studentId,
+                    subscriptionId: context.subscriptionId,
+                    error: message
+                });
+                setCancelModalProcessing(false);
+                finishActionProcessing(context.triggerButton);
             }
         }
 
@@ -6591,7 +7842,10 @@
         // 为单门课程打开订阅模态框
         function openSingleCourseSubscribeModal(selectedCourses, modalTitle, buttonElement) {
             // 设置模态框标题
-            document.getElementById('modalTitle').textContent = modalTitle + '条件设置';
+            setSubscribeFormMode('create', {
+                title: modalTitle + '条件设置',
+                confirmText: '确认订阅'
+            });
             
             // 设置模态框头部样式（本校课程和产品课程都使用绿色样式）
             const modalHeader = document.querySelector('#subscribeModal .modal-header');
@@ -7848,7 +9102,8 @@
                 notified: { text: '已通知', className: 'status-notified', icon: '📧' },
                 viewed: { text: '已查看', className: 'status-viewed', icon: '👁️' },
                 converted: { text: '已转化', className: 'status-converted', icon: '🎉' },
-                expired: { text: '已过期', className: 'status-expired', icon: '⏰' }
+                expired: { text: '已过期', className: 'status-expired', icon: '⏰' },
+                cancelled: { text: '已取消', className: 'status-cancelled', icon: '🚫' }
             };
 
             const typeConfig = {
@@ -7866,6 +9121,15 @@
                 card.dataset.type = sub.type || '';
                 card.dataset.deadline = sub.deadline || '';
                 card.dataset.index = String(index);
+                card.dataset.subscriptionId = sub.id || '';
+                card.dataset.studentId = student.id || '';
+                card.dataset.courseCode = sub.course?.code || '';
+                card.dataset.courseName = sub.course?.name || '';
+                card.dataset.submissionMode = sub.submissionMode || '';
+                card.dataset.hasFormSnapshot = sub.formSnapshot ? 'true' : 'false';
+                card.dataset.lastRenewedAt = sub.lastRenewedAt || '';
+                card.dataset.createdAtIso = sub.createdAtIso || '';
+                card.dataset.historyLength = Array.isArray(sub.history) ? String(sub.history.length) : '0';
 
                 const header = document.createElement('div');
                 header.className = 'card-header';
@@ -7958,6 +9222,7 @@
                     { label: '上课形式：', value: sub.modality || '-' },
                     { label: '时长：', value: sub.duration || '-' },
                     { label: '价格：', value: sub.price || '-' },
+                    { label: '提交方式：', value: sub.submissionMode === 'form' ? '条件订阅' : '直接订阅' },
                     { label: '创建日期：', value: sub.createdAt || '-' }
                 ];
 
@@ -7982,15 +9247,15 @@
                 const actions = document.createElement('div');
                 actions.className = 'card-actions';
 
-                if (sub.status === 'converted') {
+                if (sub.status === 'converted' || sub.status === 'cancelled') {
                     const completion = document.createElement('div');
                     completion.className = 'completion-note';
                     const icon = document.createElement('span');
                     icon.className = 'completion-icon';
-                    icon.textContent = '✅';
+                    icon.textContent = sub.status === 'cancelled' ? '🚫' : '✅';
                     const text = document.createElement('span');
                     text.className = 'completion-text';
-                    text.textContent = '订阅已完成';
+                    text.textContent = sub.status === 'cancelled' ? '订阅已取消' : '订阅已完成';
                     completion.appendChild(icon);
                     completion.appendChild(text);
                     actions.appendChild(completion);
@@ -7999,14 +9264,14 @@
                     primaryBtn.className = 'btn-primary-action';
                     primaryBtn.type = 'button';
                     primaryBtn.textContent = '跳转选课';
-                    primaryBtn.onclick = () => handleAction('jump', sub.id);
+                    primaryBtn.onclick = function() { handleAction('jump', sub.id, this); };
                     actions.appendChild(primaryBtn);
 
                     const viewBtn = document.createElement('button');
                     viewBtn.className = 'btn-view';
                     viewBtn.type = 'button';
                     viewBtn.textContent = '查看匹配课程';
-                    viewBtn.onclick = () => handleAction('view', sub.id);
+                    viewBtn.onclick = function() { handleAction('view', sub.id, this); };
                     actions.appendChild(viewBtn);
 
                     if (sub.status === 'notified') {
@@ -8014,7 +9279,7 @@
                         notifyBtn.className = 'btn-view';
                         notifyBtn.type = 'button';
                         notifyBtn.textContent = '查看通知详情';
-                        notifyBtn.onclick = () => handleAction('notifyDetail', sub.id);
+                        notifyBtn.onclick = function() { handleAction('notifyDetail', sub.id, this); };
                         actions.appendChild(notifyBtn);
                     }
 
@@ -8023,21 +9288,21 @@
                         editBtn.className = 'btn-edit';
                         editBtn.type = 'button';
                         editBtn.textContent = '编辑条件';
-                        editBtn.onclick = () => handleAction('edit', sub.id);
+                        editBtn.onclick = function() { handleAction('edit', sub.id, this); };
                         actions.appendChild(editBtn);
 
                         const renewBtn = document.createElement('button');
                         renewBtn.className = 'btn-renew';
                         renewBtn.type = 'button';
                         renewBtn.textContent = '续期';
-                        renewBtn.onclick = () => handleAction('renew', sub.id);
+                        renewBtn.onclick = function() { handleAction('renew', sub.id, this); };
                         actions.appendChild(renewBtn);
 
                         const cancelBtn = document.createElement('button');
                         cancelBtn.className = 'btn-destructive';
                         cancelBtn.type = 'button';
                         cancelBtn.textContent = '取消订阅';
-                        cancelBtn.onclick = () => handleAction('cancel', sub.id);
+                        cancelBtn.onclick = function() { handleAction('cancel', sub.id, this); };
                         actions.appendChild(cancelBtn);
                     }
 
@@ -8046,7 +9311,7 @@
                         renewBtn.className = 'btn-renew';
                         renewBtn.type = 'button';
                         renewBtn.textContent = '续期';
-                        renewBtn.onclick = () => handleAction('renew', sub.id);
+                        renewBtn.onclick = function() { handleAction('renew', sub.id, this); };
                         actions.appendChild(renewBtn);
                     }
                 }
@@ -8880,76 +10145,447 @@
             }
         }
         
-        function handleAction(action, subscriptionId) {
+        function ensureToastContainer() {
+            const container = document.getElementById('toastContainer');
+            if (!container) {
+                return null;
+            }
+            return container;
+        }
+
+        function showActionToast({
+            title,
+            description = '',
+            type = 'info',
+            duration = 3200,
+            actions = []
+        } = {}) {
+            const container = ensureToastContainer();
+            if (!container) {
+                if (description) {
+                    console.info(`[Toast:${type}] ${title} - ${description}`);
+                } else {
+                    console.info(`[Toast:${type}] ${title}`);
+                }
+                return;
+            }
+
+            const toast = document.createElement('div');
+            toast.className = `toast-message ${type}`.trim();
+
+            if (title) {
+                const titleElement = document.createElement('p');
+                titleElement.className = 'toast-title';
+                titleElement.textContent = title;
+                toast.appendChild(titleElement);
+            }
+
+            if (description) {
+                const descriptionElement = document.createElement('p');
+                descriptionElement.className = 'toast-description';
+                descriptionElement.textContent = description;
+                toast.appendChild(descriptionElement);
+            }
+
+            if (Array.isArray(actions) && actions.length > 0) {
+                const actionsWrapper = document.createElement('div');
+                actionsWrapper.className = 'toast-actions';
+                actions.slice(0, 2).forEach(action => {
+                    if (!action || typeof action.label !== 'string' || typeof action.onClick !== 'function') {
+                        return;
+                    }
+                    const actionButton = document.createElement('button');
+                    actionButton.type = 'button';
+                    actionButton.textContent = action.label;
+                    actionButton.addEventListener('click', (event) => {
+                        event.preventDefault();
+                        action.onClick(event);
+                        hideToast();
+                    });
+                    actionsWrapper.appendChild(actionButton);
+                });
+                if (actionsWrapper.childElementCount > 0) {
+                    toast.appendChild(actionsWrapper);
+                }
+            }
+
+            container.appendChild(toast);
+
+            let hideTimer = null;
+
+            function hideToast() {
+                if (toast.classList.contains('hide')) {
+                    return;
+                }
+                toast.classList.add('hide');
+                setTimeout(() => {
+                    if (toast.parentNode === container) {
+                        container.removeChild(toast);
+                    }
+                }, 260);
+            }
+
+            toast.addEventListener('mouseenter', () => {
+                if (hideTimer) {
+                    clearTimeout(hideTimer);
+                    hideTimer = null;
+                }
+            });
+
+            toast.addEventListener('mouseleave', () => {
+                if (!hideTimer) {
+                    hideTimer = setTimeout(hideToast, duration);
+                }
+            });
+
+            hideTimer = setTimeout(hideToast, duration);
+        }
+
+        function recordSubscriptionActionLog(action, state, details) {
+            if (!window.SubscriptionAuditLog) {
+                window.SubscriptionAuditLog = [];
+            }
+            const entry = {
+                action,
+                state,
+                details: details || {},
+                timestamp: new Date().toISOString()
+            };
+            window.SubscriptionAuditLog.push(entry);
+            console.info('[SubscriptionAuditLog]', entry);
+        }
+
+        function resolveCurrentOperatorName() {
+            const candidates = [
+                window.currentConsultantInfo,
+                window.currentAdvisorInfo,
+                window.currentUserInfo,
+                window.currentUser,
+                window.currentStaffInfo,
+                window.loggedInStaff
+            ];
+
+            for (let i = 0; i < candidates.length; i += 1) {
+                const source = candidates[i];
+                if (source && typeof source === 'object' && source.name) {
+                    return source.name;
+                }
+            }
+
+            if (window.StudentAnalysisController && typeof window.StudentAnalysisController.getCurrentConsultant === 'function') {
+                const consultant = window.StudentAnalysisController.getCurrentConsultant();
+                if (consultant && consultant.name) {
+                    return consultant.name;
+                }
+            }
+
+            return '系统';
+        }
+
+        function handleAction(action, subscriptionId, triggerElement) {
             const repository = window.StudentRepository;
             const student = (window.StudentAnalysisController && typeof window.StudentAnalysisController.getCurrentStudent === 'function')
                 ? window.StudentAnalysisController.getCurrentStudent()
                 : (window.currentStudentInfo || null);
 
             if (!repository || typeof repository.getSubscriptions !== 'function') {
-                alert('订阅服务暂未初始化，请稍后再试。');
+                showActionToast({
+                    title: '操作暂不可用',
+                    description: '订阅服务未正确初始化，请稍后再试。',
+                    type: 'error'
+                });
+                recordSubscriptionActionLog(action, 'failed', {
+                    reason: 'repository-missing'
+                });
                 return;
             }
 
             if (!student || !student.id) {
-                alert('请选择学生后再执行此操作。');
+                showActionToast({
+                    title: '缺少学生信息',
+                    description: '请选择学生后再执行操作。',
+                    type: 'error'
+                });
+                recordSubscriptionActionLog(action, 'failed', {
+                    reason: 'missing-student'
+                });
                 return;
             }
 
-            const subscriptions = repository.getSubscriptions(student.id) || [];
-            const target = subscriptions.find(item => String(item.id) === String(subscriptionId));
+            let context = null;
+            if (typeof repository.resolveSubscriptionContext === 'function') {
+                context = repository.resolveSubscriptionContext(student.id, subscriptionId);
+            }
+
+            let target = context ? context.subscription : null;
+            if (!target) {
+                const subscriptions = repository.getSubscriptions(student.id) || [];
+                target = subscriptions.find(item => String(item.id) === String(subscriptionId));
+            }
 
             if (!target) {
-                alert('未找到订阅记录，可能已被移除。');
+                showActionToast({
+                    title: '未找到订阅',
+                    description: '订阅可能已被移除或刷新，请检查后重试。',
+                    type: 'error'
+                });
+                recordSubscriptionActionLog(action, 'failed', {
+                    studentId: student.id,
+                    subscriptionId
+                });
                 return;
             }
+
+            const effectiveContext = {
+                student: context?.student || {
+                    id: student.id,
+                    name: student.name,
+                    school: student.school,
+                    status: student.status || {}
+                },
+                subscription: context?.subscription || target,
+                course: context?.course || target.course || {},
+                formSnapshot: context?.formSnapshot !== undefined ? context.formSnapshot : (target.formSnapshot || null),
+                submissionMode: context?.submissionMode || target.submissionMode || '',
+                history: Array.isArray(context?.history) ? context.history : (Array.isArray(target.history) ? target.history : []),
+                metadata: context?.metadata || target.metadata || {}
+            };
+
+            window.currentSubscriptionContext = effectiveContext;
+
+            const triggerButton = triggerElement || null;
+
+            recordSubscriptionActionLog(action, 'initiated', {
+                studentId: student.id,
+                subscriptionId,
+                buttonLabel: triggerButton ? triggerButton.textContent.trim() : '',
+                status: effectiveContext.subscription?.status
+            });
 
             const actionHandlers = {
                 renew: () => {
-                    let newDeadline = prompt('请输入新的截止日期 (YYYY-MM-DD)', target.deadline || '');
-                    if (newDeadline === null) {
-                        return;
+                    if (triggerButton) {
+                        startActionProcessing(triggerButton, 'renew', '加载中...');
                     }
-                    newDeadline = newDeadline.trim();
-                    if (!newDeadline) {
-                        alert('未输入有效的截止日期，操作已取消。');
-                        return;
-                    }
-                    try {
-                        repository.updateSubscription(student.id, subscriptionId, {
-                            deadline: newDeadline,
-                            status: target.status === 'expired' ? 'waiting' : target.status
-                        });
-                        alert('续期成功，订阅已更新。');
-                    } catch (error) {
-                        const message = error?.message || '续期失败，请稍后再试。';
-                        alert(message);
-                    }
+
+                    const renewContext = {
+                        studentId: student.id,
+                        subscriptionId,
+                        triggerButton,
+                        subscription: effectiveContext.subscription,
+                        course: effectiveContext.course
+                    };
+
+                    openRenewSubscriptionModal(renewContext);
+                    finishActionProcessing(triggerButton);
                 },
                 edit: () => {
-                    alert('订阅条件编辑功能尚未接入，请稍后再试。');
-                },
-                cancel: () => {
-                    const confirmCancel = confirm('确定要取消该订阅吗？取消后将不再接收通知。');
-                    if (!confirmCancel) {
+                    const allowedStatuses = new Set(['waiting']);
+                    if (!allowedStatuses.has(target.status)) {
+                        showActionToast({
+                            title: '无法编辑当前订阅',
+                            description: '仅支持对“等待匹配”状态的订阅调整条件。',
+                            type: 'error'
+                        });
+                        recordSubscriptionActionLog('edit', 'blocked', {
+                            studentId: student.id,
+                            subscriptionId,
+                            status: target.status
+                        });
                         return;
                     }
-                    try {
-                        repository.removeSubscription(student.id, subscriptionId);
-                        alert('订阅已取消。');
-                    } catch (error) {
-                        const message = error?.message || '取消订阅失败，请稍后再试。';
-                        alert(message);
+
+                    if (triggerButton) {
+                        startActionProcessing(triggerButton, 'edit', '加载中...');
                     }
+
+                    const course = effectiveContext.course || target.course || {};
+                    const display = formatCourseDisplay(course.code, course.name);
+                    const studentName = effectiveContext.student?.name || student.name || '当前学生';
+
+                    const selectedCourse = [{
+                        student: studentName,
+                        course: display
+                    }];
+
+                    window.currentSubscriptionEditing = {
+                        studentId: student.id,
+                        subscriptionId,
+                        triggerButton,
+                        context: effectiveContext,
+                        courseDisplay: display
+                    };
+
+                    openSingleCourseSubscribeModal(selectedCourse, '编辑订阅', null);
+                    setSubscribeFormMode('edit', {
+                        title: '编辑订阅条件',
+                        confirmText: '保存修改',
+                        notice: '保存后将覆盖原订阅条件。'
+                    });
+
+                    applyFormSnapshotToSubscribeForm(effectiveContext?.formSnapshot, effectiveContext?.subscription);
+
+                    finishActionProcessing(triggerButton);
+                },
+                cancel: () => {
+                    if (triggerButton) {
+                        startActionProcessing(triggerButton, 'cancel', '加载中...');
+                    }
+                    const cancelContext = {
+                        studentId: student.id,
+                        subscriptionId,
+                        triggerButton,
+                        subscription: effectiveContext.subscription,
+                        course: effectiveContext.course
+                    };
+                    openCancelSubscriptionModal(cancelContext);
+                    finishActionProcessing(triggerButton);
                 },
                 view: () => {
-                    alert('查看匹配课程功能暂未接入。');
+                    const metadata = effectiveContext.metadata || {};
+                    const course = effectiveContext.course || {};
+
+                    if (triggerButton) {
+                        startActionProcessing(triggerButton, 'view', '查看中...');
+                    }
+
+                    const matchUrl = metadata.matchDetailUrl || metadata.matchUrl || metadata.viewUrl || '';
+                    const matchId = metadata.matchId
+                        || metadata.matchResultId
+                        || metadata.matchedResultId
+                        || metadata.matchingId
+                        || metadata.latestMatchId
+                        || '';
+
+                    if (!matchId && !matchUrl) {
+                        alert('目前暂无匹配课程详情，请稍后再试。');
+                        finishActionProcessing(triggerButton);
+                        return;
+                    }
+
+                    const params = {
+                        studentId: student.id,
+                        subscriptionId,
+                        matchId,
+                        courseCode: course.code || '',
+                        courseName: course.name || ''
+                    };
+
+                    const options = {
+                        errorMessage: '查看匹配课程失败，请稍后再试。'
+                    };
+
+                    if (matchUrl) {
+                        options.path = matchUrl;
+                        options.mode = matchUrl.startsWith('http') ? 'new-tab' : 'same-tab';
+                    }
+
+                    const result = navigateTo('view', params, options);
+                    if (!result.success) {
+                        finishActionProcessing(triggerButton);
+                        return;
+                    }
+
+                    finishActionProcessing(triggerButton);
                 },
                 notifyDetail: () => {
-                    alert('通知详情暂未接入，请稍后再试。');
+                    const metadata = effectiveContext.metadata || {};
+
+                    if (triggerButton) {
+                        startActionProcessing(triggerButton, 'notifyDetail', '查看中...');
+                    }
+
+                    const notificationUrl = metadata.notificationDetailUrl || metadata.notificationUrl || '';
+                    const notificationId = metadata.notificationId
+                        || metadata.latestNotificationId
+                        || metadata.lastNotificationId
+                        || '';
+
+                    if (!notificationId && !notificationUrl) {
+                        alert('暂未找到通知详情，请稍后再试。');
+                        finishActionProcessing(triggerButton);
+                        return;
+                    }
+
+                    const params = {
+                        studentId: student.id,
+                        subscriptionId,
+                        notificationId,
+                        status: target.status,
+                        type: target.type
+                    };
+
+                    const options = {
+                        errorMessage: '打开通知详情失败，请稍后再试。'
+                    };
+
+                    if (notificationUrl) {
+                        options.path = notificationUrl;
+                        options.mode = notificationUrl.startsWith('http') ? 'new-tab' : 'same-tab';
+                    }
+
+                    const result = navigateTo('notifyDetail', params, options);
+                    if (!result.success) {
+                        finishActionProcessing(triggerButton);
+                        return;
+                    }
+
+                    finishActionProcessing(triggerButton);
                 },
                 jump: () => {
-                    alert('跳转选课功能暂未接入。');
+                    const course = effectiveContext.course || {};
+                    const metadata = effectiveContext.metadata || {};
+
+                    if (!course.code) {
+                        alert('缺少课程信息，无法跳转选课。');
+                        return;
+                    }
+
+                    if (triggerButton) {
+                        startActionProcessing(triggerButton, 'jump', '跳转中...');
+                    }
+
+                    const jumpUrl = metadata.jumpTargetUrl
+                        || metadata.enrollmentUrl
+                        || metadata.selectionUrl
+                        || metadata.courseUrl
+                        || '';
+
+                    const params = {
+                        studentId: student.id,
+                        subscriptionId,
+                        courseCode: course.code,
+                        courseName: course.name || '',
+                        type: target.type || 'product',
+                        submissionMode: effectiveContext.submissionMode || target.submissionMode || ''
+                    };
+
+                    if (metadata.unitId) {
+                        params.unitId = metadata.unitId;
+                    }
+                    if (metadata.productId) {
+                        params.productId = metadata.productId;
+                    }
+                    if (metadata.school) {
+                        params.school = metadata.school;
+                    }
+
+                    const options = {
+                        errorMessage: '跳转选课失败，请稍后再试。'
+                    };
+
+                    if (jumpUrl) {
+                        options.path = jumpUrl;
+                        options.mode = jumpUrl.startsWith('http') ? 'new-tab' : 'same-tab';
+                    }
+
+                    const result = navigateTo('jump', params, options);
+                    if (!result.success) {
+                        finishActionProcessing(triggerButton);
+                        return;
+                    }
+
+                    finishActionProcessing(triggerButton);
                 }
             };
 
@@ -8960,6 +10596,31 @@
                 alert(`暂未支持的操作: ${action}`);
             }
         }
+
+        function resolveSubscriptionContext(subscriptionId, options = {}) {
+            const repository = window.StudentRepository;
+            if (!repository || typeof repository.resolveSubscriptionContext !== 'function') {
+                console.warn('resolveSubscriptionContext: StudentRepository 未提供上下文解析能力');
+                return null;
+            }
+
+            const studentId = options.studentId
+                || (window.StudentAnalysisController && typeof window.StudentAnalysisController.getCurrentStudent === 'function'
+                    ? window.StudentAnalysisController.getCurrentStudent()?.id
+                    : undefined)
+                || (window.currentStudentInfo ? window.currentStudentInfo.id : undefined);
+
+            if (!studentId) {
+                console.warn('resolveSubscriptionContext: 缺少 studentId');
+                return null;
+            }
+
+            return repository.resolveSubscriptionContext(studentId, subscriptionId);
+        }
+
+        window.resolveSubscriptionContext = resolveSubscriptionContext;
+    window.navigateSubscriptionAction = navigateTo;
+    window.SubscriptionActionRoutes = actionRoutes;
         
         // ===== 灵活订阅功能模块 =====
         // 为实现跨页面、多场景订阅功能设计的通用组件系统
