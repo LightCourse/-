@@ -1644,6 +1644,8 @@
             font-weight: 600;
             color: #2c3e50;
             background-color: white !important;
+            position: relative;
+            padding-right: 36px;
         }
 
         .home-course-cell .home-course-code {
@@ -1720,6 +1722,8 @@
         .product-course-cell {
             text-align: left;
             line-height: 1.4;
+            position: relative;
+            padding-right: 36px;
         }
         
         .product-course-code {
@@ -4766,6 +4770,25 @@
                 <!-- 学生已选课程 -->
                 <div id="selected-courses" class="analysis-tab-content">
                     <div class="selected-courses-container">
+                        <div class="function-bar" id="selectedCoursesFunctionBar">
+                            <div class="batch-subscribe-dropdown" id="selectedCoursesBatchDropdown">
+                                <button class="function-btn batch-subscribe-btn" id="selectedCoursesBatchBtn" disabled>
+                                    <span class="btn-icon">🔔</span>
+                                    <span class="btn-text">批量订阅</span>
+                                    <span class="dropdown-arrow">▼</span>
+                                </button>
+                                <div class="dropdown-menu" id="selectedCoursesDropdownMenu">
+                                    <button class="dropdown-item" data-type="home">
+                                        <span class="btn-icon">📋</span>
+                                        <span class="btn-text">订阅本校课程</span>
+                                    </button>
+                                    <button class="dropdown-item" data-type="product">
+                                        <span class="btn-icon">🔔</span>
+                                        <span class="btn-text">订阅产品课程</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                         <table class="selected-courses-table">
                             <thead>
                                 <tr>
@@ -5559,7 +5582,7 @@
         });
         
         // 下拉菜单项点击事件
-        document.querySelectorAll('.dropdown-item').forEach(item => {
+        document.querySelectorAll('#dropdownMenu .dropdown-item').forEach(item => {
             item.addEventListener('click', function(e) {
                 e.stopPropagation();
                 
@@ -5659,8 +5682,17 @@
         
         // 打开批量订阅模态框
         function openBatchSubscribeModal(type) {
-            const selectedCourses = getSelectedCourses();
-            if (selectedCourses.length < 2) {
+            const precomputed = Array.isArray(window.batchSelectedCourses)
+                ? window.batchSelectedCourses
+                : [];
+            const selectedCourses = precomputed.length ? precomputed : getSelectedCourses();
+
+            if (!selectedCourses.length) {
+                alert('请至少选择1门课程进行批量订阅');
+                return;
+            }
+
+            if (!precomputed.length && selectedCourses.length < 2) {
                 alert('请至少选择2门课程进行批量订阅');
                 return;
             }
@@ -5983,9 +6015,15 @@
             } else {
                 console.log('检测到批量课程订阅模式');
                 // 批量课程提交
-                const selectedCourses = getSelectedCourses();
+                const precomputed = Array.isArray(window.batchSelectedCourses)
+                    ? window.batchSelectedCourses
+                    : [];
+                const selectedCourses = precomputed.length ? precomputed : getSelectedCourses();
                 console.log('选中的课程数量:', selectedCourses.length);
                 submitBatchCourses(selectedCourses);
+                if (precomputed.length) {
+                    window.batchSelectedCourses = [];
+                }
             }
         }
         
@@ -6019,16 +6057,19 @@
 
             const identifiers = resolveCourseIdentifiers(buttonElement, {
                 courseDisplay,
-                courseType: courseEntry.type
+                courseType: courseEntry.type,
+                courseCode: courseEntry.courseCode,
+                courseName: courseEntry.courseName,
+                courseSchool: courseEntry.courseSchool
             });
 
             return buildSingleSubscriptionPayload(buttonElement, formData, {
                 student,
                 courseDisplay,
                 courseType: identifiers.type,
-                courseCode: identifiers.code,
-                courseName: identifiers.name,
-                courseSchool: identifiers.school
+                courseCode: identifiers.code || courseEntry.courseCode,
+                courseName: identifiers.name || courseEntry.courseName,
+                courseSchool: identifiers.school || courseEntry.courseSchool
             });
         }
 
@@ -7117,6 +7158,8 @@
             }
 
             const selected = repository.getSelectedCourses(student.id) || [];
+            const studentName = student.name || '';
+            const studentSchool = student.school || '';
             if (!selected.length) {
                 const emptyRow = document.createElement('tr');
                 const emptyCell = document.createElement('td');
@@ -7125,6 +7168,11 @@
                 emptyCell.textContent = '暂未记录选课数据';
                 emptyRow.appendChild(emptyCell);
                 tbody.appendChild(emptyRow);
+                initializeSelectedCoursesSubscriptionLayer({
+                    studentId: student.id,
+                    studentName,
+                    studentSchool
+                });
                 return;
             }
 
@@ -7171,7 +7219,9 @@
                         categoryBadgeClass,
                         statusInfo,
                         auditInfo,
-                        product: null
+                        product: null,
+                        studentName,
+                        studentSchool
                     });
                     tbody.appendChild(row);
                     return;
@@ -7186,10 +7236,18 @@
                         categoryBadgeClass,
                         statusInfo,
                         auditInfo,
-                        product
+                        product,
+                        studentName,
+                        studentSchool
                     });
                     tbody.appendChild(row);
                 });
+            });
+
+            initializeSelectedCoursesSubscriptionLayer({
+                studentId: student.id,
+                studentName,
+                studentSchool
             });
         }
 
@@ -7205,21 +7263,47 @@
                 categoryBadgeClass,
                 statusInfo,
                 auditInfo,
-                product
+                product,
+                studentName = '',
+                studentSchool = ''
             } = context;
 
             const checkboxCell = document.createElement('td');
             checkboxCell.className = 'checkbox-cell';
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
-            checkbox.className = 'course-checkbox';
+            checkbox.className = 'course-checkbox selected-course-checkbox';
+            const checkboxCourseCode = product && product.code ? product.code : (course.homeCourse || '');
+            const checkboxCourseName = product && product.name
+                ? product.name
+                : (course.homeCourseName || course.homeCourse || '');
+            checkbox.dataset.courseType = product && product.code ? 'product' : 'home';
+            checkbox.dataset.homeCourseCode = course.homeCourse || '';
+            checkbox.dataset.homeCourseName = course.homeCourseName || '';
+            checkbox.dataset.productCourseCode = product && product.code ? product.code : '';
+            checkbox.dataset.productCourseName = product && product.name ? product.name : '';
+            checkbox.dataset.productSchool = product && product.school ? product.school : '';
+            checkbox.dataset.courseCode = checkboxCourseCode;
+            checkbox.dataset.courseName = checkboxCourseName;
+            checkbox.dataset.studentName = studentName;
+            checkbox.dataset.studentSchool = studentSchool;
             checkboxCell.appendChild(checkbox);
             row.appendChild(checkboxCell);
 
             if (isFirst) {
                 const homeCourseCell = document.createElement('td');
                 homeCourseCell.className = rowSpan > 1 ? 'home-course-cell merged-cell' : 'home-course-cell';
+                homeCourseCell.classList.add('course-cell');
                 homeCourseCell.rowSpan = rowSpan;
+                homeCourseCell.dataset.courseType = 'home';
+                homeCourseCell.dataset.courseId = course.homeCourse || '';
+                homeCourseCell.dataset.courseCode = course.homeCourse || '';
+                homeCourseCell.dataset.courseName = course.homeCourseName || course.homeCourse || '';
+                homeCourseCell.dataset.homeCourseCode = course.homeCourse || '';
+                homeCourseCell.dataset.homeCourseName = course.homeCourseName || '';
+                homeCourseCell.dataset.courseSchool = studentSchool;
+                homeCourseCell.dataset.studentName = studentName;
+                homeCourseCell.dataset.studentSchool = studentSchool;
                 const homeCourseCode = document.createElement('div');
                 homeCourseCode.className = 'home-course-code';
                 homeCourseCode.textContent = course.homeCourse || '未知课程';
@@ -7260,8 +7344,18 @@
             }
 
             const productCell = document.createElement('td');
-            productCell.className = 'product-course-cell';
+            productCell.className = 'product-course-cell course-cell';
             if (product) {
+                productCell.dataset.courseType = 'product';
+                productCell.dataset.courseId = product.code || '';
+                productCell.dataset.courseCode = product.code || '';
+                productCell.dataset.courseName = product.name || product.code || '';
+                productCell.dataset.productSchool = product.school || '';
+                productCell.dataset.courseSchool = product.school || '';
+                productCell.dataset.studentName = studentName;
+                productCell.dataset.studentSchool = studentSchool;
+                productCell.dataset.homeCourseCode = course.homeCourse || '';
+                productCell.dataset.homeCourseName = course.homeCourseName || '';
                 const codeSpan = document.createElement('span');
                 codeSpan.className = 'product-course-code';
                 codeSpan.textContent = product.code || '';
@@ -7285,6 +7379,15 @@
                     productCell.appendChild(metaSpan);
                 }
             } else {
+                productCell.dataset.courseType = 'product';
+                productCell.dataset.courseId = '';
+                productCell.dataset.courseCode = '';
+                productCell.dataset.courseName = '';
+                productCell.dataset.productSchool = '';
+                productCell.dataset.studentName = studentName;
+                productCell.dataset.studentSchool = studentSchool;
+                productCell.dataset.homeCourseCode = course.homeCourse || '';
+                productCell.dataset.homeCourseName = course.homeCourseName || '';
                 productCell.textContent = '暂未匹配产品课程';
             }
             row.appendChild(productCell);
@@ -7321,6 +7424,312 @@
             durationCell.className = 'duration-cell';
             durationCell.textContent = product && product.duration ? product.duration : '-';
             row.appendChild(durationCell);
+        }
+
+        function escapeAttributeSelector(value) {
+            const raw = value === undefined || value === null ? '' : String(value);
+            if (typeof window.CSS !== 'undefined' && typeof window.CSS.escape === 'function') {
+                return window.CSS.escape(raw);
+            }
+            return raw.replace(/(["'\\\]\[])/g, '\\$1');
+        }
+
+        function findHomeCourseCell(row, homeCourseCode) {
+            let current = row;
+            while (current) {
+                const cell = current.querySelector('.home-course-cell');
+                if (cell) {
+                    return cell;
+                }
+                current = current.previousElementSibling;
+            }
+
+            if (!homeCourseCode) {
+                return null;
+            }
+
+            const selector = `.home-course-cell[data-home-course-code="${escapeAttributeSelector(homeCourseCode)}"]`;
+            const tbody = row.closest('tbody');
+            if (tbody) {
+                const scoped = tbody.querySelector(selector);
+                if (scoped) {
+                    return scoped;
+                }
+            }
+            return document.querySelector(selector);
+        }
+
+        function findProductCourseCell(row, productCourseCode) {
+            const directCell = row.querySelector('.product-course-cell');
+            if (directCell) {
+                return directCell;
+            }
+
+            if (!productCourseCode) {
+                return null;
+            }
+
+            const selector = `.product-course-cell[data-course-code="${escapeAttributeSelector(productCourseCode)}"]`;
+            const tbody = row.closest('tbody');
+            if (tbody) {
+                const scoped = tbody.querySelector(selector);
+                if (scoped) {
+                    return scoped;
+                }
+            }
+            return document.querySelector(selector);
+        }
+
+        function formatCourseDisplay(courseCode, courseName) {
+            const code = (courseCode || '').trim();
+            const name = (courseName || '').trim();
+            if (code && name && code !== name) {
+                return `${code}(${name})`;
+            }
+            return code || name || '未命名课程';
+        }
+
+        function collectSelectedCourseEntries(targetType, studentContext = {}) {
+            const checkboxSelector = '#selectedCoursesTableBody .selected-course-checkbox:checked';
+            const checkboxes = document.querySelectorAll(checkboxSelector);
+            const tbody = document.getElementById('selectedCoursesTableBody');
+            const entries = [];
+            const seenKeys = new Set();
+
+            checkboxes.forEach(checkbox => {
+                if (!checkbox) {
+                    return;
+                }
+
+                const row = checkbox.closest('tr');
+                if (!row) {
+                    return;
+                }
+
+                const dataset = checkbox.dataset || {};
+                const studentName = dataset.studentName || studentContext.studentName || '当前学生';
+                const studentSchool = dataset.studentSchool || studentContext.studentSchool || '';
+                const homeCourseCode = dataset.homeCourseCode || '';
+                const homeCourseName = dataset.homeCourseName || '';
+
+                let courseCode = '';
+                let courseName = '';
+                let courseSchool = '';
+                let courseCell = null;
+                let buttonElement = null;
+
+                if (targetType === 'home') {
+                    courseCell = findHomeCourseCell(row, homeCourseCode);
+                    courseCode = (courseCell && courseCell.dataset.courseCode) || homeCourseCode;
+                    courseName = (courseCell && courseCell.dataset.courseName) || homeCourseName || courseCode;
+                    courseSchool = studentSchool;
+                    if (courseCell) {
+                        buttonElement = courseCell.querySelector('.course-subscribe-btn[data-course-type="home"]')
+                            || courseCell.querySelector('.course-subscribe-btn');
+                    }
+                } else {
+                    const productCourseCode = dataset.productCourseCode || '';
+                    courseCell = findProductCourseCell(row, productCourseCode);
+                    courseCode = (courseCell && courseCell.dataset.courseCode) || productCourseCode;
+                    const datasetName = dataset.productCourseName || '';
+                    courseName = (courseCell && courseCell.dataset.courseName) || datasetName || courseCode;
+                    courseSchool = (courseCell && courseCell.dataset.productSchool)
+                        || dataset.productSchool
+                        || '';
+                    if (courseCell) {
+                        buttonElement = courseCell.querySelector('.course-subscribe-btn[data-course-type="product"]')
+                            || courseCell.querySelector('.course-subscribe-btn');
+                    }
+                }
+
+                if (!courseCode) {
+                    return;
+                }
+
+                if (!buttonElement && courseCode) {
+                    const selector = `.course-subscribe-btn[data-course-type="${targetType}"][data-course-code="${escapeAttributeSelector(courseCode)}"]`;
+                    buttonElement = (tbody && tbody.querySelector(selector)) || document.querySelector(selector);
+                }
+
+                if (!buttonElement) {
+                    console.warn('collectSelectedCourseEntries: 未找到对应的订阅按钮', {
+                        targetType,
+                        courseCode,
+                        studentName
+                    });
+                    return;
+                }
+
+                if (targetType === 'home') {
+                    const dedupeKey = `${studentName}::${courseCode}`;
+                    if (seenKeys.has(dedupeKey)) {
+                        return;
+                    }
+                    seenKeys.add(dedupeKey);
+                }
+
+                const display = formatCourseDisplay(courseCode, courseName);
+
+                entries.push({
+                    student: studentName,
+                    course: display,
+                    type: targetType,
+                    buttonElement,
+                    courseCode,
+                    courseName,
+                    courseSchool,
+                    studentName,
+                    studentSchool,
+                    homeCourseCode,
+                    homeCourseName
+                });
+            });
+
+            return entries;
+        }
+
+        function updateSelectedCoursesBatchControls() {
+            const checkedCount = document.querySelectorAll('#selectedCoursesTableBody .selected-course-checkbox:checked').length;
+            const meetsThreshold = checkedCount >= 2;
+            const batchBtn = document.getElementById('selectedCoursesBatchBtn');
+            const dropdownMenu = document.getElementById('selectedCoursesDropdownMenu');
+
+            if (batchBtn) {
+                batchBtn.disabled = !meetsThreshold;
+                const label = batchBtn.querySelector('.btn-text');
+                if (label) {
+                    if (checkedCount > 0) {
+                        label.textContent = meetsThreshold
+                            ? `批量订阅 (${checkedCount})`
+                            : `批量订阅 (${checkedCount}/2)`;
+                    } else {
+                        label.textContent = '批量订阅';
+                    }
+                }
+            }
+
+            if (dropdownMenu) {
+                dropdownMenu.classList.toggle('disabled', !meetsThreshold);
+            }
+        }
+
+        function bindSelectedCoursesCheckboxes() {
+            const checkboxes = document.querySelectorAll('#selectedCoursesTableBody .selected-course-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.removeEventListener('change', updateSelectedCoursesBatchControls);
+                checkbox.addEventListener('change', updateSelectedCoursesBatchControls);
+            });
+        }
+
+        function setupSelectedCoursesBatchDropdown(studentContext = {}) {
+            const dropdownMenu = document.getElementById('selectedCoursesDropdownMenu');
+            const batchBtn = document.getElementById('selectedCoursesBatchBtn');
+            if (!dropdownMenu) {
+                return;
+            }
+
+            const items = dropdownMenu.querySelectorAll('.dropdown-item');
+            items.forEach(item => {
+                item.onclick = function(event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    if (batchBtn && batchBtn.disabled) {
+                        return;
+                    }
+
+                    const targetType = item.dataset.type;
+                    if (!targetType) {
+                        return;
+                    }
+
+                    const selectedEntries = collectSelectedCourseEntries(targetType, studentContext);
+                    if (!selectedEntries.length) {
+                        alert(targetType === 'home'
+                            ? '请选择包含本校课程的数据行'
+                            : '请选择包含产品课程的数据行');
+                        return;
+                    }
+
+                    window.batchSelectedCourses = selectedEntries.map(entry => ({
+                        student: entry.student,
+                        course: entry.course,
+                        type: entry.type,
+                        buttonElement: entry.buttonElement,
+                        courseCode: entry.courseCode,
+                        courseName: entry.courseName,
+                        courseSchool: entry.courseSchool,
+                        studentName: entry.studentName,
+                        studentSchool: entry.studentSchool,
+                        homeCourseCode: entry.homeCourseCode,
+                        homeCourseName: entry.homeCourseName
+                    }));
+
+                    window.currentBatchContext = {
+                        clearFunction: () => {
+                            document.querySelectorAll('#selectedCoursesTableBody .selected-course-checkbox:checked')
+                                .forEach(cb => {
+                                    cb.checked = false;
+                                });
+                            updateSelectedCoursesBatchControls();
+                            window.batchSelectedCourses = [];
+                        },
+                        source: 'selected-courses',
+                        targetType
+                    };
+
+                    const modalTitle = targetType === 'home' ? '本校课程' : '产品课程';
+                    openBatchSubscribeModal(modalTitle);
+                };
+            });
+        }
+
+        function deploySelectedCoursesSingleButtons(studentContext = {}) {
+            if (!window.SubscriptionModule) {
+                return;
+            }
+
+            if (typeof window.SubscriptionModule.injectStyles === 'function') {
+                window.SubscriptionModule.injectStyles();
+            }
+
+            window.SubscriptionModule.deploySingle('#selectedCoursesTableBody .home-course-cell', {
+                preset: 'single-home',
+                insertMethod: 'append',
+                courseNameSelector: '.home-course-name',
+                courseType: 'home',
+                allowedTypes: ['home']
+            });
+
+            window.SubscriptionModule.deploySingle('#selectedCoursesTableBody .product-course-cell', {
+                preset: 'single-product',
+                insertMethod: 'append',
+                courseNameSelector: '.product-course-name',
+                courseType: 'product',
+                allowedTypes: ['product']
+            });
+
+            if (typeof window.SubscriptionModule.syncButtonStates === 'function') {
+                window.SubscriptionModule.syncButtonStates(studentContext.studentId);
+            }
+        }
+
+        function initializeSelectedCoursesSubscriptionLayer(studentContext = {}) {
+            if (Array.isArray(window.batchSelectedCourses)) {
+                window.batchSelectedCourses = [];
+            }
+            if (window.currentBatchContext && window.currentBatchContext.source === 'selected-courses') {
+                window.currentBatchContext = null;
+            }
+            bindSelectedCoursesCheckboxes();
+            updateSelectedCoursesBatchControls();
+            deploySelectedCoursesSingleButtons(studentContext);
+            setupSelectedCoursesBatchDropdown(studentContext);
+            if (window.SubscriptionModule && window.SubscriptionModule.BatchMixedSubscription) {
+                window.SubscriptionModule.BatchMixedSubscription.deployBoth('#selectedCoursesFunctionBar', {
+                    checkboxSelector: '#selectedCoursesTableBody .selected-course-checkbox'
+                });
+            }
         }
 
         function renderReportSection() {
@@ -8623,9 +9032,15 @@
             function generateSingleButton(options = {}) {
                 const {
                     courseId = '',
+                    courseCode = '',
                     courseName = '',
                     courseType = 'product',
+                    courseSchool = '',
                     studentName = '',
+                    studentSchool = '',
+                    homeCourseCode = '',
+                    homeCourseName = '',
+                    productSchool = '',
                     buttonText = '订阅',
                     position = 'absolute',
                     size = 'normal',
@@ -8646,9 +9061,15 @@
                 // 构建数据属性
                 const dataAttrs = [
                     `data-course-id="${courseId}"`,
+                    `data-course-code="${courseCode}"`,
                     `data-course-name="${courseName}"`,
                     `data-course-type="${config.courseType}"`,
-                    `data-student-name="${studentName}"`
+                    `data-course-school="${courseSchool}"`,
+                    `data-student-name="${studentName}"`,
+                    `data-student-school="${studentSchool}"`,
+                    `data-home-course-code="${homeCourseCode}"`,
+                    `data-home-course-name="${homeCourseName}"`,
+                    `data-product-school="${productSchool}"`
                 ].join(' ');
                 
                 return `<button class="${cssClasses.join(' ')}" 
@@ -8818,16 +9239,50 @@
                     }
                 }
                 
-                // 提取课程ID
-                info.courseId = element.dataset.courseId || element.id || '';
-                
-                // 智能判断课程类型
+                const dataset = element.dataset || {};
+
+                info.courseId = dataset.courseId || element.id || info.courseId || '';
+                info.courseCode = dataset.courseCode || info.courseCode || info.courseId || '';
+
+                if (!info.courseName && dataset.courseName) {
+                    info.courseName = dataset.courseName;
+                }
+
+                if (!info.studentName && dataset.studentName) {
+                    info.studentName = dataset.studentName;
+                }
+
+                if (dataset.studentSchool) {
+                    info.studentSchool = dataset.studentSchool;
+                }
+
+                if (dataset.courseSchool || dataset.productSchool) {
+                    info.courseSchool = dataset.courseSchool || dataset.productSchool;
+                    info.productSchool = dataset.productSchool || dataset.courseSchool;
+                }
+
+                if (dataset.homeCourseCode) {
+                    info.homeCourseCode = dataset.homeCourseCode;
+                }
+
+                if (dataset.homeCourseName) {
+                    info.homeCourseName = dataset.homeCourseName;
+                }
+
                 if (options.courseType === 'auto') {
                     info.courseType = detectCourseType(element);
+                } else if (options.courseType) {
+                    info.courseType = options.courseType;
+                } else if (dataset.courseType) {
+                    info.courseType = dataset.courseType;
                 } else {
-                    info.courseType = options.courseType || 'product';
+                    info.courseType = info.courseType || 'product';
                 }
-                
+
+                if (!info.courseCode) {
+                    info.courseCode = info.courseId || '';
+                }
+
                 return info;
             }
             
@@ -9349,16 +9804,32 @@
                     
                     deployBoth: function(containerSelector, config = {}) {
                         // � 同时部署本校和产品课程批量订阅按钮
-                        const homeResult = this.parent.BatchHomeSubscription.deploy(containerSelector, {
-                            ...config,
-                            buttonText: config.homeButtonText || '批量订阅'
-                        });
-                        
-                        const productResult = this.parent.BatchProductSubscription.deploy(containerSelector, {
-                            ...config,
-                            buttonText: config.productButtonText || '批量订阅产品课程'
-                        });
-                        
+                        const moduleRoot = window.SubscriptionModule || this;
+                        const homeApi = moduleRoot && moduleRoot.BatchHomeSubscription;
+                        const productApi = moduleRoot && moduleRoot.BatchProductSubscription;
+
+                        if (!homeApi || typeof homeApi.deploy !== 'function') {
+                            console.warn('BatchMixedSubscription: 本校批量订阅组件不可用');
+                        }
+
+                        if (!productApi || typeof productApi.deploy !== 'function') {
+                            console.warn('BatchMixedSubscription: 产品批量订阅组件不可用');
+                        }
+
+                        const homeResult = homeApi && typeof homeApi.deploy === 'function'
+                            ? homeApi.deploy(containerSelector, {
+                                ...config,
+                                buttonText: config.homeButtonText || '批量订阅'
+                            })
+                            : { success: false, message: 'BatchHomeSubscription 未就绪' };
+
+                        const productResult = productApi && typeof productApi.deploy === 'function'
+                            ? productApi.deploy(containerSelector, {
+                                ...config,
+                                buttonText: config.productButtonText || '批量订阅产品课程'
+                            })
+                            : { success: false, message: 'BatchProductSubscription 未就绪' };
+
                         return {
                             home: homeResult,
                             product: productResult,
