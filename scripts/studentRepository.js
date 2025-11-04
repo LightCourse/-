@@ -38,6 +38,208 @@
         };
     };
 
+    const subscriptionBlueprint = Object.freeze({
+        required: ['id', 'type', 'status', 'course'],
+        optional: ['deadline', 'summary', 'term', 'modality', 'duration', 'price', 'createdAt', 'warning']
+    });
+
+    const subscriptionErrorTypes = Object.freeze({
+        invalidPayload: 'subscription/invalid-payload',
+        duplicateEntry: 'subscription/duplicate-entry',
+        notFound: 'subscription/not-found',
+        storageFailure: 'subscription/storage-failure'
+    });
+
+    class SubscriptionRepositoryError extends Error {
+        constructor(code, message, context) {
+            super(message || code);
+            this.name = 'SubscriptionRepositoryError';
+            this.code = code;
+            if (context && typeof context === 'object') {
+                this.context = context;
+            }
+        }
+    }
+
+    const subscriptionDefaults = Object.freeze({
+        type: 'product',
+        status: 'waiting'
+    });
+
+    const subscriptionStatusSet = new Set([
+        'waiting',
+        'matched',
+        'notified',
+        'viewed',
+        'converted',
+        'expired'
+    ]);
+
+    const subscriptionTypeSet = new Set(['product', 'home']);
+
+    let subscriptionIdSeed = Date.now();
+
+    const ensureSubscriptionId = (subscription, studentId) => {
+        if (subscription && typeof subscription.id === 'string' && subscription.id.trim()) {
+            return subscription.id.trim();
+        }
+        subscriptionIdSeed += 1;
+        const baseStudentId = typeof studentId === 'undefined' ? 'unknown' : String(studentId).trim() || 'unknown';
+        return `sub-${baseStudentId}-${subscriptionIdSeed}`;
+    };
+
+    const normalizeCourseSnapshot = (course = {}) => {
+        const fallback = { code: '', name: '', school: '' };
+        if (!course || typeof course !== 'object') {
+            return fallback;
+        }
+        return {
+            code: typeof course.code === 'string' ? course.code : fallback.code,
+            name: typeof course.name === 'string' ? course.name : fallback.name,
+            school: typeof course.school === 'string' ? course.school : fallback.school
+        };
+    };
+
+    const normalizeSubscriptionSnapshot = (subscription, studentId) => {
+        const snapshot = cloneEntity(subscription) || {};
+
+        snapshot.id = ensureSubscriptionId(snapshot, studentId);
+
+        const normalizedType = typeof snapshot.type === 'string' && subscriptionTypeSet.has(snapshot.type)
+            ? snapshot.type
+            : subscriptionDefaults.type;
+        snapshot.type = normalizedType;
+
+        const normalizedStatus = typeof snapshot.status === 'string' && subscriptionStatusSet.has(snapshot.status)
+            ? snapshot.status
+            : subscriptionDefaults.status;
+        snapshot.status = normalizedStatus;
+
+        snapshot.course = normalizeCourseSnapshot(snapshot.course);
+
+        return snapshot;
+    };
+
+    const validateSubscriptionPayload = (payload) => {
+        if (!payload || typeof payload !== 'object') {
+            throw new SubscriptionRepositoryError(
+                subscriptionErrorTypes.invalidPayload,
+                '订阅数据必须是对象'
+            );
+        }
+
+        subscriptionBlueprint.required.forEach(field => {
+            if (field === 'id' || field === 'type' || field === 'status') {
+                return;
+            }
+            if (payload[field] === undefined || payload[field] === null) {
+                throw new SubscriptionRepositoryError(
+                    subscriptionErrorTypes.invalidPayload,
+                    `订阅字段缺失: ${field}`,
+                    { field }
+                );
+            }
+        });
+
+        if (payload.status && !subscriptionStatusSet.has(payload.status)) {
+            throw new SubscriptionRepositoryError(
+                subscriptionErrorTypes.invalidPayload,
+                `未知的订阅状态: ${payload.status}`,
+                { status: payload.status }
+            );
+        }
+
+        if (payload.type && !subscriptionTypeSet.has(payload.type)) {
+            throw new SubscriptionRepositoryError(
+                subscriptionErrorTypes.invalidPayload,
+                `未知的订阅类型: ${payload.type}`,
+                { type: payload.type }
+            );
+        }
+
+        const course = payload.course;
+        if (!course || typeof course !== 'object') {
+            throw new SubscriptionRepositoryError(
+                subscriptionErrorTypes.invalidPayload,
+                '订阅缺少课程信息',
+                { field: 'course' }
+            );
+        }
+
+        ['code', 'name'].forEach(prop => {
+            if (typeof course[prop] !== 'string' || !course[prop]) {
+                throw new SubscriptionRepositoryError(
+                    subscriptionErrorTypes.invalidPayload,
+                    `课程字段缺失: course.${prop}`,
+                    { field: `course.${prop}` }
+                );
+            }
+        });
+    };
+
+    const getStudentForMutation = (studentId) => {
+        const student = getFollowUpCollection().find(item => String(item.id) === String(studentId));
+        if (!student) {
+            throw new SubscriptionRepositoryError(
+                subscriptionErrorTypes.notFound,
+                `未找到学生 ${studentId}`,
+                { studentId }
+            );
+        }
+        if (!Array.isArray(student.subscriptions)) {
+            student.subscriptions = [];
+        }
+        return student;
+    };
+
+    const findSubscriptionIndex = (list, subscriptionId) => {
+        return list.findIndex(item => String(item?.id) === String(subscriptionId));
+    };
+
+    const createEventBus = () => {
+        const listeners = new Map();
+
+        const getListeners = (eventName) => {
+            if (!listeners.has(eventName)) {
+                listeners.set(eventName, new Set());
+            }
+            return listeners.get(eventName);
+        };
+
+        return {
+            on(eventName, handler) {
+                if (typeof handler !== 'function') {
+                    return () => {};
+                }
+                const eventListeners = getListeners(eventName);
+                eventListeners.add(handler);
+                return () => {
+                    eventListeners.delete(handler);
+                };
+            },
+            off(eventName, handler) {
+                if (!listeners.has(eventName) || typeof handler !== 'function') {
+                    return;
+                }
+                listeners.get(eventName).delete(handler);
+            },
+            emit(eventName, payload) {
+                if (!listeners.has(eventName)) {
+                    return;
+                }
+                listeners.get(eventName).forEach(listener => {
+                    try {
+                        listener(payload);
+                    } catch (error) {
+                        console.warn('StudentRepository: 事件监听执行失败', { eventName, error });
+                    }
+                });
+            }
+        };
+    };
+
+    const eventBus = createEventBus();
+
     const textFromCell = (cell) => (cell ? cell.textContent.trim() : '');
 
     const makeUnitKey = (schoolName, courseCode) => `${schoolName || ''}::${courseCode || ''}`;
@@ -405,8 +607,162 @@
             if (!student || !Array.isArray(student.subscriptions)) {
                 return [];
             }
-            return student.subscriptions.map(cloneEntity);
-        }
+            return student.subscriptions.map(subscription => normalizeSubscriptionSnapshot(subscription, studentId));
+        },
+
+        addSubscription(studentId, payload) {
+            validateSubscriptionPayload(payload);
+            const student = getStudentForMutation(studentId);
+
+            const normalized = normalizeSubscriptionSnapshot(payload, studentId);
+
+            const duplicate = student.subscriptions.some(existing => {
+                if (!existing) {
+                    return false;
+                }
+                if (existing.id && normalized.id && String(existing.id) === normalized.id) {
+                    return true;
+                }
+                return existing.course?.code === normalized.course.code && existing.type === normalized.type;
+            });
+
+            if (duplicate) {
+                throw new SubscriptionRepositoryError(
+                    subscriptionErrorTypes.duplicateEntry,
+                    '订阅已存在',
+                    { studentId, subscriptionId: normalized.id }
+                );
+            }
+
+            student.subscriptions.push(normalized);
+
+            eventBus.emit('subscriptions:changed', { studentId: student.id });
+            return normalizeSubscriptionSnapshot(normalized, studentId);
+        },
+
+        updateSubscription(studentId, subscriptionId, updates) {
+            if (!updates || typeof updates !== 'object') {
+                throw new SubscriptionRepositoryError(
+                    subscriptionErrorTypes.invalidPayload,
+                    '订阅更新数据必须是对象'
+                );
+            }
+
+            const student = getStudentForMutation(studentId);
+            const index = findSubscriptionIndex(student.subscriptions, subscriptionId);
+
+            if (index < 0) {
+                throw new SubscriptionRepositoryError(
+                    subscriptionErrorTypes.notFound,
+                    `未找到订阅 ${subscriptionId}`,
+                    { studentId, subscriptionId }
+                );
+            }
+
+            const target = student.subscriptions[index] || {};
+            const updated = {
+                ...target,
+                ...updates,
+                id: target.id
+            };
+
+            validateSubscriptionPayload(updated);
+
+            student.subscriptions[index] = normalizeSubscriptionSnapshot(updated, studentId);
+
+            eventBus.emit('subscriptions:changed', { studentId: student.id });
+            return normalizeSubscriptionSnapshot(student.subscriptions[index], studentId);
+        },
+
+        removeSubscription(studentId, subscriptionId) {
+            const student = getStudentForMutation(studentId);
+            const index = findSubscriptionIndex(student.subscriptions, subscriptionId);
+
+            if (index < 0) {
+                throw new SubscriptionRepositoryError(
+                    subscriptionErrorTypes.notFound,
+                    `未找到订阅 ${subscriptionId}`,
+                    { studentId, subscriptionId }
+                );
+            }
+
+            const removed = student.subscriptions.splice(index, 1)[0];
+            eventBus.emit('subscriptions:changed', { studentId: student.id });
+            return normalizeSubscriptionSnapshot(removed, studentId);
+        },
+
+        applyBatchSubscriptions(studentId, payload = []) {
+            if (!Array.isArray(payload)) {
+                throw new SubscriptionRepositoryError(
+                    subscriptionErrorTypes.invalidPayload,
+                    '批量订阅数据必须是数组'
+                );
+            }
+
+            const student = getStudentForMutation(studentId);
+            const inserted = [];
+            const skipped = [];
+
+            payload.forEach(entry => {
+                try {
+                    validateSubscriptionPayload(entry);
+                    const normalized = normalizeSubscriptionSnapshot(entry, studentId);
+                    const duplicateIndex = findSubscriptionIndex(student.subscriptions, normalized.id);
+
+                    const matchByCourse = student.subscriptions.findIndex(existing => {
+                        if (!existing) {
+                            return false;
+                        }
+                        return existing.course?.code === normalized.course.code && existing.type === normalized.type;
+                    });
+
+                    if (duplicateIndex >= 0 || matchByCourse >= 0) {
+                        skipped.push({ entry: normalized, reason: 'duplicate' });
+                        return;
+                    }
+
+                    student.subscriptions.push(normalized);
+                    inserted.push(normalized);
+                } catch (error) {
+                    if (error instanceof SubscriptionRepositoryError) {
+                        skipped.push({ entry, reason: error.code });
+                        return;
+                    }
+                    skipped.push({ entry, reason: 'unknown', error: String(error?.message || error) });
+                }
+            });
+
+            if (inserted.length) {
+                eventBus.emit('subscriptions:changed', { studentId: student.id });
+            }
+
+            return {
+                inserted: inserted.map(item => normalizeSubscriptionSnapshot(item, studentId)),
+                skipped
+            };
+        },
+
+        subscribe(eventName, handler) {
+            return eventBus.on(eventName, handler);
+        },
+
+        unsubscribe(eventName, handler) {
+            eventBus.off(eventName, handler);
+        },
+
+        _emit(eventName, payload) {
+            eventBus.emit(eventName, payload);
+        },
+
+        getSubscriptionBlueprint() {
+            return subscriptionBlueprint;
+        },
+
+        getSubscriptionErrorTypes() {
+            return subscriptionErrorTypes;
+        },
+
+        SubscriptionRepositoryError
     };
 
     global.StudentRepository = Object.freeze(repository);

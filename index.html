@@ -5751,6 +5751,7 @@
             document.querySelector('#subscribeModal .modal-header').classList.remove('product-course');
             // 清理单门课程订阅的状态
             window.currentSubscribeButton = null;
+            window.currentSingleCourseSnapshot = null;
         }
         
         // 获取选中的课程
@@ -5990,64 +5991,94 @@
         
         // 提交单门课程
         function submitSingleCourse() {
-            // 更新按钮状态为已订阅
-            if (window.currentSubscribeButton) {
-                window.currentSubscribeButton.classList.add('subscribed');
-                window.currentSubscribeButton.textContent = '已订阅';
-                window.currentSubscribeButton.title = window.currentSubscribeButton.title.replace('订阅', '取消订阅');
-                console.log('单门课程订阅成功，按钮状态已更新');
-            } else {
-                console.error('错误：未找到currentSubscribeButton');
+            const buttonElement = window.currentSubscribeButton;
+            if (!buttonElement) {
+                alert('当前没有可提交的订阅请求，请刷新后重试。');
+                return;
             }
-            
-            alert('订阅成功！系统将根据设置的条件监控课程状态。');
-            closeSubscribeModal();
+
+            const subscribeForm = document.querySelector('#subscribeForm');
+            const formData = subscribeForm ? collectFormData(subscribeForm) : {};
+            const courseDisplay = (window.currentSingleCourseSnapshot && window.currentSingleCourseSnapshot.course)
+                || document.getElementById('selectedCoursesField')?.textContent
+                || '';
+
+            setButtonProcessingState(buttonElement, true);
+            const result = commitSingleCourseSubscription(buttonElement, formData, { courseDisplay });
+
+            if (result.success) {
+                closeSubscribeModal();
+            } else {
+                setButtonProcessingState(buttonElement, false);
+            }
         }
         
+        function normalizeBatchCoursePayload(courseEntry, formData, student) {
+            const buttonElement = courseEntry.buttonElement;
+            const courseDisplay = courseEntry.course;
+
+            const identifiers = resolveCourseIdentifiers(buttonElement, {
+                courseDisplay,
+                courseType: courseEntry.type
+            });
+
+            return buildSingleSubscriptionPayload(buttonElement, formData, {
+                student,
+                courseDisplay,
+                courseType: identifiers.type,
+                courseCode: identifiers.code,
+                courseName: identifiers.name,
+                courseSchool: identifiers.school
+            });
+        }
+
         // 提交批量课程
         function submitBatchCourses(selectedCourses) {
-            const coursesData = [];
-            
-            selectedCourses.forEach((course, index) => {
+            const repository = window.StudentRepository;
+            const student = (window.StudentAnalysisController && typeof window.StudentAnalysisController.getCurrentStudent === 'function')
+                ? window.StudentAnalysisController.getCurrentStudent()
+                : (window.currentStudentInfo || null);
+
+            if (!repository || typeof repository.applyBatchSubscriptions !== 'function') {
+                alert('订阅服务暂未初始化，请稍后再试。');
+                return;
+            }
+
+            if (!student || !student.id) {
+                alert('请选择学生后再执行批量订阅。');
+                return;
+            }
+
+            const unifiedForm = document.querySelector('#subscribeForm');
+            const unifiedFormData = unifiedForm ? collectFormData(unifiedForm) : {};
+
+            const payloads = selectedCourses.map((course, index) => {
                 const individualForm = document.getElementById(`form-${index}`);
-                const useIndividual = individualForm.classList.contains('show');
-                
-                let formData;
-                if (useIndividual) {
-                    // 收集单独设置的数据
-                    formData = collectFormData(individualForm);
-                } else {
-                    // 收集统一设置的数据
-                    formData = collectFormData(document.querySelector('#subscribeForm'));
-                }
-                
-                coursesData.push({
-                    courseIndex: index,
-                    courseName: course.course,
-                    student: course.student,
-                    settings: formData,
-                    useIndividual: useIndividual
-                });
+                const useIndividual = individualForm && individualForm.classList.contains('show');
+                const formData = useIndividual ? collectFormData(individualForm) : unifiedFormData;
+                return normalizeBatchCoursePayload(course, formData, student);
             });
-            
-            // 更新所有选中课程的按钮状态
-            selectedCourses.forEach(course => {
-                if (course.buttonElement) {
-                    course.buttonElement.classList.add('subscribed');
-                    course.buttonElement.textContent = '已订阅';
-                    course.buttonElement.title = course.buttonElement.title.replace('订阅', '取消订阅');
+
+            const result = repository.applyBatchSubscriptions(student.id, payloads);
+            const successCount = Array.isArray(result.inserted) ? result.inserted.length : 0;
+            const skippedCount = Array.isArray(result.skipped) ? result.skipped.length : 0;
+
+            if (successCount > 0) {
+                alert(`成功订阅 ${successCount} 门课程！系统将根据设置的条件监控课程状态。`);
+            }
+
+            if (skippedCount > 0) {
+                const duplicateItems = result.skipped.filter(item => item.reason === 'duplicate');
+                if (duplicateItems.length) {
+                    alert(`有 ${duplicateItems.length} 门课程已存在订阅，已自动跳过。`);
                 }
-            });
-            
-            console.log('批量订阅数据:', coursesData);
-            alert(`成功订阅 ${selectedCourses.length} 门课程！系统将根据设置的条件监控课程状态。`);
-            
-            // 🎯 批量订阅完成后，调用相应页面的清理函数
+            }
+
             if (window.currentBatchContext && window.currentBatchContext.clearFunction) {
                 window.currentBatchContext.clearFunction();
-                window.currentBatchContext = null; // 清理上下文
+                window.currentBatchContext = null;
             }
-            
+
             closeSubscribeModal();
         }
         
@@ -6065,6 +6096,218 @@
             });
             
             return data;
+        }
+
+        const subscriptionModalityLabels = {
+            'online-live': '线上直播',
+            'online-recorded': '线上非直播',
+            'offline': '线下'
+        };
+
+        function splitCourseDisplay(display) {
+            if (!display || typeof display !== 'string') {
+                return { code: '', name: '' };
+            }
+            const match = display.match(/^\s*([^()]+?)\s*(?:\(([^)]+)\))?\s*$/);
+            if (!match) {
+                return { code: display.trim(), name: '' };
+            }
+            const code = (match[1] || '').trim();
+            const name = (match[2] || '').trim();
+            return { code, name };
+        }
+
+        function resolveCourseIdentifiers(buttonElement, options = {}) {
+            const dataset = buttonElement ? buttonElement.dataset : {};
+            const courseDisplay = options.courseDisplay || dataset.courseDisplay || '';
+            const fallback = splitCourseDisplay(courseDisplay);
+
+            const code = (dataset.courseCode || options.courseCode || fallback.code || '').trim();
+            let name = (dataset.courseName || options.courseName || fallback.name || '').trim();
+            if (!name && code) {
+                name = code;
+            }
+
+            const type = (dataset.courseType || options.courseType || 'product').trim().toLowerCase();
+            const school = (dataset.courseSchool || options.courseSchool || '').trim();
+
+            return { code, name, type, school };
+        }
+
+        function formatDurationText(formData = {}) {
+            const rawValue = formData.duration;
+            if (rawValue === undefined || rawValue === null || rawValue === '') {
+                return '';
+            }
+            const value = Number(rawValue);
+            if (!Number.isFinite(value) || value <= 0) {
+                return '';
+            }
+            const operator = formData.durationOperator || 'equal';
+            const operatorMap = {
+                equal: '',
+                gte: '≥',
+                lte: '≤'
+            };
+            const prefix = operatorMap[operator] || '';
+            return `${prefix}${value}周`;
+        }
+
+        function formatPriceText(formData = {}) {
+            const rawValue = formData.price;
+            if (rawValue === undefined || rawValue === null || rawValue === '') {
+                return '';
+            }
+            const value = Number(rawValue);
+            if (!Number.isFinite(value) || value < 0) {
+                return '';
+            }
+            return `≤${value}美元`;
+        }
+
+        function buildSingleSubscriptionPayload(buttonElement, formData = {}, options = {}) {
+            if (!buttonElement) {
+                throw new Error('未找到订阅按钮');
+            }
+
+            const student = options.student
+                || ((window.StudentAnalysisController && typeof window.StudentAnalysisController.getCurrentStudent === 'function')
+                    ? window.StudentAnalysisController.getCurrentStudent()
+                    : null)
+                || (window.currentStudentInfo ? { ...window.currentStudentInfo } : null);
+
+            if (!student || !student.id) {
+                throw new Error('请选择学生后再设置订阅');
+            }
+
+            const identifiers = resolveCourseIdentifiers(buttonElement, options);
+            if (!identifiers.code) {
+                throw new Error('无法识别课程代码，无法创建订阅');
+            }
+            if (!identifiers.name) {
+                identifiers.name = identifiers.code;
+            }
+
+            const modalityValue = formData.format || '';
+            const modalityText = subscriptionModalityLabels[modalityValue] || modalityValue || '不限';
+            const durationText = formatDurationText(formData);
+            const priceText = formatPriceText(formData);
+            const termText = formData.semester || '任意学期';
+            const deadline = formData.endDate || '';
+            const createdAt = options.createdAt || new Date().toISOString().split('T')[0];
+
+            const summaryParts = [];
+            if (termText && termText !== '任意学期') {
+                summaryParts.push(termText);
+            }
+            if (modalityText && modalityText !== '不限') {
+                summaryParts.push(modalityText);
+            }
+            if (durationText) {
+                summaryParts.push(durationText);
+            }
+            if (priceText) {
+                summaryParts.push(priceText);
+            }
+
+            const summary = summaryParts.length ? summaryParts.join(', ') : '无附加条件';
+
+            return {
+                type: identifiers.type || 'product',
+                status: options.status || 'waiting',
+                course: {
+                    code: identifiers.code,
+                    name: identifiers.name,
+                    school: identifiers.type === 'home'
+                        ? (student.school || identifiers.school || '')
+                        : (identifiers.school || '')
+                },
+                term: termText,
+                modality: modalityText,
+                duration: durationText || '不限',
+                price: priceText || '',
+                deadline,
+                summary,
+                createdAt
+            };
+        }
+
+        function setButtonProcessingState(buttonElement, isProcessing) {
+            if (!buttonElement) {
+                return;
+            }
+
+            if (isProcessing) {
+                if (!buttonElement.dataset.processingOriginalText) {
+                    buttonElement.dataset.processingOriginalText = buttonElement.textContent.trim();
+                }
+                buttonElement.disabled = true;
+                buttonElement.setAttribute('aria-busy', 'true');
+                buttonElement.textContent = buttonElement.dataset.processingLabel || '处理中...';
+            } else {
+                const originalText = buttonElement.dataset.processingOriginalText || '订阅';
+                buttonElement.textContent = originalText;
+                buttonElement.disabled = false;
+                buttonElement.removeAttribute('aria-busy');
+                delete buttonElement.dataset.processingOriginalText;
+            }
+        }
+
+        function commitSingleCourseSubscription(buttonElement, formData = {}, options = {}) {
+            const repository = window.StudentRepository;
+            if (!repository || typeof repository.addSubscription !== 'function') {
+                alert('订阅功能暂未初始化，请稍后再试。');
+                return { success: false };
+            }
+
+            const student = (window.StudentAnalysisController && typeof window.StudentAnalysisController.getCurrentStudent === 'function')
+                ? window.StudentAnalysisController.getCurrentStudent()
+                : (window.currentStudentInfo || null);
+
+            if (!student || !student.id) {
+                alert('请选择学生后再设置订阅。');
+                return { success: false };
+            }
+
+            let payload;
+            try {
+                payload = buildSingleSubscriptionPayload(buttonElement, formData, {
+                    ...options,
+                    student
+                });
+            } catch (payloadError) {
+                const message = payloadError && payloadError.message
+                    ? payloadError.message
+                    : '订阅信息不完整，请检查后重试。';
+                alert(message);
+                console.warn('构建订阅数据失败', payloadError);
+                return { success: false, error: payloadError };
+            }
+
+            try {
+                repository.addSubscription(student.id, payload);
+                if (buttonElement) {
+                    buttonElement.removeAttribute('aria-busy');
+                    delete buttonElement.dataset.processingOriginalText;
+                }
+                if (window.SubscriptionModule && typeof window.SubscriptionModule.syncButtonStates === 'function') {
+                    window.SubscriptionModule.syncButtonStates(student.id);
+                }
+                alert('订阅成功！系统将根据设置的条件监控课程状态。');
+                return { success: true, payload };
+            } catch (error) {
+                let message = '订阅失败，请稍后再试。';
+                if (error && typeof error === 'object') {
+                    if (error.code === 'subscription/duplicate-entry') {
+                        message = '该课程已经订阅，无需重复设置。';
+                    } else if (error.message) {
+                        message = error.message;
+                    }
+                }
+                alert(message);
+                console.warn('单门订阅失败', { error, payload });
+                return { success: false, error };
+            }
         }
         
         // 点击模态框外部关闭
@@ -6259,11 +6502,24 @@
                 if (!data) return;
                 
                 if (selectedOption.value === 'direct') {
-                    // 直接订阅
-                    data.buttonElement.classList.add('subscribed');
-                    data.buttonElement.textContent = '已订阅';
-                    data.buttonElement.title = data.buttonElement.title.replace('订阅', '取消订阅');
-                    alert('订阅成功！');
+                    const targetButton = data.buttonElement;
+                    if (!targetButton) {
+                        alert('未找到订阅按钮，请刷新后重试。');
+                        return;
+                    }
+
+                    const courseDisplay = data.selectedCourse && data.selectedCourse.length
+                        ? data.selectedCourse[0].course
+                        : '';
+
+                    setButtonProcessingState(targetButton, true);
+                    const result = commitSingleCourseSubscription(targetButton, {}, { courseDisplay });
+
+                    if (!result.success) {
+                        setButtonProcessingState(targetButton, false);
+                        return;
+                    }
+
                     closeSingleCourseModal();
                 } else {
                     // 个性化订阅，打开条件设置页面
@@ -6308,6 +6564,9 @@
             
             // 存储按钮元素用于后续更新状态
             window.currentSubscribeButton = buttonElement;
+            window.currentSingleCourseSnapshot = selectedCourses && selectedCourses.length
+                ? { ...selectedCourses[0] }
+                : null;
             
             // 显示模态框
             document.getElementById('subscribeModal').style.display = 'flex';
@@ -6432,6 +6691,7 @@
             window.currentBatchContext = null;
             window.currentSubscribeButton = null;
             window.currentSingleCourseData = null;
+            window.currentSingleCourseSnapshot = null;
         }
 
         function resetIndependentForms() {
@@ -7395,7 +7655,65 @@
             if (sortValue && sortValue.value) {
                 sortCardsByDeadline();
             }
+
+            if (window.SubscriptionModule && typeof window.SubscriptionModule.syncButtonStates === 'function') {
+                window.SubscriptionModule.syncButtonStates(student.id);
+            }
         }
+
+        function refreshSubscriptionCenter(studentId) {
+            const currentStudent = StudentAnalysisController.getCurrentStudent();
+            if (!currentStudent) {
+                return;
+            }
+
+            if (studentId && String(studentId) !== String(currentStudent.id)) {
+                return;
+            }
+
+            renderSubscriptionSection();
+        }
+
+        function initSubscriptionEventBridge() {
+            if (initSubscriptionEventBridge._initialized) {
+                return;
+            }
+
+            const repository = window.StudentRepository;
+            if (!repository || typeof repository.subscribe !== 'function') {
+                return;
+            }
+
+            const unsubscribe = repository.subscribe('subscriptions:changed', payload => {
+                const targetId = payload && payload.studentId;
+                refreshSubscriptionCenter(targetId);
+
+                if (window.SubscriptionModule && typeof window.SubscriptionModule.syncButtonStates === 'function') {
+                    window.SubscriptionModule.syncButtonStates(targetId);
+                }
+            });
+
+            initSubscriptionEventBridge._initialized = true;
+            initSubscriptionEventBridge._unsubscribe = unsubscribe;
+
+            window.addEventListener('beforeunload', () => {
+                if (typeof initSubscriptionEventBridge._unsubscribe === 'function') {
+                    initSubscriptionEventBridge._unsubscribe();
+                    initSubscriptionEventBridge._unsubscribe = null;
+                }
+            });
+        }
+
+        function setupSubscriptionCenterLifecycle() {
+            initSubscriptionEventBridge();
+
+            const student = StudentAnalysisController.getCurrentStudent();
+            if (student && window.SubscriptionModule && typeof window.SubscriptionModule.syncButtonStates === 'function') {
+                window.SubscriptionModule.syncButtonStates(student.id);
+            }
+        }
+
+        window.refreshSubscriptionCenter = refreshSubscriptionCenter;
 
         function formatUploadedFileSize(bytes) {
             if (!Number.isFinite(bytes) || bytes <= 0) {
@@ -8154,8 +8472,84 @@
         }
         
         function handleAction(action, subscriptionId) {
-            // 模拟处理操作
-            alert(`执行操作: ${action} (订阅ID: ${subscriptionId})`);
+            const repository = window.StudentRepository;
+            const student = (window.StudentAnalysisController && typeof window.StudentAnalysisController.getCurrentStudent === 'function')
+                ? window.StudentAnalysisController.getCurrentStudent()
+                : (window.currentStudentInfo || null);
+
+            if (!repository || typeof repository.getSubscriptions !== 'function') {
+                alert('订阅服务暂未初始化，请稍后再试。');
+                return;
+            }
+
+            if (!student || !student.id) {
+                alert('请选择学生后再执行此操作。');
+                return;
+            }
+
+            const subscriptions = repository.getSubscriptions(student.id) || [];
+            const target = subscriptions.find(item => String(item.id) === String(subscriptionId));
+
+            if (!target) {
+                alert('未找到订阅记录，可能已被移除。');
+                return;
+            }
+
+            const actionHandlers = {
+                renew: () => {
+                    let newDeadline = prompt('请输入新的截止日期 (YYYY-MM-DD)', target.deadline || '');
+                    if (newDeadline === null) {
+                        return;
+                    }
+                    newDeadline = newDeadline.trim();
+                    if (!newDeadline) {
+                        alert('未输入有效的截止日期，操作已取消。');
+                        return;
+                    }
+                    try {
+                        repository.updateSubscription(student.id, subscriptionId, {
+                            deadline: newDeadline,
+                            status: target.status === 'expired' ? 'waiting' : target.status
+                        });
+                        alert('续期成功，订阅已更新。');
+                    } catch (error) {
+                        const message = error?.message || '续期失败，请稍后再试。';
+                        alert(message);
+                    }
+                },
+                edit: () => {
+                    alert('订阅条件编辑功能尚未接入，请稍后再试。');
+                },
+                cancel: () => {
+                    const confirmCancel = confirm('确定要取消该订阅吗？取消后将不再接收通知。');
+                    if (!confirmCancel) {
+                        return;
+                    }
+                    try {
+                        repository.removeSubscription(student.id, subscriptionId);
+                        alert('订阅已取消。');
+                    } catch (error) {
+                        const message = error?.message || '取消订阅失败，请稍后再试。';
+                        alert(message);
+                    }
+                },
+                view: () => {
+                    alert('查看匹配课程功能暂未接入。');
+                },
+                notifyDetail: () => {
+                    alert('通知详情暂未接入，请稍后再试。');
+                },
+                jump: () => {
+                    alert('跳转选课功能暂未接入。');
+                }
+            };
+
+            const handler = actionHandlers[action];
+            if (typeof handler === 'function') {
+                handler();
+            } else {
+                alert(`暂未支持的操作: ${action}`);
+            }
         }
         
         // ===== 灵活订阅功能模块 =====
@@ -8586,6 +8980,73 @@
                         setTimeout(updateBatchButton, 50);
                     });
                 }
+            }
+
+            function getActiveStudentId(overrideId) {
+                if (overrideId !== undefined && overrideId !== null) {
+                    return String(overrideId);
+                }
+
+                if (window.StudentAnalysisController && typeof window.StudentAnalysisController.getCurrentStudent === 'function') {
+                    const student = window.StudentAnalysisController.getCurrentStudent();
+                    if (student && student.id !== undefined && student.id !== null) {
+                        return String(student.id);
+                    }
+                }
+
+                return null;
+            }
+
+            function syncButtonStates(targetStudentId) {
+                const repository = getStudentRepository();
+                const studentId = getActiveStudentId(targetStudentId);
+
+                if (!repository || typeof repository.getSubscriptions !== 'function' || !studentId) {
+                    return;
+                }
+
+                let subscriptions = [];
+                try {
+                    subscriptions = repository.getSubscriptions(studentId) || [];
+                } catch (error) {
+                    console.warn('SubscriptionModule: 同步订阅按钮状态时获取数据失败', error);
+                    return;
+                }
+
+                const activeKeys = new Set(subscriptions.map(sub => {
+                    const type = (sub && sub.type) ? String(sub.type).toLowerCase() : 'product';
+                    const code = sub && sub.course && sub.course.code ? String(sub.course.code).toLowerCase() : '';
+                    return `${type}::${code}`;
+                }));
+
+                const buttons = document.querySelectorAll('.course-subscribe-btn');
+                buttons.forEach(button => {
+                    const type = (button.dataset.courseType || 'product').toLowerCase();
+                    const codeAttr = button.dataset.courseCode || button.dataset.courseId || '';
+                    const courseCode = codeAttr.toLowerCase();
+                    if (!courseCode) {
+                        return;
+                    }
+
+                    const key = `${type}::${courseCode}`;
+                    const isSubscribed = activeKeys.has(key);
+
+                    if (!button.dataset.originalLabel) {
+                        button.dataset.originalLabel = button.textContent.trim();
+                    }
+
+                    if (isSubscribed) {
+                        button.classList.add(config.subscribedClass);
+                        button.disabled = true;
+                        button.setAttribute('aria-disabled', 'true');
+                        button.textContent = button.dataset.subscribedLabel || '已订阅';
+                    } else {
+                        button.classList.remove(config.subscribedClass);
+                        button.disabled = false;
+                        button.removeAttribute('aria-disabled');
+                        button.textContent = button.dataset.originalLabel || '订阅';
+                    }
+                });
             }
             
             // 快速场景化部署函数
@@ -9073,6 +9534,7 @@
                 extractCourseInfo: extractCourseInfo,   // 提取课程信息
                 detectCourseType: detectCourseType,     // 检测课程类型
                 injectStyles: injectStyles,             // 注入样式
+                syncButtonStates: syncButtonStates,     // 同步按钮状态
                 
                 // 📖 预设配置
                 presets: componentPresets,              // 所有预设配置
@@ -9197,6 +9659,12 @@
             
             return { success: false, message: '没有可测试的课程' };
         };
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', setupSubscriptionCenterLifecycle);
+        } else {
+            setupSubscriptionCenterLifecycle();
+        }
 
         // 自动注入样式
         if (document.readyState === 'loading') {
