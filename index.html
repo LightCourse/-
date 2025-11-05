@@ -7865,7 +7865,6 @@
         }
 
         const matchedCoursesModalState = {
-            filter: 'all',
             dataset: null,
             context: null,
             onAddCourse: null,
@@ -7904,20 +7903,9 @@
                                         <span class="info-hint" id="matchedCoursesDeadlineHint"></span>
                                     </span>
                                 </div>
-                                <div class="info-block">
-                                    <span class="info-label">匹配数据来源</span>
-                                    <span class="info-value" id="matchedCoursesMatchSourceLabel">-</span>
-                                </div>
                             </div>
 
-                            <div class="matched-courses-toolbar">
-                                <div class="matched-courses-summary" id="matchedCoursesSummaryLabel">匹配数据正在加载...</div>
-                                <div class="matched-courses-filters" id="matchedCoursesFilter">
-                                    <button type="button" class="matched-courses-filter-btn active" data-filter="all">全部</button>
-                                    <button type="button" class="matched-courses-filter-btn" data-filter="home">本校课程</button>
-                                    <button type="button" class="matched-courses-filter-btn" data-filter="product">产品课程</button>
-                                </div>
-                            </div>
+                            <div class="matched-courses-summary" id="matchedCoursesSummaryLabel">匹配数据正在加载...</div>
 
                             <div class="matched-courses-feedback" id="matchedCoursesFeedback"></div>
 
@@ -7927,22 +7915,13 @@
                                 <div class="skeleton-line"></div>
                             </div>
 
-                            <div class="matched-courses-columns" id="matchedCoursesColumns">
-                                <section class="matched-courses-column" data-source="home">
-                                    <div class="matched-courses-column-header">
-                                        <h4>本校课程</h4>
-                                        <span class="matched-courses-count" id="matchedCoursesHomeCount">0</span>
-                                    </div>
-                                    <div class="matched-courses-list" id="matchedCoursesHomeList"></div>
-                                </section>
-                                <section class="matched-courses-column" data-source="product">
-                                    <div class="matched-courses-column-header">
-                                        <h4>产品课程</h4>
-                                        <span class="matched-courses-count" id="matchedCoursesProductCount">0</span>
-                                    </div>
-                                    <div class="matched-courses-list" id="matchedCoursesProductList"></div>
-                                </section>
-                            </div>
+                            <section class="matched-courses-product-section" id="matchedCoursesProductSection">
+                                <div class="matched-courses-column-header">
+                                    <h4>在售产品课程</h4>
+                                    <span class="matched-courses-count" id="matchedCoursesProductCount">0</span>
+                                </div>
+                                <div class="matched-courses-list" id="matchedCoursesProductList"></div>
+                            </section>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-cancel" id="matchedCoursesCloseBtn">关闭</button>
@@ -7980,18 +7959,6 @@
             };
             if (!value) {
                 return '未知';
-            }
-            return mapping[value] || value;
-        }
-
-        function describeMatchSource(value) {
-            const mapping = {
-                snapshot: '订阅快照',
-                runtime: '实时解析',
-                unknown: '未提供'
-            };
-            if (!value) {
-                return mapping.unknown;
             }
             return mapping[value] || value;
         }
@@ -8035,40 +8002,6 @@
             return `${source}::${(school || '').toLowerCase()}::${(keyCode || '').toLowerCase()}`;
         }
 
-        function bindMatchedCoursesFilterEvents() {
-            const filterContainer = document.getElementById('matchedCoursesFilter');
-            if (!filterContainer || filterContainer.dataset.bound === 'true') {
-                return;
-            }
-
-            filterContainer.addEventListener('click', (event) => {
-                const button = event.target.closest('.matched-courses-filter-btn');
-                if (!button) {
-                    return;
-                }
-                event.preventDefault();
-                const targetFilter = button.dataset.filter || 'all';
-                matchedCoursesModalState.filter = targetFilter;
-                updateMatchedCoursesFilterUI();
-                renderMatchedCoursesModal();
-            });
-
-            filterContainer.dataset.bound = 'true';
-        }
-
-        function updateMatchedCoursesFilterUI() {
-            const filterContainer = document.getElementById('matchedCoursesFilter');
-            if (!filterContainer) {
-                return;
-            }
-            const active = matchedCoursesModalState.filter;
-            const buttons = filterContainer.querySelectorAll('.matched-courses-filter-btn');
-            buttons.forEach(btn => {
-                const btnFilter = btn.dataset.filter || 'all';
-                btn.classList.toggle('active', btnFilter === active);
-            });
-        }
-
         function openMatchedCoursesModal(payload = {}) {
             const modal = ensureMatchedCoursesModalContainer();
             if (!modal) {
@@ -8076,21 +8009,12 @@
                 return;
             }
 
-            bindMatchedCoursesFilterEvents();
-
-            const validFilters = new Set(['all', 'home', 'product']);
-            const initialFilter = typeof payload.initialFilter === 'string' && validFilters.has(payload.initialFilter)
-                ? payload.initialFilter
-                : 'all';
-
-            matchedCoursesModalState.filter = initialFilter;
             matchedCoursesModalState.context = payload.context || null;
             matchedCoursesModalState.dataset = payload.dataset || null;
             matchedCoursesModalState.onAddCourse = typeof payload.onAddCourse === 'function' ? payload.onAddCourse : null;
             matchedCoursesModalState.isLoading = Boolean(payload.isLoading);
             matchedCoursesModalState.error = payload.error || null;
 
-            updateMatchedCoursesFilterUI();
             renderMatchedCoursesModal();
 
             modal.style.display = 'flex';
@@ -8122,17 +8046,12 @@
             const schoolLabel = document.getElementById('matchedCoursesSchoolLabel');
             const deadlineLabel = document.getElementById('matchedCoursesDeadlineLabel');
             const deadlineHint = document.getElementById('matchedCoursesDeadlineHint');
-            const matchSourceLabel = document.getElementById('matchedCoursesMatchSourceLabel');
             const summaryLabel = document.getElementById('matchedCoursesSummaryLabel');
             const feedbackEl = document.getElementById('matchedCoursesFeedback');
             const loaderEl = document.getElementById('matchedCoursesLoadingState');
-            const columnsWrapper = document.getElementById('matchedCoursesColumns');
-            const homeCountEl = document.getElementById('matchedCoursesHomeCount');
+            const productSection = document.getElementById('matchedCoursesProductSection');
             const productCountEl = document.getElementById('matchedCoursesProductCount');
-            const homeListEl = document.getElementById('matchedCoursesHomeList');
             const productListEl = document.getElementById('matchedCoursesProductList');
-
-            updateMatchedCoursesFilterUI();
 
             const context = matchedCoursesModalState.context || {};
             const course = context.course || {};
@@ -8167,13 +8086,6 @@
                 deadlineHint.textContent = text;
             }
 
-            if (matchSourceLabel) {
-                const source = matchedCoursesModalState.dataset?.metadata?.matchSource
-                    || subscription.metadata?.matchSource
-                    || 'unknown';
-                matchSourceLabel.textContent = describeMatchSource(source);
-            }
-
             if (loaderEl) {
                 loaderEl.style.display = matchedCoursesModalState.isLoading ? 'flex' : 'none';
             }
@@ -8181,10 +8093,10 @@
             const hasError = Boolean(matchedCoursesModalState.error);
             const dataset = matchedCoursesModalState.dataset;
             const hasDataset = dataset && typeof dataset === 'object';
-            const shouldShowColumns = hasDataset && !matchedCoursesModalState.isLoading && !hasError;
+            const shouldShowProducts = hasDataset && !matchedCoursesModalState.isLoading && !hasError;
 
-            if (columnsWrapper) {
-                columnsWrapper.style.display = shouldShowColumns ? 'flex' : 'none';
+            if (productSection) {
+                productSection.style.display = shouldShowProducts ? 'block' : 'none';
             }
 
             if (feedbackEl) {
@@ -8203,7 +8115,7 @@
                 }
             }
 
-            if (!shouldShowColumns) {
+            if (!shouldShowProducts) {
                 if (summaryLabel) {
                     if (matchedCoursesModalState.isLoading) {
                         summaryLabel.textContent = '匹配数据正在加载...';
@@ -8214,14 +8126,8 @@
                     }
                 }
 
-                if (homeCountEl) {
-                    homeCountEl.textContent = '0';
-                }
                 if (productCountEl) {
                     productCountEl.textContent = '0';
-                }
-                if (homeListEl) {
-                    homeListEl.innerHTML = '';
                 }
                 if (productListEl) {
                     productListEl.innerHTML = '';
@@ -8229,60 +8135,34 @@
                 return;
             }
 
-            const homeCourses = Array.isArray(dataset.homeCourses) ? dataset.homeCourses : [];
-            const productCourses = Array.isArray(dataset.productCourses) ? dataset.productCourses : [];
-            const homeCount = homeCourses.length;
+            const rawProductCourses = Array.isArray(dataset.productCourses) ? dataset.productCourses : [];
+            const productCourses = rawProductCourses.filter(course => course && (course.onsaleStatus === 'onSale' || course.isOnSale === true));
             const productCount = productCourses.length;
-            const totalCount = homeCount + productCount;
-            const hasOnSaleProduct = Boolean(dataset.summary?.hasOnSaleProduct || productCourses.some(course => course.onsaleStatus === 'onSale'));
             const generatedAt = dataset.summary?.generatedAt || '';
 
             if (summaryLabel) {
-                const parts = [`本校 ${homeCount} 门`, `产品 ${productCount} 门`];
-                if (hasOnSaleProduct) {
-                    parts.push('包含在售产品课程');
+                if (productCount > 0) {
+                    const parts = [`在售产品 ${productCount} 门`];
+                    const generatedText = formatTimestampReadable(generatedAt);
+                    if (generatedText) {
+                        parts.push(`数据生成于 ${generatedText}`);
+                    }
+                    summaryLabel.textContent = parts.join(' · ');
+                } else {
+                    summaryLabel.textContent = '暂无在售产品课程';
                 }
-                const generatedText = formatTimestampReadable(generatedAt);
-                if (generatedText) {
-                    parts.push(`数据生成于 ${generatedText}`);
-                }
-                summaryLabel.textContent = parts.join(' · ');
             }
 
-            if (homeCountEl) {
-                homeCountEl.textContent = String(homeCount);
-            }
             if (productCountEl) {
                 productCountEl.textContent = String(productCount);
             }
 
-            populateMatchedCoursesList(homeListEl, homeCourses, 'home', matchedCoursesModalState.onAddCourse);
             populateMatchedCoursesList(productListEl, productCourses, 'product', matchedCoursesModalState.onAddCourse);
 
-            if (feedbackEl && totalCount === 0) {
-                feedbackEl.textContent = '当前订阅暂无匹配课程，请稍后再试或调整订阅条件。';
+            if (feedbackEl && productCount === 0) {
+                feedbackEl.textContent = '当前订阅暂无在售产品课程，请调整订阅条件或稍后再试。';
                 feedbackEl.classList.add('info');
                 feedbackEl.style.display = 'block';
-            }
-
-            const filter = matchedCoursesModalState.filter;
-            if (filter !== 'all') {
-                const columns = columnsWrapper.querySelectorAll('.matched-courses-column');
-                columns.forEach(column => {
-                    if (!column.dataset.source) {
-                        return;
-                    }
-                    if (column.dataset.source === filter) {
-                        column.style.display = 'flex';
-                    } else {
-                        column.style.display = 'none';
-                    }
-                });
-            } else {
-                const columns = columnsWrapper.querySelectorAll('.matched-courses-column');
-                columns.forEach(column => {
-                    column.style.display = 'flex';
-                });
             }
         }
 
@@ -8295,7 +8175,7 @@
             if (!Array.isArray(courses) || !courses.length) {
                 const empty = document.createElement('div');
                 empty.className = 'matched-courses-empty';
-                empty.textContent = source === 'home' ? '暂无本校匹配课程' : '暂无产品匹配课程';
+                empty.textContent = source === 'product' ? '暂无在售产品课程' : '暂无匹配课程';
                 listElement.appendChild(empty);
                 return;
             }
@@ -8445,14 +8325,11 @@
                 modal.style.display = 'none';
             }
 
-            matchedCoursesModalState.filter = 'all';
             matchedCoursesModalState.dataset = null;
             matchedCoursesModalState.context = null;
             matchedCoursesModalState.onAddCourse = null;
             matchedCoursesModalState.isLoading = false;
             matchedCoursesModalState.error = null;
-
-            updateMatchedCoursesFilterUI();
 
             const summaryLabel = document.getElementById('matchedCoursesSummaryLabel');
             if (summaryLabel) {
@@ -8471,22 +8348,19 @@
                 feedbackEl.style.display = 'none';
             }
 
-            const homeListEl = document.getElementById('matchedCoursesHomeList');
             const productListEl = document.getElementById('matchedCoursesProductList');
-            if (homeListEl) {
-                homeListEl.innerHTML = '';
-            }
             if (productListEl) {
                 productListEl.innerHTML = '';
             }
 
-            const columnsWrapper = document.getElementById('matchedCoursesColumns');
-            if (columnsWrapper) {
-                columnsWrapper.style.display = 'none';
-                const columns = columnsWrapper.querySelectorAll('.matched-courses-column');
-                columns.forEach(column => {
-                    column.style.display = 'flex';
-                });
+            const productCountEl = document.getElementById('matchedCoursesProductCount');
+            if (productCountEl) {
+                productCountEl.textContent = '0';
+            }
+
+            const productSection = document.getElementById('matchedCoursesProductSection');
+            if (productSection) {
+                productSection.style.display = 'none';
             }
         }
 
@@ -8499,7 +8373,6 @@
             markCourseAdded: markMatchedCourseAsAdded,
             getState() {
                 return {
-                    filter: matchedCoursesModalState.filter,
                     dataset: matchedCoursesModalState.dataset,
                     context: matchedCoursesModalState.context,
                     isLoading: matchedCoursesModalState.isLoading,

@@ -401,10 +401,6 @@
             snapshot.matchResults = [];
         }
 
-        if (typeof snapshot.metadata.matchSource !== 'string' || !snapshot.metadata.matchSource) {
-            snapshot.metadata.matchSource = snapshot.matchResults.length ? 'snapshot' : 'unknown';
-        }
-
         let deadlineValue = typeof snapshot.deadline === 'string' ? snapshot.deadline.trim() : '';
         if (!deadlineValue) {
             const createdDate = parseDateInput(snapshot.createdAt)
@@ -1024,11 +1020,13 @@
             ? buildProductCourseMatches({ student, subscription, baseMatches: baseProductMatches, sharedCaches })
             : [];
 
-        const hasOnSaleProduct = productCourses.some(course => course.onsaleStatus === 'onSale');
+        const onSaleProductCount = productCourses.filter(course => course && course.onsaleStatus === 'onSale').length;
+        const hasOnSaleProduct = onSaleProductCount > 0;
 
         const summary = {
             homeCount: homeCourses.length,
             productCount: productCourses.length,
+            onSaleProductCount,
             hasOnSaleProduct,
             generatedAt: new Date().toISOString()
         };
@@ -1038,8 +1036,7 @@
             subscriptionId: subscription.id,
             courseCode: subscription.course?.code || '',
             schoolName: student.school || subscription.course?.school || '',
-            deadlineSource: subscription.metadata?.deadlineSource || '',
-            matchSource: subscription.metadata?.matchSource || (baseMatches.length ? 'snapshot' : 'runtime')
+            deadlineSource: subscription.metadata?.deadlineSource || ''
         };
 
         return {
