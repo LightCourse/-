@@ -733,6 +733,345 @@
             padding: 24px;
         }
 
+        #matchedCoursesModal .modal-content {
+            max-width: 960px;
+        }
+
+        .matched-courses-body {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .matched-courses-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .matched-courses-info .info-block {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .matched-courses-info .info-label {
+            font-size: 12px;
+            letter-spacing: 0.4px;
+            color: #64748b;
+            text-transform: uppercase;
+        }
+
+        .matched-courses-info .info-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .matched-courses-info .info-hint {
+            display: block;
+            margin-top: 4px;
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .matched-courses-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 12px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            background: #f8fafc;
+        }
+
+        .matched-courses-summary {
+            font-size: 13px;
+            color: #475569;
+            font-weight: 500;
+        }
+
+        .matched-courses-filters {
+            display: flex;
+            gap: 8px;
+        }
+
+        .matched-courses-filter-btn {
+            border: 1px solid #cbd5f5;
+            background: white;
+            color: #1d4ed8;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .matched-courses-filter-btn:hover:not(.active) {
+            background: #eff6ff;
+        }
+
+        .matched-courses-filter-btn.active {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            border-color: #2563eb;
+            color: white;
+            box-shadow: 0 4px 10px rgba(59, 130, 246, 0.25);
+        }
+
+        .matched-courses-columns {
+            display: flex;
+            gap: 20px;
+        }
+
+        .matched-courses-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .matched-courses-column-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .matched-courses-column-header h4 {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .matched-courses-count {
+            font-size: 12px;
+            font-weight: 600;
+            color: #475569;
+            background: #e2e8f0;
+            padding: 2px 10px;
+            border-radius: 999px;
+        }
+
+        .matched-courses-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .matched-course-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 14px;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+            transition: box-shadow 0.2s ease, transform 0.2s ease;
+        }
+
+        .matched-course-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+        }
+
+        .matched-course-card.matched-course-added {
+            border-color: #bbf7d0;
+            background: #f0fdf4;
+        }
+
+        .matched-course-header {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+        }
+
+        .matched-course-title {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .matched-course-code {
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748b;
+            background: #eef2ff;
+            padding: 2px 8px;
+            border-radius: 6px;
+        }
+
+        .course-origin-badge {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .matched-course-card[data-source="product"] .course-origin-badge {
+            background: #dcfce7;
+            color: #047857;
+        }
+
+        .matched-course-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 8px 16px;
+        }
+
+        .course-meta-line {
+            font-size: 13px;
+            color: #475569;
+            display: flex;
+            gap: 6px;
+            align-items: baseline;
+        }
+
+        .course-meta-label {
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .course-meta-value {
+            font-weight: 500;
+            color: #334155;
+        }
+
+        .course-meta-value.onsale {
+            color: #047857;
+        }
+
+        .course-meta-value.soldout {
+            color: #b91c1c;
+        }
+
+        .matched-course-action {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .matched-course-add-btn {
+            border: 1px solid #2563eb;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .matched-course-add-btn:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+        }
+
+        .matched-course-add-btn:disabled {
+            background: #e2e8f0;
+            border-color: #cbd5e1;
+            color: #64748b;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .matched-course-add-btn.added {
+            background: #bbf7d0;
+            border-color: #34d399;
+            color: #047857;
+        }
+
+        .matched-courses-empty {
+            border: 1px dashed #cbd5f5;
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+            font-size: 13px;
+            color: #64748b;
+            background: #f8fafc;
+        }
+
+        .matched-courses-loader {
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .matched-courses-loader .skeleton-line {
+            height: 14px;
+            border-radius: 6px;
+            background: linear-gradient(90deg, #e2e8f0 0%, #f8fafc 50%, #e2e8f0 100%);
+            background-size: 200% 100%;
+            animation: shimmer 1.2s ease-in-out infinite;
+        }
+
+        .matched-courses-feedback {
+            display: none;
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .matched-courses-feedback.error {
+            display: block;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #b91c1c;
+        }
+
+        .matched-courses-feedback.info {
+            display: block;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #1d4ed8;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        @media (max-width: 768px) {
+            .matched-courses-columns {
+                flex-direction: column;
+            }
+
+            .matched-courses-toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .matched-course-meta {
+                grid-template-columns: 1fr;
+            }
+
+            .matched-course-action {
+                justify-content: stretch;
+            }
+
+            .matched-course-add-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
         .renew-info-block,
         .cancel-info-block {
             background: #f8fafc;
@@ -5905,6 +6244,7 @@
                         </div>
                     </div>
                 </div>
+
             `;
             
             // 更新确认按钮事件
@@ -6908,19 +7248,24 @@
             }
 
             if (isProcessing) {
-                if (!buttonElement.dataset.processingOriginalText) {
+                if (buttonElement.dataset.processingOriginalText === undefined) {
                     buttonElement.dataset.processingOriginalText = buttonElement.textContent.trim();
                 }
                 buttonElement.disabled = true;
                 buttonElement.setAttribute('aria-busy', 'true');
-                buttonElement.textContent = buttonElement.dataset.processingLabel || '处理中...';
-            } else {
-                const originalText = buttonElement.dataset.processingOriginalText || '订阅';
-                buttonElement.textContent = originalText;
-                buttonElement.disabled = false;
-                buttonElement.removeAttribute('aria-busy');
-                delete buttonElement.dataset.processingOriginalText;
+                const nextLabel = buttonElement.dataset.processingLabel || '处理中...';
+                if (nextLabel) {
+                    buttonElement.textContent = nextLabel;
+                }
+                return;
             }
+
+            if (buttonElement.dataset.processingOriginalText !== undefined) {
+                buttonElement.textContent = buttonElement.dataset.processingOriginalText;
+            }
+            buttonElement.disabled = false;
+            buttonElement.removeAttribute('aria-busy');
+            delete buttonElement.dataset.processingOriginalText;
         }
 
         function setSubscribeModalProcessing(isProcessing, label) {
@@ -7067,9 +7412,16 @@
             if (!button) {
                 return;
             }
+            const hasStoredOriginal = button.dataset.processingOriginalText !== undefined;
             delete button.dataset.processingLabel;
-            if (shouldReset) {
+            if (!shouldReset) {
+                return;
+            }
+            if (hasStoredOriginal) {
                 setButtonProcessingState(button, false);
+            } else {
+                button.disabled = false;
+                button.removeAttribute('aria-busy');
             }
         }
 
@@ -7512,6 +7864,650 @@
             }
         }
 
+        const matchedCoursesModalState = {
+            filter: 'all',
+            dataset: null,
+            context: null,
+            onAddCourse: null,
+            isLoading: false,
+            error: null
+        };
+
+        function ensureMatchedCoursesModalContainer() {
+            let modal = document.getElementById('matchedCoursesModal');
+            if (modal) {
+                return modal;
+            }
+
+            const wrapper = document.createElement('div');
+            wrapper.innerHTML = `
+                <div id="matchedCoursesModal" class="modal" style="display: none;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 id="matchedCoursesModalTitle">查看匹配课程</h3>
+                            <button class="modal-close" type="button">&times;</button>
+                        </div>
+                        <div class="modal-body matched-courses-body">
+                            <div class="matched-courses-info">
+                                <div class="info-block">
+                                    <span class="info-label">订阅课程</span>
+                                    <span class="info-value" id="matchedCoursesCourseLabel">-</span>
+                                </div>
+                                <div class="info-block">
+                                    <span class="info-label">所属学校</span>
+                                    <span class="info-value" id="matchedCoursesSchoolLabel">-</span>
+                                </div>
+                                <div class="info-block">
+                                    <span class="info-label">截止日期</span>
+                                    <span class="info-value">
+                                        <span id="matchedCoursesDeadlineLabel">-</span>
+                                        <span class="info-hint" id="matchedCoursesDeadlineHint"></span>
+                                    </span>
+                                </div>
+                                <div class="info-block">
+                                    <span class="info-label">匹配数据来源</span>
+                                    <span class="info-value" id="matchedCoursesMatchSourceLabel">-</span>
+                                </div>
+                            </div>
+
+                            <div class="matched-courses-toolbar">
+                                <div class="matched-courses-summary" id="matchedCoursesSummaryLabel">匹配数据正在加载...</div>
+                                <div class="matched-courses-filters" id="matchedCoursesFilter">
+                                    <button type="button" class="matched-courses-filter-btn active" data-filter="all">全部</button>
+                                    <button type="button" class="matched-courses-filter-btn" data-filter="home">本校课程</button>
+                                    <button type="button" class="matched-courses-filter-btn" data-filter="product">产品课程</button>
+                                </div>
+                            </div>
+
+                            <div class="matched-courses-feedback" id="matchedCoursesFeedback"></div>
+
+                            <div class="matched-courses-loader" id="matchedCoursesLoadingState">
+                                <div class="skeleton-line"></div>
+                                <div class="skeleton-line"></div>
+                                <div class="skeleton-line"></div>
+                            </div>
+
+                            <div class="matched-courses-columns" id="matchedCoursesColumns">
+                                <section class="matched-courses-column" data-source="home">
+                                    <div class="matched-courses-column-header">
+                                        <h4>本校课程</h4>
+                                        <span class="matched-courses-count" id="matchedCoursesHomeCount">0</span>
+                                    </div>
+                                    <div class="matched-courses-list" id="matchedCoursesHomeList"></div>
+                                </section>
+                                <section class="matched-courses-column" data-source="product">
+                                    <div class="matched-courses-column-header">
+                                        <h4>产品课程</h4>
+                                        <span class="matched-courses-count" id="matchedCoursesProductCount">0</span>
+                                    </div>
+                                    <div class="matched-courses-list" id="matchedCoursesProductList"></div>
+                                </section>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-cancel" id="matchedCoursesCloseBtn">关闭</button>
+                        </div>
+                    </div>
+                </div>
+            `.trim();
+
+            modal = wrapper.firstElementChild;
+            if (!modal) {
+                console.warn('MatchedCoursesModal: 创建模态容器失败');
+                return null;
+            }
+
+            document.body.appendChild(modal);
+
+            const closeButton = modal.querySelector('.modal-close');
+            if (closeButton) {
+                closeButton.addEventListener('click', closeMatchedCoursesModal);
+            }
+            const footerCloseBtn = modal.querySelector('#matchedCoursesCloseBtn');
+            if (footerCloseBtn) {
+                footerCloseBtn.addEventListener('click', closeMatchedCoursesModal);
+            }
+
+            return modal;
+        }
+
+        function describeDeadlineSource(value) {
+            const mapping = {
+                'auto-180': '系统自动补足(+180天)',
+                manual: '人工录入',
+                'renew-auto-180': '续期自动(+180天)',
+                'renew-custom': '续期自定义'
+            };
+            if (!value) {
+                return '未知';
+            }
+            return mapping[value] || value;
+        }
+
+        function describeMatchSource(value) {
+            const mapping = {
+                snapshot: '订阅快照',
+                runtime: '实时解析',
+                unknown: '未提供'
+            };
+            if (!value) {
+                return mapping.unknown;
+            }
+            return mapping[value] || value;
+        }
+
+        function describeAvailability(value) {
+            if (!value) {
+                return '未知';
+            }
+            const normalized = String(value).toLowerCase();
+            if (['available', 'open', 'on', 'yes'].includes(normalized)) {
+                return '可选';
+            }
+            if (['full', 'closed', 'no', 'off'].includes(normalized)) {
+                return '已满';
+            }
+            return value;
+        }
+
+        function formatTimestampReadable(isoString) {
+            if (!isoString) {
+                return '';
+            }
+            const date = new Date(isoString);
+            if (Number.isNaN(date.getTime())) {
+                return '';
+            }
+            const pad = (num) => (num < 10 ? `0${num}` : String(num));
+            return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+        }
+
+        function getMatchedCourseKey(course, source) {
+            if (!course) {
+                return '';
+            }
+            const homeCode = course.courseCode || course.code || '';
+            const productCode = course.productCourseCode || course.courseCode || '';
+            const keyCode = source === 'home' ? homeCode : productCode;
+            const school = source === 'product'
+                ? (course.schoolName || course.productSchool || '')
+                : (course.school || '');
+            return `${source}::${(school || '').toLowerCase()}::${(keyCode || '').toLowerCase()}`;
+        }
+
+        function bindMatchedCoursesFilterEvents() {
+            const filterContainer = document.getElementById('matchedCoursesFilter');
+            if (!filterContainer || filterContainer.dataset.bound === 'true') {
+                return;
+            }
+
+            filterContainer.addEventListener('click', (event) => {
+                const button = event.target.closest('.matched-courses-filter-btn');
+                if (!button) {
+                    return;
+                }
+                event.preventDefault();
+                const targetFilter = button.dataset.filter || 'all';
+                matchedCoursesModalState.filter = targetFilter;
+                updateMatchedCoursesFilterUI();
+                renderMatchedCoursesModal();
+            });
+
+            filterContainer.dataset.bound = 'true';
+        }
+
+        function updateMatchedCoursesFilterUI() {
+            const filterContainer = document.getElementById('matchedCoursesFilter');
+            if (!filterContainer) {
+                return;
+            }
+            const active = matchedCoursesModalState.filter;
+            const buttons = filterContainer.querySelectorAll('.matched-courses-filter-btn');
+            buttons.forEach(btn => {
+                const btnFilter = btn.dataset.filter || 'all';
+                btn.classList.toggle('active', btnFilter === active);
+            });
+        }
+
+        function openMatchedCoursesModal(payload = {}) {
+            const modal = ensureMatchedCoursesModalContainer();
+            if (!modal) {
+                console.warn('未找到查看匹配课程模态框容器');
+                return;
+            }
+
+            bindMatchedCoursesFilterEvents();
+
+            const validFilters = new Set(['all', 'home', 'product']);
+            const initialFilter = typeof payload.initialFilter === 'string' && validFilters.has(payload.initialFilter)
+                ? payload.initialFilter
+                : 'all';
+
+            matchedCoursesModalState.filter = initialFilter;
+            matchedCoursesModalState.context = payload.context || null;
+            matchedCoursesModalState.dataset = payload.dataset || null;
+            matchedCoursesModalState.onAddCourse = typeof payload.onAddCourse === 'function' ? payload.onAddCourse : null;
+            matchedCoursesModalState.isLoading = Boolean(payload.isLoading);
+            matchedCoursesModalState.error = payload.error || null;
+
+            updateMatchedCoursesFilterUI();
+            renderMatchedCoursesModal();
+
+            modal.style.display = 'flex';
+        }
+
+        function setMatchedCoursesModalLoading(isLoading) {
+            matchedCoursesModalState.isLoading = Boolean(isLoading);
+            if (isLoading) {
+                matchedCoursesModalState.error = null;
+            }
+            renderMatchedCoursesModal();
+        }
+
+        function setMatchedCoursesModalError(message) {
+            matchedCoursesModalState.error = message || null;
+            if (message) {
+                matchedCoursesModalState.isLoading = false;
+            }
+            renderMatchedCoursesModal();
+        }
+
+        function renderMatchedCoursesModal() {
+            const modal = document.getElementById('matchedCoursesModal');
+            if (!modal) {
+                return;
+            }
+
+            const courseLabel = document.getElementById('matchedCoursesCourseLabel');
+            const schoolLabel = document.getElementById('matchedCoursesSchoolLabel');
+            const deadlineLabel = document.getElementById('matchedCoursesDeadlineLabel');
+            const deadlineHint = document.getElementById('matchedCoursesDeadlineHint');
+            const matchSourceLabel = document.getElementById('matchedCoursesMatchSourceLabel');
+            const summaryLabel = document.getElementById('matchedCoursesSummaryLabel');
+            const feedbackEl = document.getElementById('matchedCoursesFeedback');
+            const loaderEl = document.getElementById('matchedCoursesLoadingState');
+            const columnsWrapper = document.getElementById('matchedCoursesColumns');
+            const homeCountEl = document.getElementById('matchedCoursesHomeCount');
+            const productCountEl = document.getElementById('matchedCoursesProductCount');
+            const homeListEl = document.getElementById('matchedCoursesHomeList');
+            const productListEl = document.getElementById('matchedCoursesProductList');
+
+            updateMatchedCoursesFilterUI();
+
+            const context = matchedCoursesModalState.context || {};
+            const course = context.course || {};
+            const subscription = context.subscription || {};
+            const student = context.student || {};
+
+            if (courseLabel) {
+                const parts = [];
+                if (course.code) {
+                    parts.push(course.code);
+                }
+                if (course.name) {
+                    parts.push(course.name);
+                }
+                courseLabel.textContent = parts.length ? parts.join(' · ') : (course.name || course.code || '未命名课程');
+            }
+
+            if (schoolLabel) {
+                const fromDataset = matchedCoursesModalState.dataset?.metadata?.schoolName;
+                schoolLabel.textContent = fromDataset || student.school || course.school || '未提供';
+            }
+
+            if (deadlineLabel) {
+                deadlineLabel.textContent = subscription.deadline || '未设置';
+            }
+
+            if (deadlineHint) {
+                const source = matchedCoursesModalState.dataset?.metadata?.deadlineSource
+                    || subscription.metadata?.deadlineSource
+                    || '';
+                const text = source ? `来源：${describeDeadlineSource(source)}` : '';
+                deadlineHint.textContent = text;
+            }
+
+            if (matchSourceLabel) {
+                const source = matchedCoursesModalState.dataset?.metadata?.matchSource
+                    || subscription.metadata?.matchSource
+                    || 'unknown';
+                matchSourceLabel.textContent = describeMatchSource(source);
+            }
+
+            if (loaderEl) {
+                loaderEl.style.display = matchedCoursesModalState.isLoading ? 'flex' : 'none';
+            }
+
+            const hasError = Boolean(matchedCoursesModalState.error);
+            const dataset = matchedCoursesModalState.dataset;
+            const hasDataset = dataset && typeof dataset === 'object';
+            const shouldShowColumns = hasDataset && !matchedCoursesModalState.isLoading && !hasError;
+
+            if (columnsWrapper) {
+                columnsWrapper.style.display = shouldShowColumns ? 'flex' : 'none';
+            }
+
+            if (feedbackEl) {
+                feedbackEl.textContent = '';
+                feedbackEl.classList.remove('error', 'info');
+                feedbackEl.style.display = 'none';
+
+                if (hasError) {
+                    feedbackEl.textContent = matchedCoursesModalState.error;
+                    feedbackEl.classList.add('error');
+                    feedbackEl.style.display = 'block';
+                } else if (!hasDataset && !matchedCoursesModalState.isLoading) {
+                    feedbackEl.textContent = '匹配数据尚未加载，请稍后重试。';
+                    feedbackEl.classList.add('info');
+                    feedbackEl.style.display = 'block';
+                }
+            }
+
+            if (!shouldShowColumns) {
+                if (summaryLabel) {
+                    if (matchedCoursesModalState.isLoading) {
+                        summaryLabel.textContent = '匹配数据正在加载...';
+                    } else if (hasError) {
+                        summaryLabel.textContent = '加载匹配数据失败';
+                    } else {
+                        summaryLabel.textContent = '尚未提供匹配数据';
+                    }
+                }
+
+                if (homeCountEl) {
+                    homeCountEl.textContent = '0';
+                }
+                if (productCountEl) {
+                    productCountEl.textContent = '0';
+                }
+                if (homeListEl) {
+                    homeListEl.innerHTML = '';
+                }
+                if (productListEl) {
+                    productListEl.innerHTML = '';
+                }
+                return;
+            }
+
+            const homeCourses = Array.isArray(dataset.homeCourses) ? dataset.homeCourses : [];
+            const productCourses = Array.isArray(dataset.productCourses) ? dataset.productCourses : [];
+            const homeCount = homeCourses.length;
+            const productCount = productCourses.length;
+            const totalCount = homeCount + productCount;
+            const hasOnSaleProduct = Boolean(dataset.summary?.hasOnSaleProduct || productCourses.some(course => course.onsaleStatus === 'onSale'));
+            const generatedAt = dataset.summary?.generatedAt || '';
+
+            if (summaryLabel) {
+                const parts = [`本校 ${homeCount} 门`, `产品 ${productCount} 门`];
+                if (hasOnSaleProduct) {
+                    parts.push('包含在售产品课程');
+                }
+                const generatedText = formatTimestampReadable(generatedAt);
+                if (generatedText) {
+                    parts.push(`数据生成于 ${generatedText}`);
+                }
+                summaryLabel.textContent = parts.join(' · ');
+            }
+
+            if (homeCountEl) {
+                homeCountEl.textContent = String(homeCount);
+            }
+            if (productCountEl) {
+                productCountEl.textContent = String(productCount);
+            }
+
+            populateMatchedCoursesList(homeListEl, homeCourses, 'home', matchedCoursesModalState.onAddCourse);
+            populateMatchedCoursesList(productListEl, productCourses, 'product', matchedCoursesModalState.onAddCourse);
+
+            if (feedbackEl && totalCount === 0) {
+                feedbackEl.textContent = '当前订阅暂无匹配课程，请稍后再试或调整订阅条件。';
+                feedbackEl.classList.add('info');
+                feedbackEl.style.display = 'block';
+            }
+
+            const filter = matchedCoursesModalState.filter;
+            if (filter !== 'all') {
+                const columns = columnsWrapper.querySelectorAll('.matched-courses-column');
+                columns.forEach(column => {
+                    if (!column.dataset.source) {
+                        return;
+                    }
+                    if (column.dataset.source === filter) {
+                        column.style.display = 'flex';
+                    } else {
+                        column.style.display = 'none';
+                    }
+                });
+            } else {
+                const columns = columnsWrapper.querySelectorAll('.matched-courses-column');
+                columns.forEach(column => {
+                    column.style.display = 'flex';
+                });
+            }
+        }
+
+        function populateMatchedCoursesList(listElement, courses, source, onAddCourse) {
+            if (!listElement) {
+                return;
+            }
+            listElement.innerHTML = '';
+
+            if (!Array.isArray(courses) || !courses.length) {
+                const empty = document.createElement('div');
+                empty.className = 'matched-courses-empty';
+                empty.textContent = source === 'home' ? '暂无本校匹配课程' : '暂无产品匹配课程';
+                listElement.appendChild(empty);
+                return;
+            }
+
+            courses.forEach(course => {
+                const card = createMatchedCourseCard(course, source, onAddCourse);
+                listElement.appendChild(card);
+            });
+        }
+
+        function createCourseMetaLine(label, value, valueClass) {
+            const row = document.createElement('div');
+            row.className = 'course-meta-line';
+
+            const labelEl = document.createElement('span');
+            labelEl.className = 'course-meta-label';
+            labelEl.textContent = label;
+
+            const valueEl = document.createElement('span');
+            valueEl.className = valueClass ? `course-meta-value ${valueClass}` : 'course-meta-value';
+            valueEl.textContent = value !== undefined && value !== null && value !== '' ? String(value) : '-';
+
+            row.appendChild(labelEl);
+            row.appendChild(valueEl);
+            return row;
+        }
+
+        function createMatchedCourseCard(course, source, onAddCourse) {
+            const card = document.createElement('article');
+            card.className = 'matched-course-card';
+            card.dataset.source = source;
+
+            const courseKey = getMatchedCourseKey(course, source);
+            if (courseKey) {
+                card.dataset.courseKey = courseKey;
+            }
+
+            const header = document.createElement('div');
+            header.className = 'matched-course-header';
+
+            const badge = document.createElement('span');
+            badge.className = 'course-origin-badge';
+            badge.textContent = source === 'home' ? '本校' : '产品';
+
+            const title = document.createElement('h5');
+            title.className = 'matched-course-title';
+            title.textContent = source === 'home'
+                ? (course.courseName || course.courseDisplayName || '未命名课程')
+                : (course.productCourseName || course.courseName || '未命名课程');
+
+            const codeBadge = document.createElement('span');
+            codeBadge.className = 'matched-course-code';
+            codeBadge.textContent = source === 'home'
+                ? (course.courseCode || course.code || '未提供')
+                : (course.productCourseCode || course.courseCode || '未提供');
+
+            header.appendChild(badge);
+            header.appendChild(title);
+            header.appendChild(codeBadge);
+
+            const metaContainer = document.createElement('div');
+            metaContainer.className = 'matched-course-meta';
+
+            if (source === 'home') {
+                const termValue = [course.year, course.term].filter(Boolean).join(' / ');
+                const homeMeta = [
+                    { label: '类别', value: course.category || '未提供' },
+                    { label: '学分', value: course.credit !== null && course.credit !== undefined ? course.credit : '未提供' },
+                    { label: '可用性', value: describeAvailability(course.availability || course.status || '') },
+                    { label: '学期', value: termValue || '未提供' }
+                ];
+                homeMeta.forEach(item => {
+                    metaContainer.appendChild(createCourseMetaLine(item.label, String(item.value || '')));
+                });
+            } else {
+                const onsaleClass = course.onsaleStatus === 'onSale' ? 'onsale' : 'soldout';
+                const onsaleLabel = course.onsaleStatus === 'onSale' ? '可售' : '已售罄';
+                const productMeta = [
+                    { label: '开课学校', value: course.schoolName || course.productSchool || '未提供' },
+                    { label: '价格', value: course.price || '待确认' },
+                    { label: '开课时间', value: course.nextStartDate || course.startDate || '待公布' },
+                    { label: '授课方式', value: course.modality || '未提供' },
+                    { label: '课时/时长', value: course.duration || '未提供' },
+                    { label: '上架状态', value: onsaleLabel, valueClass: onsaleClass }
+                ];
+                productMeta.forEach(item => {
+                    metaContainer.appendChild(createCourseMetaLine(item.label, String(item.value || ''), item.valueClass));
+                });
+            }
+
+            const actionRow = document.createElement('div');
+            actionRow.className = 'matched-course-action';
+
+            const actionButton = document.createElement('button');
+            actionButton.type = 'button';
+            actionButton.className = 'matched-course-add-btn';
+            actionButton.textContent = '加入已选课程';
+
+            if (!onAddCourse) {
+                actionButton.disabled = true;
+                actionButton.title = '暂不支持直接加入';
+            } else {
+                if (courseKey) {
+                    actionButton.dataset.courseKey = courseKey;
+                }
+                actionButton.dataset.source = source;
+                actionButton.addEventListener('click', () => {
+                    onAddCourse({
+                        source,
+                        course,
+                        trigger: actionButton,
+                        courseKey,
+                        context: matchedCoursesModalState.context
+                    });
+                });
+            }
+
+            actionRow.appendChild(actionButton);
+
+            card.appendChild(header);
+            card.appendChild(metaContainer);
+            card.appendChild(actionRow);
+
+            return card;
+        }
+
+        function markMatchedCourseAsAdded(courseKey) {
+            if (!courseKey) {
+                return;
+            }
+            const normalizedKey = courseKey.toLowerCase();
+            const card = document.querySelector(`#matchedCoursesModal .matched-course-card[data-course-key="${normalizedKey}"]`);
+            const button = document.querySelector(`#matchedCoursesModal .matched-course-add-btn[data-course-key="${normalizedKey}"]`);
+            if (card) {
+                card.classList.add('matched-course-added');
+            }
+            if (button) {
+                button.classList.add('added');
+                button.disabled = true;
+                button.textContent = '已加入';
+            }
+        }
+
+        function closeMatchedCoursesModal() {
+            const modal = document.getElementById('matchedCoursesModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+
+            matchedCoursesModalState.filter = 'all';
+            matchedCoursesModalState.dataset = null;
+            matchedCoursesModalState.context = null;
+            matchedCoursesModalState.onAddCourse = null;
+            matchedCoursesModalState.isLoading = false;
+            matchedCoursesModalState.error = null;
+
+            updateMatchedCoursesFilterUI();
+
+            const summaryLabel = document.getElementById('matchedCoursesSummaryLabel');
+            if (summaryLabel) {
+                summaryLabel.textContent = '匹配数据正在加载...';
+            }
+
+            const loaderEl = document.getElementById('matchedCoursesLoadingState');
+            if (loaderEl) {
+                loaderEl.style.display = 'none';
+            }
+
+            const feedbackEl = document.getElementById('matchedCoursesFeedback');
+            if (feedbackEl) {
+                feedbackEl.textContent = '';
+                feedbackEl.classList.remove('error', 'info');
+                feedbackEl.style.display = 'none';
+            }
+
+            const homeListEl = document.getElementById('matchedCoursesHomeList');
+            const productListEl = document.getElementById('matchedCoursesProductList');
+            if (homeListEl) {
+                homeListEl.innerHTML = '';
+            }
+            if (productListEl) {
+                productListEl.innerHTML = '';
+            }
+
+            const columnsWrapper = document.getElementById('matchedCoursesColumns');
+            if (columnsWrapper) {
+                columnsWrapper.style.display = 'none';
+                const columns = columnsWrapper.querySelectorAll('.matched-courses-column');
+                columns.forEach(column => {
+                    column.style.display = 'flex';
+                });
+            }
+        }
+
+        window.MatchedCoursesModal = {
+            open: openMatchedCoursesModal,
+            close: closeMatchedCoursesModal,
+            render: renderMatchedCoursesModal,
+            setLoading: setMatchedCoursesModalLoading,
+            setError: setMatchedCoursesModalError,
+            markCourseAdded: markMatchedCourseAsAdded,
+            getState() {
+                return {
+                    filter: matchedCoursesModalState.filter,
+                    dataset: matchedCoursesModalState.dataset,
+                    context: matchedCoursesModalState.context,
+                    isLoading: matchedCoursesModalState.isLoading,
+                    error: matchedCoursesModalState.error
+                };
+            }
+        };
+
         function submitRenewSubscription() {
             const context = window.currentSubscriptionRenewal;
             if (!context || !context.studentId || !context.subscriptionId) {
@@ -7596,10 +8592,17 @@
             setRenewModalProcessing(true, '续期中...');
 
             try {
+                if (window.SubscriptionDeadlineHelper && typeof window.SubscriptionDeadlineHelper.invalidateDeadlineMeta === 'function') {
+                    window.SubscriptionDeadlineHelper.invalidateDeadlineMeta(context.subscriptionId);
+                }
+
                 const updated = repository.renewSubscription(context.studentId, context.subscriptionId, {
                     days,
                     actor: resolveCurrentOperatorName()
                 });
+                if (window.SubscriptionDeadlineHelper && typeof window.SubscriptionDeadlineHelper.invalidateDeadlineMeta === 'function') {
+                    window.SubscriptionDeadlineHelper.invalidateDeadlineMeta(context.subscriptionId);
+                }
                 if (typeof repository.resolveSubscriptionContext === 'function') {
                     window.currentSubscriptionContext = repository.resolveSubscriptionContext(context.studentId, context.subscriptionId);
                 }
@@ -10620,51 +11623,278 @@
                     finishActionProcessing(triggerButton);
                 },
                 view: () => {
-                    const metadata = effectiveContext.metadata || {};
-                    const course = effectiveContext.course || {};
+                    const repository = window.StudentRepository;
+                    const modal = window.MatchedCoursesModal;
 
-                    if (triggerButton) {
-                        startActionProcessing(triggerButton, 'view', '查看中...');
-                    }
-
-                    const matchUrl = metadata.matchDetailUrl || metadata.matchUrl || metadata.viewUrl || '';
-                    const matchId = metadata.matchId
-                        || metadata.matchResultId
-                        || metadata.matchedResultId
-                        || metadata.matchingId
-                        || metadata.latestMatchId
-                        || '';
-
-                    if (!matchId && !matchUrl) {
-                        alert('目前暂无匹配课程详情，请稍后再试。');
+                    if (!repository || typeof repository.resolveMatchedCourses !== 'function') {
+                        showActionToast({
+                            title: '暂无法查看匹配课程',
+                            description: '订阅数据服务未初始化，请稍后再试。',
+                            type: 'error'
+                        });
                         finishActionProcessing(triggerButton);
+                        recordSubscriptionActionLog('view', 'failed', {
+                            reason: 'repository-missing'
+                        });
                         return;
                     }
 
-                    const params = {
-                        studentId: student.id,
-                        subscriptionId,
-                        matchId,
-                        courseCode: course.code || '',
-                        courseName: course.name || ''
-                    };
-
-                    const options = {
-                        errorMessage: '查看匹配课程失败，请稍后再试。'
-                    };
-
-                    if (matchUrl) {
-                        options.path = matchUrl;
-                        options.mode = matchUrl.startsWith('http') ? 'new-tab' : 'same-tab';
-                    }
-
-                    const result = navigateTo('view', params, options);
-                    if (!result.success) {
+                    if (!modal || typeof modal.open !== 'function') {
+                        showActionToast({
+                            title: '暂无法查看匹配课程',
+                            description: '匹配课程模态框尚未就绪，请联系管理员。',
+                            type: 'error'
+                        });
                         finishActionProcessing(triggerButton);
+                        recordSubscriptionActionLog('view', 'failed', {
+                            reason: 'modal-missing'
+                        });
                         return;
                     }
 
-                    finishActionProcessing(triggerButton);
+                    const contextPayload = {
+                        student: effectiveContext.student,
+                        subscription: effectiveContext.subscription,
+                        course: effectiveContext.course
+                    };
+
+                    const pendingToastId = Date.now();
+
+                    const showLoadingToast = () => {
+                        showActionToast({
+                            title: '正在获取匹配课程',
+                            description: '请稍候，系统正在检索本校与产品课程...',
+                            type: 'info'
+                        });
+                        return pendingToastId;
+                    };
+
+                    const openModalWithPayload = (dataset, options = {}) => {
+                        modal.open({
+                            context: contextPayload,
+                            dataset,
+                            isLoading: false,
+                            initialFilter: options.initialFilter,
+                            onAddCourse: options.onAddCourse
+                        });
+                    };
+
+                    const handleRepositoryError = (error) => {
+                        const message = error && error.message
+                            ? error.message
+                            : '未能加载匹配课程，请稍后再试。';
+                        showActionToast({
+                            title: '获取匹配课程失败',
+                            description: message,
+                            type: 'error'
+                        });
+                        modal.open({
+                            context: contextPayload,
+                            dataset: null,
+                            isLoading: false,
+                            error: message
+                        });
+                        recordSubscriptionActionLog('view', 'failed', {
+                            studentId: student.id,
+                            subscriptionId,
+                            reason: 'repository-error',
+                            message
+                        });
+                    };
+
+                    const mergedOnAddCourse = ({ source, course, trigger, courseKey, context }) => {
+                        if (!repository || typeof repository.addCourseToSelected !== 'function') {
+                            showActionToast({
+                                title: '添加失败',
+                                description: '选课服务未初始化，无法加入已选课程。',
+                                type: 'error'
+                            });
+                            return;
+                        }
+
+                        const currentTrigger = trigger || null;
+                        let originalButtonText = '';
+                        if (currentTrigger) {
+                            currentTrigger.disabled = true;
+                            originalButtonText = currentTrigger.textContent;
+                            currentTrigger.textContent = '添加中...';
+                        }
+
+                        const payload = {
+                            source,
+                            courseCode: source === 'home'
+                                ? (course.courseCode || course.code || '')
+                                : (course.homeCourseCode || context?.course?.code || ''),
+                            productCourseCode: source === 'product'
+                                ? (course.productCourseCode || course.courseCode || '')
+                                : undefined,
+                            courseName: course.courseName || course.courseDisplayName || '',
+                            productCourseName: course.productCourseName || course.courseName || '',
+                            schoolName: course.schoolName || course.productSchool || '',
+                            credit: course.credit,
+                            mappingId: course.metadata?.mappingId || course.productId || '',
+                            availability: course.availability,
+                            status: course.status,
+                            term: course.term,
+                            year: course.year,
+                            price: course.price,
+                            nextStartDate: course.nextStartDate,
+                            duration: course.duration,
+                            modality: course.modality,
+                            onsaleStatus: course.onsaleStatus
+                        };
+
+                        let addStatus = 'error';
+                        try {
+                            const result = repository.addCourseToSelected(student.id, payload);
+                            if (result && result.success) {
+                                showActionToast({
+                                    title: '已加入已选课程',
+                                    description: '课程已同步到学生已选列表，稍后可在右侧面板查看。',
+                                    type: 'success'
+                                });
+                                if (courseKey) {
+                                    window.MatchedCoursesModal.markCourseAdded(courseKey);
+                                }
+                                recordSubscriptionActionLog('view', 'add-course-success', {
+                                    studentId: student.id,
+                                    subscriptionId,
+                                    source,
+                                    courseCode: payload.courseCode,
+                                    productCourseCode: payload.productCourseCode
+                                });
+                                window.StudentRepository.getSelectedCourses(student.id, { forceRefresh: true });
+                                addStatus = 'success';
+                            } else if (result && result.reason === 'duplicate') {
+                                showActionToast({
+                                    title: '课程已存在',
+                                    description: '该课程已在已选列表中，避免重复添加。',
+                                    type: 'info'
+                                });
+                                if (courseKey) {
+                                    window.MatchedCoursesModal.markCourseAdded(courseKey);
+                                }
+                                recordSubscriptionActionLog('view', 'add-course-duplicate', {
+                                    studentId: student.id,
+                                    subscriptionId,
+                                    source,
+                                    courseCode: payload.courseCode,
+                                    productCourseCode: payload.productCourseCode
+                                });
+                                addStatus = 'duplicate';
+                            } else {
+                                showActionToast({
+                                    title: '添加失败',
+                                    description: '未能将课程加入已选列表，请稍后再试。',
+                                    type: 'error'
+                                });
+                                recordSubscriptionActionLog('view', 'add-course-error', {
+                                    studentId: student.id,
+                                    subscriptionId,
+                                    source,
+                                    courseCode: payload.courseCode,
+                                    productCourseCode: payload.productCourseCode,
+                                    reason: 'unknown-response'
+                                });
+                            }
+                        } catch (error) {
+                            const message = error && error.message ? error.message : '未知错误';
+                            showActionToast({
+                                title: '添加失败',
+                                description: message,
+                                type: 'error'
+                            });
+                            recordSubscriptionActionLog('view', 'add-course-error', {
+                                studentId: student.id,
+                                subscriptionId,
+                                source,
+                                courseCode: payload.courseCode,
+                                productCourseCode: payload.productCourseCode,
+                                reason: 'exception',
+                                message
+                            });
+                        } finally {
+                            if (currentTrigger) {
+                                if (addStatus === 'success' || addStatus === 'duplicate') {
+                                    currentTrigger.disabled = true;
+                                    currentTrigger.textContent = '已加入';
+                                } else {
+                                    currentTrigger.disabled = false;
+                                    currentTrigger.textContent = originalButtonText || '加入已选课程';
+                                }
+                            }
+                        }
+                    };
+
+                    try {
+                        showLoadingToast();
+                        modal.open({
+                            context: contextPayload,
+                            dataset: null,
+                            isLoading: true,
+                            onAddCourse: mergedOnAddCourse
+                        });
+
+                        const rawDataset = repository.resolveMatchedCourses(student.id, subscriptionId, {
+                            includeHome: true,
+                            includeProduct: true
+                        });
+
+                        const dataset = (() => {
+                            if (!rawDataset || typeof rawDataset !== 'object') {
+                                return {
+                                    homeCourses: [],
+                                    productCourses: [],
+                                    summary: {
+                                        homeCount: 0,
+                                        productCount: 0,
+                                        hasOnSaleProduct: false,
+                                        generatedAt: new Date().toISOString()
+                                    },
+                                    metadata: {}
+                                };
+                            }
+
+                            const homeCourses = Array.isArray(rawDataset.homeCourses) ? rawDataset.homeCourses.slice() : [];
+                            const productCourses = Array.isArray(rawDataset.productCourses) ? rawDataset.productCourses.slice() : [];
+                            const baseSummary = rawDataset.summary && typeof rawDataset.summary === 'object'
+                                ? rawDataset.summary
+                                : {};
+                            const normalizedSummary = {
+                                ...baseSummary,
+                                homeCount: homeCourses.length,
+                                productCount: productCourses.length,
+                                hasOnSaleProduct: productCourses.some(course => course && course.onsaleStatus === 'onSale')
+                            };
+
+                            return {
+                                ...rawDataset,
+                                homeCourses,
+                                productCourses,
+                                summary: normalizedSummary,
+                                metadata: rawDataset.metadata && typeof rawDataset.metadata === 'object' ? rawDataset.metadata : {}
+                            };
+                        })();
+
+                        openModalWithPayload(dataset, {
+                            initialFilter: dataset.productCourses?.length ? 'product' : 'all',
+                            onAddCourse: mergedOnAddCourse
+                        });
+
+                        recordSubscriptionActionLog('view', 'success', {
+                            studentId: student.id,
+                            subscriptionId,
+                            homeCount: dataset.homeCourses?.length || 0,
+                            productCount: dataset.productCourses?.length || 0
+                        });
+                    } catch (error) {
+                        handleRepositoryError(error);
+                    } finally {
+                        if (modal && typeof modal.setLoading === 'function') {
+                            modal.setLoading(false);
+                        }
+                        finishActionProcessing(triggerButton);
+                    }
                 },
                 notifyDetail: () => {
                     const metadata = effectiveContext.metadata || {};

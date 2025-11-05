@@ -104,7 +104,124 @@
 
     const subscriptionTypeSet = new Set(['product', 'home']);
 
+    const subscriptionCache = new Map();
+    const MATCHED_COURSE_CACHE_KEY = 'matchedCourses';
+    const MATCHED_COURSE_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+    const selectedCoursesCache = new Map();
+    const SELECTED_COURSES_CACHE_TTL = 3 * 60 * 1000; // 3 minutes
+
+    const readSubscriptionCache = (subscriptionId, cacheKey) => {
+        if (!subscriptionId) {
+            return null;
+        }
+        const baseId = String(subscriptionId);
+        if (!subscriptionCache.has(baseId)) {
+            return null;
+        }
+        const entry = subscriptionCache.get(baseId);
+        if (!entry || typeof entry !== 'object') {
+            subscriptionCache.delete(baseId);
+            return null;
+        }
+
+        const cachedSegment = entry[cacheKey];
+        if (!cachedSegment || typeof cachedSegment !== 'object') {
+            return null;
+        }
+
+        const { value, cachedAt } = cachedSegment;
+        if (!cachedAt || Date.now() - cachedAt > MATCHED_COURSE_CACHE_TTL) {
+            if (entry[cacheKey]) {
+                delete entry[cacheKey];
+            }
+            if (!Object.keys(entry).length) {
+                subscriptionCache.delete(baseId);
+            }
+            return null;
+        }
+
+        return cloneEntity(value);
+    };
+
+    const writeSubscriptionCache = (subscriptionId, cacheKey, value) => {
+        if (!subscriptionId) {
+            return;
+        }
+        const baseId = String(subscriptionId);
+        const entry = subscriptionCache.get(baseId) || {};
+        entry[cacheKey] = {
+            value: cloneEntity(value),
+            cachedAt: Date.now()
+        };
+        subscriptionCache.set(baseId, entry);
+    };
+
+    const invalidateSubscriptionCacheSegment = (subscriptionId, cacheKey) => {
+        if (!subscriptionId) {
+            return;
+        }
+        const baseId = String(subscriptionId);
+        if (!subscriptionCache.has(baseId)) {
+            return;
+        }
+        const entry = subscriptionCache.get(baseId);
+        if (!entry || typeof entry !== 'object') {
+            subscriptionCache.delete(baseId);
+            return;
+        }
+
+        if (entry[cacheKey]) {
+            delete entry[cacheKey];
+        }
+
+        if (!Object.keys(entry).length) {
+            subscriptionCache.delete(baseId);
+        }
+    };
+
+    const readSelectedCoursesCache = (studentId) => {
+        if (!studentId) {
+            return null;
+        }
+        const baseId = String(studentId);
+        if (!selectedCoursesCache.has(baseId)) {
+            return null;
+        }
+        const entry = selectedCoursesCache.get(baseId);
+        if (!entry || typeof entry !== 'object') {
+            selectedCoursesCache.delete(baseId);
+            return null;
+        }
+        const { value, cachedAt } = entry;
+        if (!cachedAt || Date.now() - cachedAt > SELECTED_COURSES_CACHE_TTL) {
+            selectedCoursesCache.delete(baseId);
+            return null;
+        }
+        return cloneEntity(value);
+    };
+
+    const writeSelectedCoursesCache = (studentId, value) => {
+        if (!studentId) {
+            return;
+        }
+        const baseId = String(studentId);
+        selectedCoursesCache.set(baseId, {
+            value: cloneEntity(value),
+            cachedAt: Date.now()
+        });
+    };
+
+    const invalidateSelectedCoursesCache = (studentId) => {
+        if (!studentId) {
+            return;
+        }
+        const baseId = String(studentId);
+        selectedCoursesCache.delete(baseId);
+    };
+
     let subscriptionIdSeed = Date.now();
+    let selectedCourseIdSeed = Date.now();
 
     const ensureSubscriptionId = (subscription, studentId) => {
         if (subscription && typeof subscription.id === 'string' && subscription.id.trim()) {
@@ -113,6 +230,12 @@
         subscriptionIdSeed += 1;
         const baseStudentId = typeof studentId === 'undefined' ? 'unknown' : String(studentId).trim() || 'unknown';
         return `sub-${baseStudentId}-${subscriptionIdSeed}`;
+    };
+
+    const ensureSelectedCourseId = (studentId) => {
+        selectedCourseIdSeed += 1;
+        const baseStudentId = typeof studentId === 'undefined' ? 'unknown' : String(studentId).trim() || 'unknown';
+        return `sel-${baseStudentId}-${selectedCourseIdSeed}`;
     };
 
     const toClonedObject = (source) => {
@@ -206,6 +329,25 @@
         };
     };
 
+    const ensureStudentDetailsContainer = (student) => {
+        if (!student || typeof student !== 'object') {
+            return {
+                selectedCourses: [],
+                autonomousPlan: []
+            };
+        }
+        if (!student.details || typeof student.details !== 'object') {
+            student.details = {};
+        }
+        if (!Array.isArray(student.details.selectedCourses)) {
+            student.details.selectedCourses = [];
+        }
+        if (!Array.isArray(student.details.autonomousPlan)) {
+            student.details.autonomousPlan = [];
+        }
+        return student.details;
+    };
+
     const normalizeSubscriptionSnapshot = (subscription, studentId) => {
         const snapshot = cloneEntity(subscription) || {};
 
@@ -251,6 +393,16 @@
             snapshot.metadata = cloneEntity(snapshot.metadata);
         } else {
             snapshot.metadata = {};
+        }
+
+        if (Array.isArray(snapshot.matchResults)) {
+            snapshot.matchResults = snapshot.matchResults.map(entry => cloneEntity(entry)).filter(Boolean);
+        } else {
+            snapshot.matchResults = [];
+        }
+
+        if (typeof snapshot.metadata.matchSource !== 'string' || !snapshot.metadata.matchSource) {
+            snapshot.metadata.matchSource = snapshot.matchResults.length ? 'snapshot' : 'unknown';
         }
 
         let deadlineValue = typeof snapshot.deadline === 'string' ? snapshot.deadline.trim() : '';
@@ -415,25 +567,25 @@
 
         rows.forEach(row => {
             const cells = Array.from(row.cells);
-            if (cells.length < 12) {
+            if (!cells.length) {
                 return;
             }
 
             const textValues = cells.map(textFromCell);
             const entry = {
-                coursePrice: textValues[0],
-                schoolName: textValues[1],
-                courseCode: textValues[2],
-                courseName: textValues[3],
-                startDate: textValues[6],
-                endDate: textValues[7],
+                coursePrice: textValues[0] || '',
+                schoolName: textValues[1] || '',
+                courseCode: textValues[2] || '',
+                courseName: textValues[3] || '',
+                startDate: textValues[6] || '',
+                endDate: textValues[7] || '',
                 seatsRemaining: parseSeats(textValues[8]),
-                courseDuration: textValues[9],
-                courseModality: textValues[10],
-                academicTerm: textValues[11]
+                courseDuration: textValues[9] || '',
+                courseModality: textValues[10] || '',
+                academicTerm: textValues[11] || ''
             };
 
-            entry.isOnSale = entry.seatsRemaining !== null ? entry.seatsRemaining > 0 : false;
+            entry.isOnSale = true;
             units.set(makeUnitKey(entry.schoolName, entry.courseCode), entry);
         });
 
@@ -567,6 +719,500 @@
         });
     };
 
+    const normalizeCreditValue = (credit) => {
+        const numeric = Number(credit);
+        return Number.isFinite(numeric) ? numeric : null;
+    };
+
+    const normalizeAvailability = (value) => {
+        if (typeof value !== 'string') {
+            return 'unknown';
+        }
+        const normalized = value.trim().toLowerCase();
+        if (!normalized) {
+            return 'unknown';
+        }
+        if (['available', 'open', 'on', 'yes'].includes(normalized)) {
+            return 'available';
+        }
+        if (['full', 'closed', 'no', 'off'].includes(normalized)) {
+            return 'full';
+        }
+        return normalized;
+    };
+
+    const dedupeByKey = (list, createKey) => {
+        const deduped = [];
+        const seen = new Set();
+        list.forEach(item => {
+            const key = createKey(item);
+            if (!seen.has(key)) {
+                seen.add(key);
+                deduped.push(item);
+            }
+        });
+        return deduped;
+    };
+
+    const buildHomeCourseMatches = ({
+        student,
+        subscription,
+        baseMatches
+    }) => {
+        const subscriptionCourse = subscription.course || {};
+        const courseCode = subscriptionCourse.code || '';
+        const courseName = subscriptionCourse.name || '';
+        const matches = [];
+
+        const normalizedBase = Array.isArray(baseMatches)
+            ? baseMatches.map(entry => {
+                const courseEntry = entry && typeof entry === 'object' ? entry : {};
+                return {
+                    courseCode: courseEntry.courseCode || courseCode,
+                    courseName: courseEntry.courseName || courseName,
+                    category: courseEntry.category || courseEntry.generalCategory || '',
+                    credit: normalizeCreditValue(courseEntry.credit),
+                    availability: normalizeAvailability(courseEntry.availability || courseEntry.status),
+                    source: courseEntry.source || 'snapshot',
+                    term: courseEntry.term || '',
+                    year: courseEntry.year || ''
+                };
+            })
+            : [];
+        matches.push(...normalizedBase);
+
+        const details = getStudentDetails(student);
+        const plan = Array.isArray(details.autonomousPlan) ? details.autonomousPlan : [];
+        plan.filter(planCourse => {
+            if (!planCourse || typeof planCourse !== 'object') {
+                return false;
+            }
+            if (!courseCode) {
+                return true;
+            }
+            return String(planCourse.code || '').trim() === String(courseCode).trim();
+        }).forEach(planCourse => {
+            matches.push({
+                courseCode: planCourse.code || courseCode,
+                courseName: planCourse.name || courseName,
+                category: planCourse.category || '',
+                credit: normalizeCreditValue(planCourse.credit),
+                availability: normalizeAvailability(planCourse.status),
+                source: 'autonomous-plan',
+                term: planCourse.term || '',
+                year: planCourse.year || ''
+            });
+        });
+
+        if (!matches.length && (courseCode || courseName)) {
+            matches.push({
+                courseCode,
+                courseName,
+                category: subscription.metadata?.category || '',
+                credit: normalizeCreditValue(subscription.metadata?.credit),
+                availability: normalizeAvailability(subscription.status),
+                source: 'subscription-course',
+                term: subscription.term || '',
+                year: ''
+            });
+        }
+
+        return dedupeByKey(matches, item => `${item.courseCode}::${item.source}`);
+    };
+
+    const buildProductCourseMatches = ({
+        student,
+        subscription,
+        baseMatches,
+        sharedCaches
+    }) => {
+        const subscriptionCourse = subscription.course || {};
+        const courseCode = subscriptionCourse.code || '';
+        const schoolName = student.school || subscriptionCourse.school || '';
+
+        const unitMap = sharedCaches && sharedCaches.unitMap instanceof Map
+            ? sharedCaches.unitMap
+            : collectProductUnits();
+
+        const mappingRecords = Array.isArray(sharedCaches?.mappingRecords)
+            ? sharedCaches.mappingRecords
+            : collectCourseMappings();
+
+        const relevantMappings = mappingRecords.filter(record => {
+            if (!record || typeof record !== 'object') {
+                return false;
+            }
+            const recordSchool = record.schoolName || record.sourceSchool || '';
+            const recordCourseCode = record.courseCode || '';
+            if (schoolName && recordSchool && recordSchool !== schoolName) {
+                return false;
+            }
+            if (courseCode && recordCourseCode && recordCourseCode !== courseCode) {
+                return false;
+            }
+            return true;
+        });
+
+        const baseProductMatches = Array.isArray(baseMatches)
+            ? baseMatches.map(entry => {
+                const productEntry = entry && typeof entry === 'object' ? entry : {};
+                const unitKey = makeUnitKey(productEntry.schoolName || productEntry.productSchool, productEntry.productCourseCode || productEntry.courseCode);
+                const unit = unitMap.get(unitKey);
+                const isOnSale = typeof productEntry.isOnSale === 'boolean'
+                    ? productEntry.isOnSale
+                    : Boolean(unit?.isOnSale);
+                return {
+                    productId: productEntry.productId || unitKey || `${productEntry.productSchool || ''}-${productEntry.productCourseCode || ''}`,
+                    productCourseCode: productEntry.productCourseCode || productEntry.courseCode || '',
+                    productCourseName: productEntry.productCourseName || productEntry.courseName || unit?.courseName || '',
+                    schoolName: productEntry.schoolName || productEntry.productSchool || unit?.schoolName || '',
+                    onsaleStatus: isOnSale ? 'onSale' : 'soldOut',
+                    price: productEntry.price || unit?.coursePrice || '',
+                    nextStartDate: productEntry.nextStartDate || unit?.startDate || '',
+                    modality: productEntry.modality || unit?.courseModality || '',
+                    duration: productEntry.duration || unit?.courseDuration || '',
+                    source: productEntry.source || 'snapshot',
+                    alignmentStatus: productEntry.alignmentStatus || '',
+                    verificationOutcome: productEntry.verificationOutcome || ''
+                };
+            })
+            : [];
+
+        const matches = [...baseProductMatches];
+        const candidateProductCodes = new Set();
+        const candidateUnitKeys = new Set();
+
+        baseProductMatches.forEach(entry => {
+            const code = (entry.productCourseCode || entry.courseCode || '').trim();
+            const school = (entry.schoolName || entry.productSchool || '').trim();
+            if (code) {
+                candidateProductCodes.add(code.toLowerCase());
+            }
+            if (code || school) {
+                candidateUnitKeys.add(makeUnitKey(school, code));
+            }
+        });
+
+        relevantMappings.forEach(mapping => {
+            const unitKey = makeUnitKey(mapping.productSchool, mapping.productCourseCode);
+            const unit = unitMap.get(unitKey);
+            if (!unit) {
+                return;
+            }
+            const isOnSale = Boolean(unit.isOnSale);
+            matches.push({
+                productId: unitKey || `${mapping.productSchool || ''}-${mapping.productCourseCode || ''}`,
+                productCourseCode: mapping.productCourseCode || '',
+                productCourseName: unit?.courseName || mapping.productCourseName || '',
+                schoolName: unit?.schoolName || mapping.productSchool || '',
+                onsaleStatus: isOnSale ? 'onSale' : 'onSale',
+                price: unit?.coursePrice || '',
+                nextStartDate: unit?.startDate || '',
+                modality: unit?.courseModality || '',
+                duration: unit?.courseDuration || '',
+                source: 'mapping-table',
+                alignmentStatus: mapping.alignmentStatus || '',
+                verificationOutcome: mapping.verificationOutcome || ''
+            });
+
+            const code = (mapping.productCourseCode || '').trim();
+            const school = (mapping.productSchool || '').trim();
+            if (code) {
+                candidateProductCodes.add(code.toLowerCase());
+            }
+            if (code || school) {
+                candidateUnitKeys.add(makeUnitKey(school, code));
+            }
+        });
+
+        if (!matches.length && unitMap.size) {
+            if (!candidateProductCodes.size && subscription.type === 'product') {
+                const subscriptionCodeRaw = (subscription.course?.code || '').trim();
+                const subscriptionSchool = (subscription.course?.school || '').trim();
+                if (subscriptionCodeRaw) {
+                    candidateProductCodes.add(subscriptionCodeRaw.toLowerCase());
+                    candidateUnitKeys.add(makeUnitKey(subscriptionSchool, subscriptionCodeRaw));
+                }
+            }
+
+            const seenFallbackKeys = new Set();
+
+            if (candidateUnitKeys.size) {
+                candidateUnitKeys.forEach(key => {
+                    const unit = unitMap.get(key);
+                    if (!unit) {
+                        return;
+                    }
+                    if (seenFallbackKeys.has(key)) {
+                        return;
+                    }
+                    seenFallbackKeys.add(key);
+                    matches.push({
+                        productId: key,
+                        productCourseCode: unit.courseCode || '',
+                        productCourseName: unit.courseName || '',
+                        schoolName: unit.schoolName || '',
+                        onsaleStatus: 'onSale',
+                        price: unit.coursePrice || '',
+                        nextStartDate: unit.startDate || '',
+                        modality: unit.courseModality || '',
+                        duration: unit.courseDuration || '',
+                        source: 'unit-table',
+                        alignmentStatus: '',
+                        verificationOutcome: ''
+                    });
+                });
+            }
+
+            if (!matches.length && candidateProductCodes.size) {
+                unitMap.forEach((unit, key) => {
+                    const normalizedCode = (unit.courseCode || '').trim().toLowerCase();
+                    if (!candidateProductCodes.has(normalizedCode)) {
+                        return;
+                    }
+                    if (seenFallbackKeys.has(key)) {
+                        return;
+                    }
+                    seenFallbackKeys.add(key);
+                    matches.push({
+                        productId: key,
+                        productCourseCode: unit.courseCode || '',
+                        productCourseName: unit.courseName || '',
+                        schoolName: unit.schoolName || '',
+                        onsaleStatus: 'onSale',
+                        price: unit.coursePrice || '',
+                        nextStartDate: unit.startDate || '',
+                        modality: unit.courseModality || '',
+                        duration: unit.courseDuration || '',
+                        source: 'unit-table',
+                        alignmentStatus: '',
+                        verificationOutcome: ''
+                    });
+                });
+            }
+        }
+
+        return dedupeByKey(matches, item => `${item.schoolName}::${item.productCourseCode}`);
+    };
+
+    const resolveMatchedCoursesInternal = (student, subscription, options = {}) => {
+        const includeProduct = options.includeProduct !== false;
+        const includeHome = options.includeHome !== false;
+
+        const baseMatches = Array.isArray(subscription.matchResults)
+            ? subscription.matchResults.filter(entry => entry && typeof entry === 'object')
+            : [];
+        const baseHomeMatches = baseMatches.filter(entry => (entry.source || '').startsWith('home'));
+        const baseProductMatches = baseMatches.filter(entry => (entry.source || '').startsWith('product'));
+
+        const sharedCaches = options.sharedCaches && typeof options.sharedCaches === 'object'
+            ? options.sharedCaches
+            : {};
+
+        if (!sharedCaches.unitMap) {
+            sharedCaches.unitMap = collectProductUnits();
+        }
+
+        if (!sharedCaches.mappingRecords) {
+            sharedCaches.mappingRecords = collectCourseMappings();
+        }
+
+        const homeCourses = includeHome
+            ? buildHomeCourseMatches({ student, subscription, baseMatches: baseHomeMatches })
+            : [];
+        const productCourses = includeProduct
+            ? buildProductCourseMatches({ student, subscription, baseMatches: baseProductMatches, sharedCaches })
+            : [];
+
+        const hasOnSaleProduct = productCourses.some(course => course.onsaleStatus === 'onSale');
+
+        const summary = {
+            homeCount: homeCourses.length,
+            productCount: productCourses.length,
+            hasOnSaleProduct,
+            generatedAt: new Date().toISOString()
+        };
+
+        const metadata = {
+            studentId: student.id,
+            subscriptionId: subscription.id,
+            courseCode: subscription.course?.code || '',
+            schoolName: student.school || subscription.course?.school || '',
+            deadlineSource: subscription.metadata?.deadlineSource || '',
+            matchSource: subscription.metadata?.matchSource || (baseMatches.length ? 'snapshot' : 'runtime')
+        };
+
+        return {
+            homeCourses,
+            productCourses,
+            summary,
+            metadata
+        };
+    };
+
+    const ensureSubscriptionMatchedStatus = (student, subscriptionIndex, normalizedSubscription, dataset) => {
+        if (!student || subscriptionIndex < 0 || !normalizedSubscription) {
+            return {
+                snapshot: normalizedSubscription,
+                changed: false
+            };
+        }
+
+        const hasOnSaleProduct = Boolean(
+            dataset?.summary?.hasOnSaleProduct
+            || (Array.isArray(dataset?.productCourses) && dataset.productCourses.some(course => course && course.onsaleStatus === 'onSale'))
+        );
+
+        if (!hasOnSaleProduct || normalizedSubscription.status === 'matched') {
+            return {
+                snapshot: normalizedSubscription,
+                changed: false
+            };
+        }
+
+        const nowIso = new Date().toISOString();
+        const historyEntry = normalizeHistoryEntry({
+            action: 'status-updated',
+            timestamp: nowIso,
+            actor: '系统',
+            details: {
+                from: normalizedSubscription.status,
+                to: 'matched',
+                reason: 'matched-course-onsale'
+            }
+        });
+
+        const updatedSnapshot = {
+            ...normalizedSubscription,
+            status: 'matched',
+            history: historyEntry
+                ? normalizedSubscription.history.concat(historyEntry)
+                : normalizedSubscription.history.slice(),
+            metadata: {
+                ...toClonedObject(normalizedSubscription.metadata),
+                lastMatchedAt: nowIso
+            }
+        };
+
+        const normalizedUpdatedSnapshot = normalizeSubscriptionSnapshot(updatedSnapshot, student.id);
+        student.subscriptions[subscriptionIndex] = normalizedUpdatedSnapshot;
+
+        return {
+            snapshot: normalizedUpdatedSnapshot,
+            changed: true
+        };
+    };
+
+    const buildSelectedCourseEntry = (payload, context = {}) => {
+        const { studentId } = context;
+        const source = typeof payload.source === 'string' ? payload.source.trim() : '';
+        const nowIso = new Date().toISOString();
+        const baseEntry = {
+            id: ensureSelectedCourseId(studentId),
+            source,
+            addedAt: nowIso,
+            metadata: {
+                mappingId: payload.mappingId || '',
+                addedBy: payload.actor || '',
+                note: payload.note || ''
+            }
+        };
+
+        if (source === 'home') {
+            return {
+                ...baseEntry,
+                courseCode: payload.courseCode || '',
+                courseName: payload.courseName || payload.courseDisplayName || '',
+                category: payload.category || '',
+                credit: normalizeCreditValue(payload.credit),
+                availability: normalizeAvailability(payload.availability || 'available'),
+                status: payload.status || 'tracking',
+                term: payload.term || '',
+                year: payload.year || '',
+                productCourses: Array.isArray(payload.productCourses)
+                    ? payload.productCourses.map(product => cloneEntity(product))
+                    : []
+            };
+        }
+
+        const productCourse = {
+            code: payload.productCourseCode || payload.courseCode || '',
+            name: payload.productCourseName || payload.courseName || '',
+            school: payload.schoolName || payload.productSchool || '',
+            isOnSale: payload.isOnSale === true || payload.onsaleStatus === 'onSale',
+            price: payload.price || '',
+            startDate: payload.nextStartDate || payload.startDate || '',
+            endDate: payload.endDate || '',
+            duration: payload.duration || '',
+            modality: payload.modality || '',
+            credit: normalizeCreditValue(payload.credit),
+            mappingId: payload.mappingId || ''
+        };
+
+        return {
+            ...baseEntry,
+            productCourseCode: productCourse.code,
+            productCourseName: productCourse.name,
+            schoolName: productCourse.school,
+            onsaleStatus: productCourse.isOnSale ? 'onSale' : 'soldOut',
+            price: productCourse.price,
+            nextStartDate: productCourse.startDate,
+            duration: productCourse.duration,
+            modality: productCourse.modality,
+            courseCode: payload.homeCourseCode || payload.courseCode || '',
+            courseName: payload.homeCourseName || '',
+            credit: productCourse.credit,
+            productCourses: [productCourse]
+        };
+    };
+
+    const isDuplicateSelectedCourse = (existingList, candidate) => {
+        if (!Array.isArray(existingList) || !candidate) {
+            return false;
+        }
+
+        const normalizeCode = (value) => (value ? String(value).trim() : '');
+        const candidateHomeCode = normalizeCode(candidate.courseCode);
+        const candidateProductCode = normalizeCode(candidate.productCourseCode);
+
+        return existingList.some(entry => {
+            if (!entry || typeof entry !== 'object') {
+                return false;
+            }
+            const entryHomeCodes = [
+                normalizeCode(entry.courseCode),
+                normalizeCode(entry.homeCourse),
+                normalizeCode(entry.homeCourseCode)
+            ].filter(Boolean);
+
+            if (candidate.source === 'home' && candidateHomeCode) {
+                if (entryHomeCodes.includes(candidateHomeCode)) {
+                    return true;
+                }
+            }
+
+            const entryProductCodes = [];
+            if (entry.productCourseCode) {
+                entryProductCodes.push(normalizeCode(entry.productCourseCode));
+            }
+            if (Array.isArray(entry.productCourses)) {
+                entry.productCourses.forEach(product => {
+                    if (product && typeof product === 'object') {
+                        entryProductCodes.push(normalizeCode(product.code || product.productCourseCode));
+                    }
+                });
+            }
+
+            if (candidate.source === 'product' && candidateProductCode) {
+                if (entryProductCodes.includes(candidateProductCode)) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
+    };
+
     const repository = {
         getAllFollowUps() {
             return getFollowUpCollection().map(cloneEntity);
@@ -624,7 +1270,19 @@
             return details.autonomousPlan;
         },
 
-        getSelectedCourses(studentId) {
+        getSelectedCourses(studentId, options = {}) {
+            const resolvedOptions = typeof options === 'boolean'
+                ? { forceRefresh: options }
+                : (options || {});
+            const forceRefresh = resolvedOptions.forceRefresh === true;
+
+            if (!forceRefresh) {
+                const cached = readSelectedCoursesCache(studentId);
+                if (cached) {
+                    return cached;
+                }
+            }
+
             const student = getFollowUpCollection().find(item => String(item.id) === String(studentId));
             if (!student) {
                 return [];
@@ -632,11 +1290,16 @@
 
             const runtimeSelected = buildSelectedCoursesFromRuntime(student);
             if (runtimeSelected.length) {
+                writeSelectedCoursesCache(studentId, runtimeSelected);
                 return runtimeSelected.map(cloneEntity);
             }
 
             const details = getStudentDetails(student);
-            return details.selectedCourses;
+            const selected = Array.isArray(details.selectedCourses)
+                ? details.selectedCourses
+                : [];
+            writeSelectedCoursesCache(studentId, selected);
+            return selected.map(cloneEntity);
         },
 
         getStudentServiceSnapshot() {
@@ -758,7 +1421,45 @@
             if (!student || !Array.isArray(student.subscriptions)) {
                 return [];
             }
-            return student.subscriptions.map(subscription => normalizeSubscriptionSnapshot(subscription, studentId));
+            const normalizedList = [];
+            const sharedCaches = {
+                unitMap: null,
+                mappingRecords: null
+            };
+
+            for (let index = 0; index < student.subscriptions.length; index += 1) {
+                const subscription = student.subscriptions[index];
+                let normalized = normalizeSubscriptionSnapshot(subscription, studentId);
+
+                if (normalized.status === 'waiting') {
+                    let dataset = readSubscriptionCache(normalized.id, MATCHED_COURSE_CACHE_KEY);
+
+                    if (!dataset) {
+                        if (!sharedCaches.unitMap || !sharedCaches.mappingRecords) {
+                            sharedCaches.unitMap = collectProductUnits();
+                            sharedCaches.mappingRecords = collectCourseMappings();
+                        }
+
+                        dataset = resolveMatchedCoursesInternal(student, normalized, {
+                            includeHome: true,
+                            includeProduct: true,
+                            sharedCaches
+                        });
+                        writeSubscriptionCache(normalized.id, MATCHED_COURSE_CACHE_KEY, dataset);
+                    }
+
+                    const { snapshot, changed } = ensureSubscriptionMatchedStatus(student, index, normalized, dataset);
+                    normalized = snapshot;
+
+                    if (changed) {
+                        writeSubscriptionCache(normalized.id, MATCHED_COURSE_CACHE_KEY, dataset);
+                    }
+                }
+
+                normalizedList.push(normalized);
+            }
+
+            return normalizedList;
         },
 
         updateSubscriptionConditions(studentId, subscriptionId, options = {}) {
@@ -814,6 +1515,7 @@
 
             student.subscriptions[index] = normalizeSubscriptionSnapshot(updatedSnapshot, studentId);
 
+            invalidateSubscriptionCacheSegment(subscriptionId, MATCHED_COURSE_CACHE_KEY);
             eventBus.emit('subscriptions:changed', { studentId: student.id });
             return normalizeSubscriptionSnapshot(student.subscriptions[index], studentId);
         },
@@ -868,12 +1570,14 @@
                 status: current.status === 'expired' ? 'waiting' : current.status,
                 lastRenewedAt: nowIso,
                 lastRenewedBy: actor,
+                warning: '',
                 history: historyEntry ? current.history.concat(historyEntry) : current.history.slice(),
                 metadata
             };
 
             student.subscriptions[index] = normalizeSubscriptionSnapshot(updatedSnapshot, studentId);
 
+            invalidateSubscriptionCacheSegment(subscriptionId, MATCHED_COURSE_CACHE_KEY);
             eventBus.emit('subscriptions:changed', { studentId: student.id });
             return normalizeSubscriptionSnapshot(student.subscriptions[index], studentId);
         },
@@ -926,6 +1630,7 @@
 
             student.subscriptions[index] = normalizeSubscriptionSnapshot(updatedSnapshot, studentId);
 
+            invalidateSubscriptionCacheSegment(subscriptionId, MATCHED_COURSE_CACHE_KEY);
             eventBus.emit('subscriptions:changed', { studentId: student.id });
             return normalizeSubscriptionSnapshot(student.subscriptions[index], studentId);
         },
@@ -963,6 +1668,84 @@
                 lastRenewedAt: normalizedSubscription.lastRenewedAt || '',
                 lastRenewedBy: normalizedSubscription.lastRenewedBy || ''
             };
+        },
+
+        resolveMatchedCourses(studentId, subscriptionId, options = {}) {
+            const includeHome = options.includeHome !== false;
+            const includeProduct = options.includeProduct !== false;
+            const forceRefresh = options.forceRefresh === true;
+
+            if (!forceRefresh) {
+                const cached = readSubscriptionCache(subscriptionId, MATCHED_COURSE_CACHE_KEY);
+                if (cached) {
+                    const cloned = cloneEntity(cached);
+                    if (!includeHome) {
+                        cloned.homeCourses = [];
+                    }
+                    if (!includeProduct) {
+                        cloned.productCourses = [];
+                    }
+                    cloned.summary = {
+                        ...cloned.summary,
+                        homeCount: cloned.homeCourses.length,
+                        productCount: cloned.productCourses.length,
+                        hasOnSaleProduct: cloned.productCourses.some(course => course.onsaleStatus === 'onSale')
+                    };
+                    return cloned;
+                }
+            }
+
+            const student = getFollowUpCollection().find(item => String(item.id) === String(studentId));
+            if (!student || !Array.isArray(student.subscriptions)) {
+                throw new SubscriptionRepositoryError(
+                    subscriptionErrorTypes.notFound,
+                    `未找到学生 ${studentId}`,
+                    { studentId }
+                );
+            }
+
+            const rawSubscription = student.subscriptions.find(item => String(item?.id) === String(subscriptionId));
+            if (!rawSubscription) {
+                throw new SubscriptionRepositoryError(
+                    subscriptionErrorTypes.notFound,
+                    `未找到订阅 ${subscriptionId}`,
+                    { studentId, subscriptionId }
+                );
+            }
+
+            const subscriptionIndex = student.subscriptions.indexOf(rawSubscription);
+            let normalizedSubscription = normalizeSubscriptionSnapshot(rawSubscription, studentId);
+            const dataset = resolveMatchedCoursesInternal(student, normalizedSubscription, { includeHome: true, includeProduct: true });
+
+            const { snapshot: ensuredSubscription, changed } = ensureSubscriptionMatchedStatus(
+                student,
+                subscriptionIndex,
+                normalizedSubscription,
+                dataset
+            );
+
+            normalizedSubscription = ensuredSubscription;
+
+            if (changed) {
+                eventBus.emit('subscriptions:changed', { studentId: student.id });
+            }
+
+            writeSubscriptionCache(subscriptionId, MATCHED_COURSE_CACHE_KEY, dataset);
+
+            const clonedDataset = cloneEntity(dataset);
+            if (!includeHome) {
+                clonedDataset.homeCourses = [];
+            }
+            if (!includeProduct) {
+                clonedDataset.productCourses = [];
+            }
+            clonedDataset.summary = {
+                ...clonedDataset.summary,
+                homeCount: clonedDataset.homeCourses.length,
+                productCount: clonedDataset.productCourses.length,
+                hasOnSaleProduct: clonedDataset.productCourses.some(course => course.onsaleStatus === 'onSale')
+            };
+            return clonedDataset;
         },
 
         addSubscription(studentId, payload) {
@@ -1021,8 +1804,71 @@
 
             student.subscriptions.push(normalized);
 
+            invalidateSubscriptionCacheSegment(normalized.id, MATCHED_COURSE_CACHE_KEY);
             eventBus.emit('subscriptions:changed', { studentId: student.id });
             return normalizeSubscriptionSnapshot(normalized, studentId);
+        },
+
+        addCourseToSelected(studentId, payload = {}) {
+            if (!payload || typeof payload !== 'object') {
+                throw new SubscriptionRepositoryError(
+                    subscriptionErrorTypes.invalidPayload,
+                    '选课数据必须是对象'
+                );
+            }
+
+            const source = typeof payload.source === 'string' ? payload.source.trim() : '';
+            if (!['home', 'product'].includes(source)) {
+                throw new SubscriptionRepositoryError(
+                    subscriptionErrorTypes.invalidPayload,
+                    `未知的选课来源: ${source}`,
+                    { source }
+                );
+            }
+
+            if (source === 'home' && !payload.courseCode) {
+                throw new SubscriptionRepositoryError(
+                    subscriptionErrorTypes.invalidPayload,
+                    '本校课程必须提供 courseCode',
+                    { source }
+                );
+            }
+
+            if (source === 'product' && !payload.productCourseCode && !payload.courseCode) {
+                throw new SubscriptionRepositoryError(
+                    subscriptionErrorTypes.invalidPayload,
+                    '产品课程必须提供 productCourseCode 或 courseCode',
+                    { source }
+                );
+            }
+
+            const student = getStudentForMutation(studentId);
+            const details = ensureStudentDetailsContainer(student);
+            const candidate = buildSelectedCourseEntry({ ...payload, source }, { studentId: student.id });
+
+            const duplicate = isDuplicateSelectedCourse(details.selectedCourses, candidate);
+            if (duplicate) {
+                return {
+                    success: false,
+                    reason: 'duplicate',
+                    selectedCourses: this.getSelectedCourses(studentId, { forceRefresh: true })
+                };
+            }
+
+            details.selectedCourses.push(candidate);
+            invalidateSelectedCoursesCache(studentId);
+
+            const updatedSelected = this.getSelectedCourses(studentId, { forceRefresh: true });
+            eventBus.emit('selectedCourses:changed', {
+                studentId: student.id,
+                entry: cloneEntity(candidate)
+            });
+
+            return {
+                success: true,
+                entry: cloneEntity(candidate),
+                selectedCourses: updatedSelected
+            };
         },
 
         updateSubscription(studentId, subscriptionId, updates) {
@@ -1055,6 +1901,7 @@
 
             student.subscriptions[index] = normalizeSubscriptionSnapshot(updated, studentId);
 
+            invalidateSubscriptionCacheSegment(subscriptionId, MATCHED_COURSE_CACHE_KEY);
             eventBus.emit('subscriptions:changed', { studentId: student.id });
             return normalizeSubscriptionSnapshot(student.subscriptions[index], studentId);
         },
@@ -1072,6 +1919,7 @@
             }
 
             const removed = student.subscriptions.splice(index, 1)[0];
+            invalidateSubscriptionCacheSegment(subscriptionId, MATCHED_COURSE_CACHE_KEY);
             eventBus.emit('subscriptions:changed', { studentId: student.id });
             return normalizeSubscriptionSnapshot(removed, studentId);
         },
@@ -1118,6 +1966,7 @@
             });
 
             if (inserted.length) {
+                inserted.forEach(entry => invalidateSubscriptionCacheSegment(entry.id, MATCHED_COURSE_CACHE_KEY));
                 eventBus.emit('subscriptions:changed', { studentId: student.id });
             }
 
