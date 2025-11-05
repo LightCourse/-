@@ -7140,6 +7140,10 @@
                 window.SubscriptionModule.syncButtonStates(studentId);
             }
 
+            if (window.SubscriptionDeadlineHelper && context.subscriptionId) {
+                window.SubscriptionDeadlineHelper.invalidateDeadlineMeta(context.subscriptionId);
+            }
+
             recordSubscriptionActionLog(action, 'succeeded', context);
 
             const successMap = {
@@ -7213,6 +7217,110 @@
             return addDaysToDate(today, 180) || today;
         }
 
+        function parseIsoDate(value) {
+            if (typeof value !== 'string' || !value) {
+                return null;
+            }
+
+            const direct = new Date(value);
+            if (!Number.isNaN(direct.getTime())) {
+                return direct;
+            }
+
+            const parts = value.split('-');
+            if (parts.length === 3) {
+                const [year, month, day] = parts.map(part => parseInt(part, 10));
+                if ([year, month, day].every(num => Number.isFinite(num))) {
+                    const parsed = new Date(year, month - 1, day);
+                    if (!Number.isNaN(parsed.getTime())) {
+                        return parsed;
+                    }
+                }
+            }
+            return null;
+        }
+
+        function getStartOfDay(date) {
+            if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
+                return null;
+            }
+            const clone = new Date(date.getTime());
+            clone.setHours(0, 0, 0, 0);
+            return clone;
+        }
+
+        function calculateDaysBetween(fromDate, toDate) {
+            const start = getStartOfDay(fromDate);
+            const end = getStartOfDay(toDate);
+            if (!start || !end) {
+                return null;
+            }
+            const diffMs = end.getTime() - start.getTime();
+            return Math.round(diffMs / (24 * 60 * 60 * 1000));
+        }
+
+        const deadlineMetaCache = new Map();
+
+        function buildDeadlineMeta(subscription = {}) {
+            const deadlineValue = subscription.deadline || subscription.metadata?.deadlineOverride || '';
+            const deadlineDate = parseIsoDate(deadlineValue);
+
+            const createdValue = subscription.createdAt || subscription.createdAtIso || '';
+            const createdDate = parseIsoDate(createdValue);
+
+            const now = new Date();
+            const today = getStartOfDay(now);
+            const deadlineDay = getStartOfDay(deadlineDate);
+
+            const daysUntilDeadline = deadlineDay ? calculateDaysBetween(today, deadlineDay) : null;
+            const isExpired = typeof daysUntilDeadline === 'number' ? daysUntilDeadline < 0 : false;
+            const isExpiringSoon = typeof daysUntilDeadline === 'number' ? daysUntilDeadline <= 7 && daysUntilDeadline >= 0 : false;
+
+            const defaultDeadlineDate = createdDate ? addDaysToDate(createdDate, 180) : null;
+            const defaultDeadline = defaultDeadlineDate && !Number.isNaN(defaultDeadlineDate.getTime())
+                ? formatDateToInput(defaultDeadlineDate)
+                : '';
+
+            return {
+                deadlineDate,
+                createdDate,
+                daysUntilDeadline,
+                isExpired,
+                isExpiringSoon,
+                deadlineSource: subscription.metadata?.deadlineSource || '',
+                defaultDeadline,
+                deadlineLabel: deadlineDay ? formatDateToInput(deadlineDay) : '未设置'
+            };
+        }
+
+        function getDeadlineMeta(subscription = {}) {
+            const subscriptionId = subscription?.id;
+            if (subscriptionId && deadlineMetaCache.has(subscriptionId)) {
+                return deadlineMetaCache.get(subscriptionId);
+            }
+
+            const meta = buildDeadlineMeta(subscription);
+            if (subscriptionId) {
+                deadlineMetaCache.set(subscriptionId, meta);
+            }
+            return meta;
+        }
+
+        function invalidateDeadlineMeta(subscriptionId) {
+            if (!subscriptionId) {
+                deadlineMetaCache.clear();
+                return;
+            }
+            deadlineMetaCache.delete(subscriptionId);
+        }
+
+        window.SubscriptionDeadlineHelper = {
+            getDeadlineMeta,
+            parseIsoDate,
+            calculateDaysBetween,
+            invalidateDeadlineMeta
+        };
+
         function resolveSubscriptionStatusLabel(status) {
             const mapping = {
                 waiting: '等待匹配',
@@ -7262,6 +7370,20 @@
 
             window.currentSubscriptionRenewal = context;
 
+            if (context.deadlineMeta) {
+                const metaText = document.getElementById('renewHintText');
+                if (metaText) {
+                    const { deadlineLabel, isExpiringSoon, isExpired } = context.deadlineMeta;
+                    if (isExpired) {
+                        metaText.textContent = `当前订阅已过期（原截止 ${deadlineLabel || '未知'}），系统建议顺延 180 天。`;
+                    } else if (isExpiringSoon) {
+                        metaText.textContent = `距离截止日期仅剩几天（${deadlineLabel || '未知'}），续期后将顺延 180 天。`;
+                    } else {
+                        metaText.textContent = '系统默认顺延 180 天，您也可以自定义日期。';
+                    }
+                }
+            }
+
             modal.style.display = 'flex';
         }
 
@@ -7284,6 +7406,27 @@
             const statusField = document.getElementById('cancelStatusField');
             if (statusField) {
                 statusField.textContent = resolveSubscriptionStatusLabel(subscription.status);
+            }
+
+            const warningText = document.getElementById('cancelWarningText');
+            if (warningText) {
+                const deadlineMeta = context.deadlineMeta
+                    || (window.SubscriptionDeadlineHelper
+                        ? window.SubscriptionDeadlineHelper.getDeadlineMeta(subscription)
+                        : null);
+                if (deadlineMeta?.isExpiringSoon) {
+                    const days = typeof deadlineMeta.daysUntilDeadline === 'number'
+                        ? deadlineMeta.daysUntilDeadline
+                        : null;
+                    const extra = days === 0
+                        ? '（今天就是截止日）'
+                        : `（剩余 ${days} 天）`;
+                    warningText.textContent = `取消后将停止课程匹配提醒${extra}，若未来仍需监控，请重新创建订阅。`;
+                } else if (deadlineMeta?.isExpired) {
+                    warningText.textContent = '该订阅已过期，取消后会移除历史提醒记录，可在需要时重新创建。';
+                } else {
+                    warningText.textContent = '取消后将停止课程匹配提醒，后续如需再次跟进，可重新创建订阅。';
+                }
             }
 
             const reasonInput = document.getElementById('cancelReasonInput');
@@ -7317,6 +7460,10 @@
             const reasonInput = document.getElementById('cancelReasonInput');
             if (reasonInput) {
                 reasonInput.value = '';
+            }
+            const warningText = document.getElementById('cancelWarningText');
+            if (warningText) {
+                warningText.textContent = '取消后将停止课程匹配提醒，后续如需再次跟进，可重新创建订阅。';
             }
             window.currentSubscriptionCancellation = null;
         }
@@ -9178,17 +9325,40 @@
                 statusBadge.appendChild(statusText);
 
                 const deadlineInfo = document.createElement('div');
-                deadlineInfo.className = `deadline-info ${sub.status === 'expired' ? 'expired' : ''}`.trim();
+                deadlineInfo.className = 'deadline-info';
                 const deadlineLabel = document.createElement('span');
                 deadlineLabel.className = 'deadline-label';
                 deadlineLabel.textContent = '截止时间';
                 const deadlineDate = document.createElement('span');
                 deadlineDate.className = 'deadline-date';
-                deadlineDate.textContent = sub.deadline || '-';
+
+                const deadlineMeta = window.SubscriptionDeadlineHelper
+                    ? window.SubscriptionDeadlineHelper.getDeadlineMeta(sub)
+                    : null;
+                const deadlineText = deadlineMeta?.deadlineLabel || sub.deadline || '-';
+                deadlineDate.textContent = deadlineText;
+
+                if (deadlineMeta?.isExpired) {
+                    deadlineInfo.classList.add('expired');
+                } else if (deadlineMeta?.isExpiringSoon) {
+                    deadlineInfo.classList.add('urgent');
+                }
+
                 deadlineInfo.appendChild(deadlineLabel);
                 deadlineInfo.appendChild(deadlineDate);
 
-                if (sub.warning) {
+                if (deadlineMeta?.isExpiringSoon) {
+                    const warning = document.createElement('span');
+                    warning.className = 'deadline-warning';
+                    const days = typeof deadlineMeta.daysUntilDeadline === 'number'
+                        ? deadlineMeta.daysUntilDeadline
+                        : null;
+                    const reminder = days === 0
+                        ? '⚠️ 今天是最后一天，请尽快续期'
+                        : `⚠️ 剩余 ${days} 天即将到期`;
+                    warning.textContent = reminder;
+                    deadlineInfo.appendChild(warning);
+                } else if (sub.warning) {
                     const warning = document.createElement('span');
                     warning.className = 'deadline-warning';
                     warning.textContent = `⚠️ ${sub.warning}`;
@@ -10351,6 +10521,12 @@
                 metadata: context?.metadata || target.metadata || {}
             };
 
+            if (effectiveContext.subscription) {
+                effectiveContext.deadlineMeta = window.SubscriptionDeadlineHelper
+                    ? window.SubscriptionDeadlineHelper.getDeadlineMeta(effectiveContext.subscription)
+                    : null;
+            }
+
             window.currentSubscriptionContext = effectiveContext;
 
             const triggerButton = triggerElement || null;
@@ -10373,7 +10549,8 @@
                         subscriptionId,
                         triggerButton,
                         subscription: effectiveContext.subscription,
-                        course: effectiveContext.course
+                        course: effectiveContext.course,
+                        deadlineMeta: effectiveContext.deadlineMeta
                     };
 
                     openRenewSubscriptionModal(renewContext);
@@ -10436,7 +10613,8 @@
                         subscriptionId,
                         triggerButton,
                         subscription: effectiveContext.subscription,
-                        course: effectiveContext.course
+                        course: effectiveContext.course,
+                        deadlineMeta: effectiveContext.deadlineMeta
                     };
                     openCancelSubscriptionModal(cancelContext);
                     finishActionProcessing(triggerButton);

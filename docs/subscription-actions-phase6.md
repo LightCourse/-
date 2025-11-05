@@ -13,6 +13,10 @@
 | Cancel – happy path | 1. 点击“取消订阅” → 2. 在弹窗确认（可填写原因） | Toast 显示“订阅已取消”；卡片更新为取消状态；原因写入仓库；日志记录成功 | ✅ 手工验证 |
 | Cancel – 仓库缺失/未初始化 | 通过在调试面板暂时移除 `StudentRepository`（模拟加载失败）再执行 | Toast 显示“取消暂不可用”；日志记录 `repository-missing` | ⚠️ 建议保留为开发环境注入测试 |
 | 通用异常 – 上下文缺失 | 复现方式：在控制台清空 `window.currentSubscriptionContext` 后直接提交续期/取消 | Toast 给出上下文失效提示；日志记录 `missing-context`；模态关闭时按钮恢复 | ✅ 手工验证 |
+| 首次订阅默认 180 天 | 1. 在控制台通过 `StudentRepository.addSubscription` 创建无 deadline 的订阅 → 2. 刷新卡片 | 卡片展示创建日 +180 天；`metadata.deadlineSource` 为 `auto-180` | ✅ 手工验证（2025-11-05） |
+| 续期默认顺延 | 1. 对即将到期的订阅执行默认续期 → 2. 查看卡片 | 截止日期顺延 180 天；toast 显示成功；`metadata.deadlineSource` 为 `renew-auto-180` | ✅ 手工验证 |
+| “剩 7 天” 提示 | 1. 将订阅截止日期改为 7 天内 → 2. 刷新卡片 | 截止时间文字变红，出现“剩余 X 天即将到期”提示；续期后提示消失 | ✅ 手工验证 |
+| 续期/取消模态文案 | 1. 打开续期/取消模态（即将到期与已过期各一次） | 续期模态提示随状态变化；取消模态提示补充剩余天数或已过期说明 | ✅ 手工验证 |
 
 > 如需复现特定异常，可在浏览器控制台手动改写全局变量或临时注释仓库绑定逻辑。
 
@@ -23,19 +27,21 @@
 3. 按“测试覆盖总结”中的步骤逐条执行，并观察：
    - Toast 反馈是否出现且符合文案；
    - 按钮 loading 状态是否在流程结束后复原；
-   - 订阅卡片状态是否刷新（依赖 `refreshSubscriptionCenter` mock）。
+   - 订阅卡片状态是否刷新（依赖 `refreshSubscriptionCenter` mock）；
+   - 截止日期颜色 / 提示是否与剩余天数一致，续期后“剩 7 天”提示应即时消失。
 4. 打开浏览器控制台，查看 `window.SubscriptionAuditLog`，确认每次操作均有一条记录（含 `action`、`state`、`timestamp`）。
-5. 若需验证仓库写入，针对取消操作可在控制台调用：
+5. 若需验证仓库写入，针对取消或续期操作可在控制台调用：
    ```js
    StudentRepository.resolveSubscriptionContext(<studentId>, <subscriptionId>)
    ```
-   检查 `metadata.cancelledReason` 与历史记录中的 `reason` 字段。
+   检查 `metadata.cancelledReason`、`metadata.deadlineSource` 等字段与历史记录是否匹配。
 
 ## 3. 交付物清单
 
-- UI / 交互：三大动作均提供统一的 toast 成功提示、错误兜底以及按钮 loading 复位。
+- UI / 交互：三大动作均提供统一的 toast 成功提示、错误兜底以及按钮 loading 复位；卡片截止日期支持动态高亮、模态文案随到期状态调整。
 - 日志：`recordSubscriptionActionLog` 自动记录所有成功、失败、拦截场景，可供后续排查。
 - 取消动作数据结构：`StudentRepository.cancelSubscription` 额外持久化 `cancelledReason`。
+- 截止日期辅助：新增 `SubscriptionDeadlineHelper` 负责缓存、计算 `daysUntilDeadline` 与提醒文案，续期/取消后自动失效缓存。
 - 文档：当前文件作为阶段 6 的测试与交接说明，位于 `docs/subscription-actions-phase6.md`。
 
 ## 4. 已知限制

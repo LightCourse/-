@@ -238,6 +238,13 @@
 
         snapshot.lastRenewedAt = typeof snapshot.lastRenewedAt === 'string' ? snapshot.lastRenewedAt : '';
         snapshot.lastRenewedBy = typeof snapshot.lastRenewedBy === 'string' ? snapshot.lastRenewedBy : '';
+        if (typeof snapshot.createdAt === 'string' && snapshot.createdAt) {
+            snapshot.createdAt = snapshot.createdAt;
+        } else if (typeof snapshot.createdAtIso === 'string' && snapshot.createdAtIso) {
+            snapshot.createdAt = snapshot.createdAtIso.split('T')[0];
+        } else {
+            snapshot.createdAt = '';
+        }
         snapshot.createdAtIso = typeof snapshot.createdAtIso === 'string' ? snapshot.createdAtIso : '';
 
         if (snapshot.metadata && typeof snapshot.metadata === 'object') {
@@ -245,6 +252,21 @@
         } else {
             snapshot.metadata = {};
         }
+
+        let deadlineValue = typeof snapshot.deadline === 'string' ? snapshot.deadline.trim() : '';
+        if (!deadlineValue) {
+            const createdDate = parseDateInput(snapshot.createdAt)
+                || parseDateInput(snapshot.createdAtIso)
+                || null;
+            const fallbackDeadline = createdDate ? addDays(createdDate, 180) : null;
+            if (fallbackDeadline) {
+                deadlineValue = formatDateOutput(fallbackDeadline);
+                if (!snapshot.metadata.deadlineSource) {
+                    snapshot.metadata.deadlineSource = 'auto-180';
+                }
+            }
+        }
+        snapshot.deadline = deadlineValue;
 
         return snapshot;
     };
@@ -809,8 +831,9 @@
             }
 
             const current = normalizeSubscriptionSnapshot(student.subscriptions[index], studentId);
+            const hasCustomDays = Number.isFinite(options.days);
+            const days = hasCustomDays ? options.days : 180;
             const baseDeadlineDate = parseDateInput(current.deadline) || new Date();
-            const days = Number.isFinite(options.days) ? options.days : 180;
             const nextDeadlineDate = addDays(baseDeadlineDate, days) || addDays(new Date(), days);
             const newDeadline = formatDateOutput(nextDeadlineDate);
             const nowIso = new Date().toISOString();
@@ -822,7 +845,9 @@
                 lastRenewedBy: actor,
                 renewCount: typeof current.metadata?.renewCount === 'number'
                     ? current.metadata.renewCount + 1
-                    : 1
+                    : 1,
+                lastRenewDays: days,
+                deadlineSource: hasCustomDays ? 'renew-custom' : 'renew-auto-180'
             };
 
             const historyEntry = normalizeHistoryEntry({
@@ -832,7 +857,8 @@
                 details: {
                     previousDeadline: current.deadline || '',
                     newDeadline,
-                    daysExtended: days
+                    daysExtended: days,
+                    deadlineSource: metadata.deadlineSource
                 }
             });
 
@@ -942,8 +968,38 @@
         addSubscription(studentId, payload) {
             validateSubscriptionPayload(payload);
             const student = getStudentForMutation(studentId);
+            const initialMetadata = toClonedObject(payload.metadata);
 
-            const normalized = normalizeSubscriptionSnapshot(payload, studentId);
+            const creationDate = parseDateInput(payload.createdAt)
+                || parseDateInput(payload.createdAtIso)
+                || new Date();
+            const resolvedCreatedAtIso = typeof payload.createdAtIso === 'string' && payload.createdAtIso
+                ? payload.createdAtIso
+                : creationDate.toISOString();
+            const resolvedCreatedAt = typeof payload.createdAt === 'string' && payload.createdAt
+                ? payload.createdAt
+                : formatDateOutput(creationDate) || resolvedCreatedAtIso.split('T')[0];
+
+            const providedDeadline = typeof payload.deadline === 'string' && payload.deadline.trim();
+            const parsedProvidedDeadline = providedDeadline ? parseDateInput(payload.deadline.trim()) : null;
+            const baseDeadlineDate = parsedProvidedDeadline || creationDate;
+            const resolvedDeadline = providedDeadline
+                ? (parsedProvidedDeadline ? formatDateOutput(parsedProvidedDeadline) : payload.deadline.trim())
+                : formatDateOutput(addDays(baseDeadlineDate, 180)) || formatDateOutput(addDays(new Date(), 180));
+
+            if (!providedDeadline) {
+                initialMetadata.deadlineSource = 'auto-180';
+            } else if (typeof initialMetadata.deadlineSource !== 'string' || !initialMetadata.deadlineSource) {
+                initialMetadata.deadlineSource = 'manual';
+            }
+
+            const normalized = normalizeSubscriptionSnapshot({
+                ...payload,
+                createdAt: resolvedCreatedAt,
+                createdAtIso: resolvedCreatedAtIso,
+                deadline: resolvedDeadline,
+                metadata: initialMetadata
+            }, studentId);
 
             const duplicate = student.subscriptions.some(existing => {
                 if (!existing) {
