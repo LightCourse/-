@@ -348,6 +348,279 @@
         return student.details;
     };
 
+    const resolveSubscriptionConfig = () => {
+        const config = global.AppConfig && typeof global.AppConfig === 'object'
+            ? global.AppConfig.subscription || {}
+            : {};
+        return {
+            enableDemoData: config.enableDemoData !== undefined ? Boolean(config.enableDemoData) : false,
+            persistence: typeof config.persistence === 'string' ? config.persistence : 'memory'
+        };
+    };
+
+    const hasLocalStorageSupport = (() => {
+        try {
+            return typeof global.localStorage !== 'undefined';
+        } catch (error) {
+            return false;
+        }
+    })();
+
+    const dynamicSubscriptionMemory = new Map();
+    const PERSISTENCE_KEY_PREFIX = 'subscription:';
+    const LEGACY_PERSISTENCE_KEY_PREFIX = 'subscription-center:';
+
+    const cloneSubscriptionList = (list) => {
+        if (!Array.isArray(list)) {
+            return [];
+        }
+        return list.reduce((acc, entry) => {
+            const snapshot = cloneEntity(entry);
+            if (snapshot && typeof snapshot === 'object') {
+                acc.push(snapshot);
+            }
+            return acc;
+        }, []);
+    };
+
+    const buildStorageKeys = (studentId) => {
+        const suffix = String(studentId || 'unknown');
+        return {
+            primary: `${PERSISTENCE_KEY_PREFIX}${suffix}`,
+            legacy: `${LEGACY_PERSISTENCE_KEY_PREFIX}${suffix}`
+        };
+    };
+
+    const parsePersistedPayload = (payload) => {
+        if (typeof payload !== 'string' || !payload) {
+            return [];
+        }
+        try {
+            const parsed = JSON.parse(payload);
+            return Array.isArray(parsed) ? parsed : [];
+        } catch (error) {
+            console.warn('StudentRepository: 解析订阅存储内容失败', error);
+            return [];
+        }
+    };
+
+    const persistenceProviders = {
+        memory: {
+            load(studentId) {
+                const key = String(studentId);
+                if (!dynamicSubscriptionMemory.has(key)) {
+                    return [];
+                }
+                return cloneSubscriptionList(dynamicSubscriptionMemory.get(key));
+            },
+            save(studentId, list) {
+                const key = String(studentId);
+                dynamicSubscriptionMemory.set(key, cloneSubscriptionList(list));
+                return true;
+            },
+            remove(studentId) {
+                const key = String(studentId);
+                dynamicSubscriptionMemory.delete(key);
+                return true;
+            }
+        },
+        localStorage: {
+            load(studentId) {
+                if (!hasLocalStorageSupport) {
+                    return [];
+                }
+                const { primary, legacy } = buildStorageKeys(studentId);
+                try {
+                    const serialized = global.localStorage.getItem(primary);
+                    if (serialized) {
+                        return cloneSubscriptionList(parsePersistedPayload(serialized));
+                    }
+
+                    if (legacy) {
+                        const legacyPayload = global.localStorage.getItem(legacy);
+                        if (legacyPayload) {
+                            const legacyList = cloneSubscriptionList(parsePersistedPayload(legacyPayload));
+                            if (legacyList.length) {
+                                global.localStorage.setItem(primary, JSON.stringify(legacyList));
+                            }
+                            global.localStorage.removeItem(legacy);
+                            return legacyList;
+                        }
+                    }
+                } catch (error) {
+                    console.warn('StudentRepository: 读取订阅本地存储失败', error);
+                }
+                return [];
+            },
+            save(studentId, list) {
+                if (!hasLocalStorageSupport) {
+                    console.warn('StudentRepository: 当前环境不支持 localStorage 持久化');
+                    return false;
+                }
+                const { primary, legacy } = buildStorageKeys(studentId);
+                try {
+                    global.localStorage.setItem(primary, JSON.stringify(cloneSubscriptionList(list)));
+                    if (legacy && legacy !== primary) {
+                        global.localStorage.removeItem(legacy);
+                    }
+                    return true;
+                } catch (error) {
+                    console.warn('StudentRepository: 写入订阅本地存储失败', error);
+                    return false;
+                }
+            },
+            remove(studentId) {
+                if (!hasLocalStorageSupport) {
+                    return false;
+                }
+                const { primary, legacy } = buildStorageKeys(studentId);
+                try {
+                    global.localStorage.removeItem(primary);
+                    if (legacy && legacy !== primary) {
+                        global.localStorage.removeItem(legacy);
+                    }
+                    return true;
+                } catch (error) {
+                    console.warn('StudentRepository: 清理订阅本地存储失败', error);
+                    return false;
+                }
+            }
+        },
+        api: {
+            load(studentId) {
+                console.warn('StudentRepository: API 持久化尚未实现，使用内存数据作为回退', { studentId });
+                return [];
+            },
+            save(studentId) {
+                console.warn('StudentRepository: API 持久化尚未实现，写入操作已跳过', { studentId });
+                return false;
+            },
+            remove(studentId) {
+                console.warn('StudentRepository: API 持久化尚未实现，清理操作已跳过', { studentId });
+                return false;
+            }
+        }
+    };
+
+    const getPersistenceProvider = () => {
+        const config = resolveSubscriptionConfig();
+        const mode = typeof config.persistence === 'string' ? config.persistence : 'memory';
+        if (mode === 'localStorage' && hasLocalStorageSupport) {
+            return persistenceProviders.localStorage;
+        }
+        if (mode === 'api') {
+            return persistenceProviders.api;
+        }
+        return persistenceProviders.memory;
+    };
+
+    const readDynamicSubscriptions = (studentId) => {
+        if (!studentId) {
+            return [];
+        }
+
+        const key = String(studentId);
+        if (dynamicSubscriptionMemory.has(key)) {
+            return cloneSubscriptionList(dynamicSubscriptionMemory.get(key));
+        }
+
+        const provider = getPersistenceProvider();
+        let persistedList = [];
+
+        if (provider && typeof provider.load === 'function') {
+            try {
+                persistedList = provider.load(studentId) || [];
+            } catch (error) {
+                console.warn('StudentRepository: 订阅持久化读取失败，已回退为内存数据', error);
+                persistedList = [];
+            }
+        }
+
+        const normalized = cloneSubscriptionList(persistedList);
+        dynamicSubscriptionMemory.set(key, normalized);
+        return cloneSubscriptionList(normalized);
+    };
+
+    const persistDynamicSubscriptions = (studentId, list) => {
+        if (!studentId) {
+            return;
+        }
+        const normalized = cloneSubscriptionList(list);
+        const key = String(studentId);
+        dynamicSubscriptionMemory.set(key, normalized);
+
+        const provider = getPersistenceProvider();
+        if (provider && typeof provider.save === 'function') {
+            try {
+                const success = provider.save(studentId, normalized);
+                if (!success && provider !== persistenceProviders.memory) {
+                    console.warn('StudentRepository: 持久化订阅数据失败，当前仅保留内存副本', { studentId });
+                }
+            } catch (error) {
+                console.warn('StudentRepository: 持久化订阅数据时发生异常，当前仅保留内存副本', { studentId, error });
+            }
+        }
+    };
+
+    const ensureStudentSubscriptionList = (student) => {
+        if (!student || typeof student !== 'object') {
+            return [];
+        }
+
+        if (!student.__subscriptionsInitialized) {
+            let storedList = readDynamicSubscriptions(student.id);
+
+            if (!storedList.length && Array.isArray(student.subscriptions) && student.subscriptions.length) {
+                storedList = student.subscriptions.map(entry => cloneEntity(entry));
+                persistDynamicSubscriptions(student.id, storedList);
+            }
+
+            student.subscriptions = Array.isArray(storedList) ? storedList : [];
+            student.__subscriptionsInitialized = true;
+        }
+
+        if (!Array.isArray(student.subscriptions)) {
+            student.subscriptions = [];
+        }
+
+        return student.subscriptions;
+    };
+
+    const persistStudentSubscriptions = (student) => {
+        if (!student || typeof student !== 'object') {
+            return;
+        }
+        ensureStudentSubscriptionList(student);
+        persistDynamicSubscriptions(student.id, student.subscriptions);
+    };
+
+    const buildDemoSubscriptionId = (studentId, template, index) => {
+        const baseId = template && typeof template.id === 'string' && template.id.trim()
+            ? template.id.trim()
+            : `template-${index}`;
+        return baseId.startsWith('demo-')
+            ? `${baseId}-${studentId}`
+            : `demo-${studentId}-${baseId}`;
+    };
+
+    const getDemoSubscriptionTemplates = (student) => {
+        const config = resolveSubscriptionConfig();
+
+        if (!student || typeof student !== 'object' || !config.enableDemoData) {
+            return [];
+        }
+
+        const templates = Array.isArray(student.demoSubscriptions)
+            ? student.demoSubscriptions
+            : [];
+
+        return templates.map((entry, index) => {
+            const cloned = cloneEntity(entry) || {};
+            cloned.id = buildDemoSubscriptionId(student.id, entry, index);
+            return cloned;
+        });
+    };
+
     const normalizeSubscriptionSnapshot = (subscription, studentId) => {
         const snapshot = cloneEntity(subscription) || {};
 
@@ -485,9 +758,7 @@
                 { studentId }
             );
         }
-        if (!Array.isArray(student.subscriptions)) {
-            student.subscriptions = [];
-        }
+        ensureStudentSubscriptionList(student);
         return student;
     };
 
@@ -1413,20 +1684,26 @@
             return details.reports;
         },
 
-        getSubscriptions(studentId) {
+        getSubscriptions(studentId, options = {}) {
+            const includeDemo = options.includeDemo !== false;
+            const config = resolveSubscriptionConfig();
+            const showDemo = includeDemo && config.enableDemoData;
             const student = getFollowUpCollection().find(item => String(item.id) === String(studentId));
-            if (!student || !Array.isArray(student.subscriptions)) {
+            if (!student) {
                 return [];
             }
+
+            const subscriptions = ensureStudentSubscriptionList(student);
             const normalizedList = [];
             const sharedCaches = {
                 unitMap: null,
                 mappingRecords: null
             };
 
-            for (let index = 0; index < student.subscriptions.length; index += 1) {
-                const subscription = student.subscriptions[index];
+            for (let index = 0; index < subscriptions.length; index += 1) {
+                const subscription = subscriptions[index];
                 let normalized = normalizeSubscriptionSnapshot(subscription, studentId);
+                subscriptions[index] = normalized;
 
                 if (normalized.status === 'waiting') {
                     let dataset = readSubscriptionCache(normalized.id, MATCHED_COURSE_CACHE_KEY);
@@ -1447,13 +1724,29 @@
 
                     const { snapshot, changed } = ensureSubscriptionMatchedStatus(student, index, normalized, dataset);
                     normalized = snapshot;
+                    subscriptions[index] = snapshot;
 
                     if (changed) {
                         writeSubscriptionCache(normalized.id, MATCHED_COURSE_CACHE_KEY, dataset);
                     }
                 }
 
-                normalizedList.push(normalized);
+                const decorated = { ...normalized, __source: 'dynamic' };
+                normalizedList.push(decorated);
+            }
+
+            persistStudentSubscriptions(student);
+
+            if (showDemo) {
+                const demoTemplates = getDemoSubscriptionTemplates(student);
+                demoTemplates.forEach((template, index) => {
+                    const seeded = {
+                        ...template,
+                        id: template.id || buildDemoSubscriptionId(student.id, template, index)
+                    };
+                    const normalizedDemo = normalizeSubscriptionSnapshot(seeded, studentId);
+                    normalizedList.push({ ...normalizedDemo, __source: 'demo' });
+                });
             }
 
             return normalizedList;
@@ -1513,6 +1806,7 @@
             student.subscriptions[index] = normalizeSubscriptionSnapshot(updatedSnapshot, studentId);
 
             invalidateSubscriptionCacheSegment(subscriptionId, MATCHED_COURSE_CACHE_KEY);
+            persistStudentSubscriptions(student);
             eventBus.emit('subscriptions:changed', { studentId: student.id });
             return normalizeSubscriptionSnapshot(student.subscriptions[index], studentId);
         },
@@ -1575,6 +1869,7 @@
             student.subscriptions[index] = normalizeSubscriptionSnapshot(updatedSnapshot, studentId);
 
             invalidateSubscriptionCacheSegment(subscriptionId, MATCHED_COURSE_CACHE_KEY);
+            persistStudentSubscriptions(student);
             eventBus.emit('subscriptions:changed', { studentId: student.id });
             return normalizeSubscriptionSnapshot(student.subscriptions[index], studentId);
         },
@@ -1628,22 +1923,45 @@
             student.subscriptions[index] = normalizeSubscriptionSnapshot(updatedSnapshot, studentId);
 
             invalidateSubscriptionCacheSegment(subscriptionId, MATCHED_COURSE_CACHE_KEY);
+            persistStudentSubscriptions(student);
             eventBus.emit('subscriptions:changed', { studentId: student.id });
             return normalizeSubscriptionSnapshot(student.subscriptions[index], studentId);
         },
 
         resolveSubscriptionContext(studentId, subscriptionId) {
             const student = getFollowUpCollection().find(item => String(item.id) === String(studentId));
-            if (!student || !Array.isArray(student.subscriptions)) {
+            if (!student) {
                 return null;
             }
 
-            const rawSubscription = student.subscriptions.find(item => String(item?.id) === String(subscriptionId));
-            if (!rawSubscription) {
+            const config = resolveSubscriptionConfig();
+            const subscriptions = ensureStudentSubscriptionList(student);
+            const rawSubscription = subscriptions.find(item => String(item?.id) === String(subscriptionId));
+
+            let resolvedSubscription = rawSubscription;
+            let subscriptionSource = 'dynamic';
+
+            if (!resolvedSubscription && config.enableDemoData) {
+                const demoTemplates = getDemoSubscriptionTemplates(student);
+                resolvedSubscription = demoTemplates.find(item => String(item?.id) === String(subscriptionId)) || null;
+                if (resolvedSubscription) {
+                    subscriptionSource = 'demo';
+                }
+            }
+
+            if (!resolvedSubscription) {
                 return null;
             }
 
-            const normalizedSubscription = normalizeSubscriptionSnapshot(rawSubscription, studentId);
+            const normalizedSubscription = normalizeSubscriptionSnapshot(resolvedSubscription, studentId);
+
+            if (subscriptionSource === 'dynamic' && rawSubscription !== normalizedSubscription) {
+                const index = subscriptions.indexOf(rawSubscription);
+                if (index >= 0) {
+                    subscriptions[index] = normalizedSubscription;
+                    persistStudentSubscriptions(student);
+                }
+            }
 
             return {
                 student: {
@@ -1693,7 +2011,7 @@
             }
 
             const student = getFollowUpCollection().find(item => String(item.id) === String(studentId));
-            if (!student || !Array.isArray(student.subscriptions)) {
+            if (!student) {
                 throw new SubscriptionRepositoryError(
                     subscriptionErrorTypes.notFound,
                     `未找到学生 ${studentId}`,
@@ -1701,7 +2019,19 @@
                 );
             }
 
-            const rawSubscription = student.subscriptions.find(item => String(item?.id) === String(subscriptionId));
+            const config = resolveSubscriptionConfig();
+            const subscriptions = ensureStudentSubscriptionList(student);
+            let rawSubscription = subscriptions.find(item => String(item?.id) === String(subscriptionId));
+            let subscriptionSource = 'dynamic';
+            let subscriptionIndex = subscriptions.indexOf(rawSubscription);
+
+            if (!rawSubscription && config.enableDemoData) {
+                const demoTemplates = getDemoSubscriptionTemplates(student);
+                rawSubscription = demoTemplates.find(item => String(item?.id) === String(subscriptionId)) || null;
+                subscriptionSource = rawSubscription ? 'demo' : subscriptionSource;
+                subscriptionIndex = -1;
+            }
+
             if (!rawSubscription) {
                 throw new SubscriptionRepositoryError(
                     subscriptionErrorTypes.notFound,
@@ -1710,21 +2040,25 @@
                 );
             }
 
-            const subscriptionIndex = student.subscriptions.indexOf(rawSubscription);
             let normalizedSubscription = normalizeSubscriptionSnapshot(rawSubscription, studentId);
             const dataset = resolveMatchedCoursesInternal(student, normalizedSubscription, { includeHome: true, includeProduct: true });
 
-            const { snapshot: ensuredSubscription, changed } = ensureSubscriptionMatchedStatus(
-                student,
-                subscriptionIndex,
-                normalizedSubscription,
-                dataset
-            );
+            if (subscriptionSource === 'dynamic' && subscriptionIndex >= 0) {
+                const { snapshot: ensuredSubscription, changed } = ensureSubscriptionMatchedStatus(
+                    student,
+                    subscriptionIndex,
+                    normalizedSubscription,
+                    dataset
+                );
 
-            normalizedSubscription = ensuredSubscription;
+                normalizedSubscription = ensuredSubscription;
+                subscriptions[subscriptionIndex] = ensuredSubscription;
 
-            if (changed) {
-                eventBus.emit('subscriptions:changed', { studentId: student.id });
+                if (changed) {
+                    eventBus.emit('subscriptions:changed', { studentId: student.id });
+                }
+
+                persistStudentSubscriptions(student);
             }
 
             writeSubscriptionCache(subscriptionId, MATCHED_COURSE_CACHE_KEY, dataset);
@@ -1802,6 +2136,7 @@
             student.subscriptions.push(normalized);
 
             invalidateSubscriptionCacheSegment(normalized.id, MATCHED_COURSE_CACHE_KEY);
+            persistStudentSubscriptions(student);
             eventBus.emit('subscriptions:changed', { studentId: student.id });
             return normalizeSubscriptionSnapshot(normalized, studentId);
         },
@@ -1899,6 +2234,7 @@
             student.subscriptions[index] = normalizeSubscriptionSnapshot(updated, studentId);
 
             invalidateSubscriptionCacheSegment(subscriptionId, MATCHED_COURSE_CACHE_KEY);
+            persistStudentSubscriptions(student);
             eventBus.emit('subscriptions:changed', { studentId: student.id });
             return normalizeSubscriptionSnapshot(student.subscriptions[index], studentId);
         },
@@ -1917,6 +2253,7 @@
 
             const removed = student.subscriptions.splice(index, 1)[0];
             invalidateSubscriptionCacheSegment(subscriptionId, MATCHED_COURSE_CACHE_KEY);
+            persistStudentSubscriptions(student);
             eventBus.emit('subscriptions:changed', { studentId: student.id });
             return normalizeSubscriptionSnapshot(removed, studentId);
         },
@@ -1964,6 +2301,7 @@
 
             if (inserted.length) {
                 inserted.forEach(entry => invalidateSubscriptionCacheSegment(entry.id, MATCHED_COURSE_CACHE_KEY));
+                persistStudentSubscriptions(student);
                 eventBus.emit('subscriptions:changed', { studentId: student.id });
             }
 

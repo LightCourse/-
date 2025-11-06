@@ -308,7 +308,7 @@
         }
     ]);
 
-    const createSubscriptions = () => ([
+    const createDemoSubscriptions = () => ([
         {
             id: "sub-chemmatched",
             type: "product",
@@ -465,7 +465,7 @@
             },
             wechatName: "明明学习",
             report: { available: true },
-            subscriptions: createSubscriptions(),
+            demoSubscriptions: createDemoSubscriptions(),
             profile: {
                 creditTransfer: "yes",
                 coursePurpose: ["graduation", "gradschool"]
@@ -489,7 +489,7 @@
             },
             wechatName: "雨天学习",
             report: { available: true },
-            subscriptions: createSubscriptions(),
+            demoSubscriptions: createDemoSubscriptions(),
             profile: {
                 creditTransfer: "no",
                 coursePurpose: ["transfer", "studyabroad"]
@@ -513,7 +513,7 @@
             },
             wechatName: "小华同学",
             report: { available: true },
-            subscriptions: createSubscriptions(),
+            demoSubscriptions: createDemoSubscriptions(),
             profile: {
                 creditTransfer: "yes",
                 coursePurpose: ["graduation"]
@@ -537,7 +537,7 @@
             },
             wechatName: "思远学子",
             report: { available: true },
-            subscriptions: createSubscriptions(),
+            demoSubscriptions: createDemoSubscriptions(),
             profile: {
                 creditTransfer: "yes",
                 coursePurpose: ["graduation", "transfer", "gradschool"]
@@ -561,7 +561,7 @@
             },
             wechatName: "佳妮加油",
             report: { available: true },
-            subscriptions: createSubscriptions(),
+            demoSubscriptions: createDemoSubscriptions(),
             profile: {
                 creditTransfer: "no",
                 coursePurpose: ["gradschool", "studyabroad"]

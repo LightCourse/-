@@ -2320,6 +2320,61 @@
             transition: all 0.3s ease;
             font-family: "Noto Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
+
+        .subscription-card[data-source="demo"] {
+            border-style: dashed;
+            border-color: #cbd5f5;
+            background: #f8fbff;
+        }
+
+        .subscription-card[data-source="demo"] .card-header {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(59, 130, 246, 0.02) 100%);
+        }
+
+        .subscription-card[data-source="demo"] .summary-text {
+            color: #475569;
+        }
+
+        .subscription-badge-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 10px;
+        }
+
+        .subscription-source-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #0f172a;
+            background: rgba(15, 23, 42, 0.06);
+            margin-left: 8px;
+        }
+
+        .subscription-source-badge::before {
+            content: '★';
+            font-size: 10px;
+            color: #2563eb;
+        }
+
+        .subscription-card[data-source="demo"] .card-actions button {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .demo-action-note {
+            font-size: 13px;
+            color: #475569;
+            background: rgba(148, 163, 184, 0.14);
+            border-radius: 10px;
+            padding: 12px 16px;
+            text-align: center;
+            font-weight: 500;
+        }
         
         .subscription-card:hover {
             transform: translateY(-2px);
@@ -5749,6 +5804,16 @@
     </div>
     <div id="toastContainer" class="toast-container" role="status" aria-live="polite"></div>
     <script src="data/students.js"></script>
+    <script>
+        window.AppConfig = window.AppConfig || {};
+        const subscriptionDefaults = {
+            enableDemoData: true,
+            persistence: 'localStorage'
+        };
+        window.AppConfig.subscription = window.AppConfig.subscription
+            ? { ...subscriptionDefaults, ...window.AppConfig.subscription }
+            : subscriptionDefaults;
+    </script>
     <script src="scripts/studentRepository.js"></script>
     <script>
 
@@ -10119,6 +10184,15 @@
                 return;
             }
 
+            const orderedSubscriptions = subscriptions.slice().sort((a, b) => {
+                const aDemo = a && a.__source === 'demo';
+                const bDemo = b && b.__source === 'demo';
+                if (aDemo === bDemo) {
+                    return 0;
+                }
+                return aDemo ? 1 : -1;
+            });
+
             const statusConfig = {
                 waiting: { text: '等待上架', className: 'status-waiting', icon: '⏳' },
                 matched: { text: '已匹配', className: 'status-matched', icon: '✅' },
@@ -10134,9 +10208,11 @@
                 home: { text: '本校课程', className: 'type-home' }
             };
 
-            subscriptions.forEach((sub, index) => {
+            orderedSubscriptions.forEach((sub, index) => {
                 const statusInfo = statusConfig[sub.status] || { text: '未知状态', className: '', icon: 'ℹ️' };
                 const typeInfo = typeConfig[sub.type] || { text: '未分类', className: '' };
+                const source = sub.__source === 'demo' ? 'demo' : 'dynamic';
+                const isDemoSource = source === 'demo';
 
                 const card = document.createElement('div');
                 card.className = 'subscription-card';
@@ -10153,6 +10229,7 @@
                 card.dataset.lastRenewedAt = sub.lastRenewedAt || '';
                 card.dataset.createdAtIso = sub.createdAtIso || '';
                 card.dataset.historyLength = Array.isArray(sub.history) ? String(sub.history.length) : '0';
+                card.dataset.source = source;
 
                 const header = document.createElement('div');
                 header.className = 'card-header';
@@ -10180,8 +10257,19 @@
                 typeBadge.className = `subscription-type-badge ${typeInfo.className}`.trim();
                 typeBadge.textContent = typeInfo.text;
 
+                const badgeGroup = document.createElement('div');
+                badgeGroup.className = 'subscription-badge-group';
+                badgeGroup.appendChild(typeBadge);
+
+                if (isDemoSource) {
+                    const sourceBadge = document.createElement('div');
+                    sourceBadge.className = 'subscription-source-badge';
+                    sourceBadge.textContent = '演示数据';
+                    badgeGroup.appendChild(sourceBadge);
+                }
+
                 header.appendChild(info);
-                header.appendChild(typeBadge);
+                header.appendChild(badgeGroup);
 
                 const body = document.createElement('div');
                 body.className = 'card-body';
@@ -10293,7 +10381,12 @@
                 const actions = document.createElement('div');
                 actions.className = 'card-actions';
 
-                if (sub.status === 'converted' || sub.status === 'cancelled') {
+                if (isDemoSource) {
+                    const demoNote = document.createElement('div');
+                    demoNote.className = 'demo-action-note';
+                    demoNote.textContent = '演示数据，仅供参考，无法执行动作';
+                    actions.appendChild(demoNote);
+                } else if (sub.status === 'converted' || sub.status === 'cancelled') {
                     const completion = document.createElement('div');
                     completion.className = 'completion-note';
                     const icon = document.createElement('span');
