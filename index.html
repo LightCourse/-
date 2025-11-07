@@ -83,6 +83,27 @@
             opacity: 0.8;
         }
 
+        .course-title-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 6px;
+            width: 100%;
+        }
+
+        .course-title-row .course-title {
+            flex: 1;
+            min-width: 160px;
+        }
+
+        .course-title-meta {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: auto;
+        }
+
         .main-layout {
             display: flex;
             margin-top: 80px;
@@ -91,7 +112,6 @@
 
         .student-layout {
             display: flex;
-            min-height: calc(100vh - 160px);
         }
 
         .student-sidebar {
@@ -103,6 +123,7 @@
 
         .student-content {
             flex: 1;
+            margin: 0;
         }
 
         .product-layout {
@@ -2313,7 +2334,7 @@
         
         .subscription-card {
             background: white;
-            border-radius: 16px;
+            border-radius: 14px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
             border: 1px solid #f1f5f9;
             overflow: hidden;
@@ -2337,9 +2358,10 @@
 
         .subscription-badge-group {
             display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
         }
 
         .subscription-source-badge {
@@ -2352,7 +2374,6 @@
             font-weight: 500;
             color: #0f172a;
             background: rgba(15, 23, 42, 0.06);
-            margin-left: 8px;
         }
 
         .subscription-source-badge::before {
@@ -2388,34 +2409,43 @@
         }
         
         .card-header {
-            padding: 24px;
+            padding: 14px 20px;
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
-            border-bottom: 1px solid #f8fafc;
-            position: relative;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid #f1f5f9;
         }
-        
-        .course-main-info {
-            flex: 1;
-            padding-right: 16px;
+
+        .card-status-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        
+
+        .card-deadline-area {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+            min-width: 160px;
+        }
+
         .course-title {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 600;
             color: #0f172a;
-            margin: 0 0 8px 0;
-            line-height: 1.3;
-            letter-spacing: -0.5px;
+            margin: 0;
+            line-height: 1.25;
+            letter-spacing: -0.3px;
         }
         
         .course-subtitle {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 400;  
             color: #64748b;
-            margin: 0 0 6px 0;
-            line-height: 1.4;
+            margin: 0 0 4px 0;
+            line-height: 1.35;
         }
         
         .university-name {
@@ -2489,23 +2519,35 @@
         }
         
         .card-body {
-            padding: 20px 24px;
-            border-bottom: 1px solid #f8fafc;
+            padding: 18px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
-        
-        .status-section {
+
+        .course-primary {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .course-secondary {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 16px;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 1px solid #eef2f8;
         }
         
         .status-badge {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 8px 12px;
-            border-radius: 16px;
+            padding: 6px 10px;
+            border-radius: 14px;
             font-size: 13px;
             font-weight: 500;
             letter-spacing: 0.1px;
@@ -2515,7 +2557,7 @@
         }
         
         .status-badge .status-icon {
-            font-size: 14px;
+            font-size: 13px;
         }
         
         /* 通过图标颜色区分不同状态 */
@@ -2544,19 +2586,30 @@
         }
         
         .deadline-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 2px;
             text-align: right;
         }
-        
+
+        .deadline-main {
+            display: inline-flex;
+            align-items: baseline;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
         .deadline-label {
-            display: block;
+            display: inline-block;
             font-size: 12px;
             color: #6b7280;
             font-weight: 500;
-            margin-bottom: 4px;
+            margin-bottom: 0;
         }
-        
+
         .deadline-date {
-            display: block;
+            display: inline-block;
             font-size: 14px;
             font-weight: 600;
             color: #374151;
@@ -2576,7 +2629,7 @@
             font-size: 12px;
             color: #dc2626;
             font-weight: 700;
-            margin-top: 4px;
+            margin-top: 2px;
             animation: pulse 2s infinite;
         }
         
@@ -2585,20 +2638,12 @@
             50% { opacity: 0.7; }
         }
         
-        .subscription-summary {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 16px;
-            background: #f8fafc;
-            border-radius: 12px;
-            margin-bottom: 16px;
-        }
-        
         .summary-text {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
-            color: #374151;
+            color: #4b5563;
+            flex: 1;
+            line-height: 1.3;
         }
         
         .details-toggle {
@@ -2608,9 +2653,10 @@
             font-size: 12px;
             font-weight: 600;
             cursor: pointer;
-            padding: 4px 8px;
-            border-radius: 6px;
+            padding: 2px 6px;
+            border-radius: 4px;
             transition: all 0.2s ease;
+            line-height: 1.2;
         }
         
         .details-toggle:hover {
@@ -2647,22 +2693,25 @@
             font-weight: 600;
         }
         
-        .card-actions {
-            padding: 20px 24px;
+        .card-footer {
+            padding: 16px 20px;
             background: #fafbfc;
             border-top: 1px solid #f1f5f9;
+        }
+
+        .card-actions {
             display: flex;
-            gap: 12px;
+            flex-wrap: wrap;
+            gap: 8px;
             align-items: center;
-            justify-content: flex-start;
         }
         
         .btn-primary {
             background: var(--primary-green);
             color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: 12px;
+            padding: 10px 20px;
+            border-radius: 10px;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
@@ -2680,8 +2729,8 @@
             background: #f8fafc;
             color: #374151;
             border: 2px solid #e5e7eb;
-            padding: 10px 20px;
-            border-radius: 12px;
+            padding: 8px 18px;
+            border-radius: 10px;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
@@ -2699,8 +2748,8 @@
             background: #fee2e2;
             color: #dc2626;
             border: 2px solid #fecaca;
-            padding: 10px 20px;
-            border-radius: 12px;
+            padding: 8px 18px;
+            border-radius: 10px;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
@@ -2844,9 +2893,34 @@
             
             .card-header,
             .card-body,
-            .card-actions {
-                padding-left: 16px;
-                padding-right: 16px;
+            .card-footer {
+                padding: 16px;
+            }
+
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .card-deadline-area {
+                align-items: flex-start;
+            }
+
+            .course-title-row {
+                gap: 12px;
+                margin-bottom: 8px;
+            }
+
+            .course-secondary {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+                padding: 10px 14px;
+            }
+
+            .summary-text {
+                line-height: 1.4;
             }
             
             .course-title {
@@ -2859,11 +2933,13 @@
             
             .card-actions {
                 flex-direction: column;
+                gap: 12px;
             }
             
             .card-actions button {
                 width: 100%;
                 justify-content: center;
+                padding: 10px 20px;
             }
         }
         
@@ -10305,6 +10381,9 @@
                 const source = sub.__source === 'demo' ? 'demo' : 'dynamic';
                 const isDemoSource = source === 'demo';
                 const isSandboxSource = Boolean(sub.__sandbox);
+                const statusLabel = typeof resolveSubscriptionStatusLabel === 'function'
+                    ? resolveSubscriptionStatusLabel(sub.status)
+                    : statusInfo.text;
 
                 const card = document.createElement('div');
                 card.className = 'subscription-card';
@@ -10324,52 +10403,6 @@
                 card.dataset.source = source;
                 card.dataset.sandbox = isSandboxSource ? 'true' : 'false';
 
-                const header = document.createElement('div');
-                header.className = 'card-header';
-
-                const info = document.createElement('div');
-                info.className = 'course-main-info';
-
-                const title = document.createElement('h3');
-                title.className = 'course-title';
-                title.textContent = sub.course?.code || '未命名课程';
-
-                const subtitle = document.createElement('p');
-                subtitle.className = 'course-subtitle';
-                subtitle.textContent = sub.course?.name || '-';
-
-                const school = document.createElement('p');
-                school.className = 'university-name';
-                school.textContent = sub.course?.school || '-';
-
-                info.appendChild(title);
-                info.appendChild(subtitle);
-                info.appendChild(school);
-
-                const typeBadge = document.createElement('div');
-                typeBadge.className = `subscription-type-badge ${typeInfo.className}`.trim();
-                typeBadge.textContent = typeInfo.text;
-
-                const badgeGroup = document.createElement('div');
-                badgeGroup.className = 'subscription-badge-group';
-                badgeGroup.appendChild(typeBadge);
-
-                if (isDemoSource) {
-                    const sourceBadge = document.createElement('div');
-                    sourceBadge.className = 'subscription-source-badge';
-                    sourceBadge.textContent = '演示数据';
-                    badgeGroup.appendChild(sourceBadge);
-                }
-
-                header.appendChild(info);
-                header.appendChild(badgeGroup);
-
-                const body = document.createElement('div');
-                body.className = 'card-body';
-
-                const statusSection = document.createElement('div');
-                statusSection.className = 'status-section';
-
                 const statusBadge = document.createElement('div');
                 statusBadge.className = `status-badge ${statusInfo.className}`.trim();
                 const statusIcon = document.createElement('span');
@@ -10377,7 +10410,7 @@
                 statusIcon.textContent = statusInfo.icon;
                 const statusText = document.createElement('span');
                 statusText.className = 'status-text';
-                statusText.textContent = statusInfo.text;
+                statusText.textContent = statusLabel;
                 statusBadge.appendChild(statusIcon);
                 statusBadge.appendChild(statusText);
 
@@ -10401,8 +10434,11 @@
                     deadlineInfo.classList.add('urgent');
                 }
 
-                deadlineInfo.appendChild(deadlineLabel);
-                deadlineInfo.appendChild(deadlineDate);
+                const deadlineMain = document.createElement('div');
+                deadlineMain.className = 'deadline-main';
+                deadlineMain.appendChild(deadlineLabel);
+                deadlineMain.appendChild(deadlineDate);
+                deadlineInfo.appendChild(deadlineMain);
 
                 if (deadlineMeta?.isExpiringSoon) {
                     const warning = document.createElement('span');
@@ -10422,14 +10458,75 @@
                     deadlineInfo.appendChild(warning);
                 }
 
-                statusSection.appendChild(statusBadge);
-                statusSection.appendChild(deadlineInfo);
+                const header = document.createElement('div');
+                header.className = 'card-header';
 
-                const summary = document.createElement('div');
-                summary.className = 'subscription-summary';
+                const headerStatus = document.createElement('div');
+                headerStatus.className = 'card-status-area';
+                headerStatus.appendChild(statusBadge);
+
+                const headerDeadline = document.createElement('div');
+                headerDeadline.className = 'card-deadline-area';
+                headerDeadline.appendChild(deadlineInfo);
+
+                header.appendChild(headerStatus);
+                header.appendChild(headerDeadline);
+
+                const body = document.createElement('div');
+                body.className = 'card-body';
+
+                const coursePrimary = document.createElement('div');
+                coursePrimary.className = 'course-primary';
+
+                const titleRow = document.createElement('div');
+                titleRow.className = 'course-title-row';
+
+                const title = document.createElement('h3');
+                title.className = 'course-title';
+                title.textContent = sub.course?.code || '未命名课程';
+                titleRow.appendChild(title);
+
+                const titleMeta = document.createElement('div');
+                titleMeta.className = 'course-title-meta';
+
+                const typeBadge = document.createElement('div');
+                typeBadge.className = `subscription-type-badge ${typeInfo.className}`.trim();
+                typeBadge.textContent = typeInfo.text;
+                titleMeta.appendChild(typeBadge);
+
+                if (isDemoSource) {
+                    const sourceBadge = document.createElement('div');
+                    sourceBadge.className = 'subscription-source-badge';
+                    sourceBadge.textContent = '演示数据';
+                    titleMeta.appendChild(sourceBadge);
+                }
+
+                if (titleMeta.childElementCount > 0) {
+                    titleRow.appendChild(titleMeta);
+                }
+
+                const subtitle = document.createElement('p');
+                subtitle.className = 'course-subtitle';
+                subtitle.textContent = sub.course?.name || '-';
+
+                const school = document.createElement('p');
+                school.className = 'university-name';
+                school.textContent = sub.course?.school || '-';
+
+                coursePrimary.appendChild(titleRow);
+                coursePrimary.appendChild(subtitle);
+                coursePrimary.appendChild(school);
+
+                const courseSecondary = document.createElement('div');
+                courseSecondary.className = 'course-secondary';
+
                 const summaryText = document.createElement('span');
                 summaryText.className = 'summary-text';
-                summaryText.textContent = sub.summary || '尚未设置摘要';
+                const summaryValue = sub.summary && sub.summary.trim()
+                    ? sub.summary.trim()
+                    : '无附加条件';
+                summaryText.textContent = summaryValue;
+
                 const detailButton = document.createElement('button');
                 detailButton.className = 'details-toggle';
                 detailButton.type = 'button';
@@ -10437,8 +10534,9 @@
                 detailButton.onclick = function() {
                     toggleDetails(this);
                 };
-                summary.appendChild(summaryText);
-                summary.appendChild(detailButton);
+
+                courseSecondary.appendChild(summaryText);
+                courseSecondary.appendChild(detailButton);
 
                 const details = document.createElement('div');
                 details.className = 'subscription-details';
@@ -10467,9 +10565,12 @@
                     details.appendChild(detailItem);
                 });
 
-                body.appendChild(statusSection);
-                body.appendChild(summary);
+                body.appendChild(coursePrimary);
+                body.appendChild(courseSecondary);
                 body.appendChild(details);
+
+                const footer = document.createElement('div');
+                footer.className = 'card-footer';
 
                 const actions = document.createElement('div');
                 actions.className = 'card-actions';
@@ -10561,9 +10662,11 @@
                     appendStandardActions();
                 }
 
+                footer.appendChild(actions);
+
                 card.appendChild(header);
                 card.appendChild(body);
-                card.appendChild(actions);
+                card.appendChild(footer);
 
                 container.appendChild(card);
             });
