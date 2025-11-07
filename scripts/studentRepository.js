@@ -352,9 +352,21 @@
         const config = global.AppConfig && typeof global.AppConfig === 'object'
             ? global.AppConfig.subscription || {}
             : {};
+        const demoActionsModeRaw = typeof config.demoActionsMode === 'string'
+            ? config.demoActionsMode.trim().toLowerCase()
+            : '';
+        const demoPersistenceRaw = typeof config.demoPersistence === 'string'
+            ? config.demoPersistence.trim().toLowerCase()
+            : '';
+        const demoActionsMode = demoActionsModeRaw === 'sandbox' ? 'sandbox' : 'disabled';
+        const demoPersistence = demoPersistenceRaw === 'localstorage' ? 'localStorage' : 'memory';
         return {
             enableDemoData: config.enableDemoData !== undefined ? Boolean(config.enableDemoData) : false,
-            persistence: typeof config.persistence === 'string' ? config.persistence : 'memory'
+            persistence: typeof config.persistence === 'string' ? config.persistence : 'memory',
+            // demoActionsMode: 'disabled' | 'sandbox' — controls whether demo cards can run sandboxed actions
+            demoActionsMode,
+            // demoPersistence controls persistence for demo sandbox: 'memory' or 'localStorage'
+            demoPersistence
         };
     };
 
@@ -369,6 +381,7 @@
     const dynamicSubscriptionMemory = new Map();
     const PERSISTENCE_KEY_PREFIX = 'subscription:';
     const LEGACY_PERSISTENCE_KEY_PREFIX = 'subscription-center:';
+    const DEMO_SANDBOX_STORAGE_PREFIX = 'subscription-demo:';
 
     const cloneSubscriptionList = (list) => {
         if (!Array.isArray(list)) {
@@ -562,6 +575,285 @@
         }
     };
 
+    const demoSandboxMemory = new Map();
+
+    const getDemoSandboxKey = (studentId) => `${DEMO_SANDBOX_STORAGE_PREFIX}${String(studentId || 'unknown')}`;
+
+    const readDemoSandboxPersistence = (studentId) => {
+        const config = resolveSubscriptionConfig();
+        if (config.demoPersistence !== 'localStorage' || !hasLocalStorageSupport) {
+            return [];
+        }
+        const storageKey = getDemoSandboxKey(studentId);
+        try {
+            const serialized = global.localStorage.getItem(storageKey);
+            if (!serialized) {
+                return [];
+            }
+            return cloneSubscriptionList(parsePersistedPayload(serialized));
+        } catch (error) {
+            console.warn('StudentRepository: 读取演示沙箱存储失败', { studentId, error });
+            return [];
+        }
+    };
+
+    const writeDemoSandboxPersistence = (studentId, list) => {
+        const config = resolveSubscriptionConfig();
+        if (config.demoPersistence !== 'localStorage' || !hasLocalStorageSupport) {
+            return false;
+        }
+        const storageKey = getDemoSandboxKey(studentId);
+        try {
+            global.localStorage.setItem(storageKey, JSON.stringify(cloneSubscriptionList(list)));
+            return true;
+        } catch (error) {
+            console.warn('StudentRepository: 写入演示沙箱存储失败', { studentId, error });
+            return false;
+        }
+    };
+
+    const clearDemoSandboxPersistence = (studentId) => {
+        const config = resolveSubscriptionConfig();
+        if (config.demoPersistence !== 'localStorage' || !hasLocalStorageSupport) {
+            return;
+        }
+        const storageKey = getDemoSandboxKey(studentId);
+        try {
+            global.localStorage.removeItem(storageKey);
+        } catch (error) {
+            console.warn('StudentRepository: 清理演示沙箱存储失败', { studentId, error });
+        }
+    };
+
+    let lastDemoSandboxPersistenceNotice = { requested: null, resolved: null };
+
+    const resolveDemoSandboxPersistenceMode = () => {
+        const config = resolveSubscriptionConfig();
+        const requested = config.demoPersistence === 'localStorage' ? 'localStorage' : 'memory';
+        const resolved = requested === 'localStorage' && hasLocalStorageSupport ? 'localStorage' : 'memory';
+        return { requested, resolved };
+    };
+
+    const maybeLogDemoSandboxPersistenceMode = () => {
+        const { requested, resolved } = resolveDemoSandboxPersistenceMode();
+        const hasChanged = lastDemoSandboxPersistenceNotice.requested !== requested
+            || lastDemoSandboxPersistenceNotice.resolved !== resolved;
+
+        if (hasChanged) {
+            lastDemoSandboxPersistenceNotice = { requested, resolved };
+
+            if (resolved === 'localStorage') {
+                console.info('StudentRepository: 演示沙箱使用 localStorage 持久化，刷新后将保留演示变更。');
+            } else if (requested === 'localStorage') {
+                console.info('StudentRepository: 当前环境无法使用 localStorage，演示沙箱已改为内存模式，刷新页面后会重置演示变更。');
+            } else {
+                console.info('StudentRepository: 演示沙箱使用内存模式，刷新页面后会重置演示变更。');
+            }
+        }
+
+        return { requested, resolved };
+    };
+
+    const DemoSubscriptionSandbox = (() => {
+        const toStudentKey = (studentId) => {
+            if (studentId === null || studentId === undefined) {
+                return '';
+            }
+            return String(studentId);
+        };
+
+        const ensureClonedList = (list) => cloneSubscriptionList(Array.isArray(list) ? list : []);
+
+        const hasSnapshotChanged = (previousSnapshot, nextSnapshot) => {
+            try {
+                return JSON.stringify(previousSnapshot) !== JSON.stringify(nextSnapshot);
+            } catch (error) {
+                console.warn('StudentRepository: 比较演示沙箱快照时出错，默认判定为已变更', error);
+                return true;
+            }
+        };
+
+        const ensureList = (studentId, options = {}) => {
+            const key = toStudentKey(studentId);
+            if (!key) {
+                return [];
+            }
+
+            const { resolved: persistenceMode } = maybeLogDemoSandboxPersistenceMode();
+            const shouldPersist = persistenceMode === 'localStorage';
+
+            if (demoSandboxMemory.has(key)) {
+                return ensureClonedList(demoSandboxMemory.get(key));
+            }
+
+            let snapshot = readDemoSandboxPersistence(studentId);
+
+            if (!snapshot.length) {
+                const seedProvider = typeof options.seedProvider === 'function' ? options.seedProvider : null;
+                if (seedProvider) {
+                    try {
+                        const seeded = seedProvider();
+                        if (Array.isArray(seeded) && seeded.length) {
+                            snapshot = ensureClonedList(seeded);
+                        }
+                    } catch (error) {
+                        console.warn('StudentRepository: 初始化演示沙箱失败，已跳过种子数据', { studentId, error });
+                        snapshot = [];
+                    }
+                }
+            }
+
+            const normalized = ensureClonedList(snapshot);
+            demoSandboxMemory.set(key, normalized);
+            if (shouldPersist) {
+                if (normalized.length) {
+                    writeDemoSandboxPersistence(studentId, normalized);
+                } else {
+                    clearDemoSandboxPersistence(studentId);
+                }
+            }
+            return ensureClonedList(normalized);
+        };
+
+        const commitList = (studentId, list) => {
+            const key = toStudentKey(studentId);
+            if (!key) {
+                return [];
+            }
+            const normalized = ensureClonedList(list);
+            demoSandboxMemory.set(key, normalized);
+            const { resolved: persistenceMode } = maybeLogDemoSandboxPersistenceMode();
+            if (persistenceMode === 'localStorage') {
+                if (normalized.length) {
+                    writeDemoSandboxPersistence(studentId, normalized);
+                } else {
+                    clearDemoSandboxPersistence(studentId);
+                }
+            }
+            return ensureClonedList(normalized);
+        };
+
+        const findSandboxIndex = (list, subscriptionId) => {
+            if (!Array.isArray(list)) {
+                return -1;
+            }
+            return list.findIndex(item => String(item?.id) === String(subscriptionId));
+        };
+
+        return {
+            load(studentId, options = {}) {
+                return ensureList(studentId, options);
+            },
+            save(studentId, list) {
+                return commitList(studentId, list);
+            },
+            mutate(studentId, subscriptionId, mutator, options = {}) {
+                const key = toStudentKey(studentId);
+                if (!key) {
+                    return {
+                        list: [],
+                        snapshot: null,
+                        previous: null,
+                        changed: false
+                    };
+                }
+
+                const sandboxList = ensureList(studentId, options);
+                const workingList = ensureClonedList(sandboxList);
+                const index = findSandboxIndex(workingList, subscriptionId);
+
+                if (index < 0) {
+                    throw new SubscriptionRepositoryError(
+                        subscriptionErrorTypes.notFound,
+                        `未找到订阅 ${subscriptionId}`,
+                        { studentId, subscriptionId }
+                    );
+                }
+
+                const currentSnapshot = cloneEntity(workingList[index]) || {};
+                const draft = cloneEntity(currentSnapshot);
+
+                if (typeof mutator !== 'function') {
+                    return {
+                        list: ensureClonedList(workingList),
+                        snapshot: cloneEntity(currentSnapshot),
+                        previous: cloneEntity(currentSnapshot),
+                        changed: false
+                    };
+                }
+
+                let mutationOutput;
+                try {
+                    mutationOutput = mutator(draft, {
+                        studentId,
+                        subscriptionId,
+                        current: cloneEntity(currentSnapshot),
+                        list: ensureClonedList(workingList)
+                    });
+                } catch (error) {
+                    console.warn('StudentRepository: 演示沙箱变更执行失败', { studentId, subscriptionId, error });
+                    throw error;
+                }
+
+                if (mutationOutput === null) {
+                    return {
+                        list: ensureClonedList(workingList),
+                        snapshot: cloneEntity(currentSnapshot),
+                        previous: cloneEntity(currentSnapshot),
+                        changed: false
+                    };
+                }
+
+                if (Array.isArray(mutationOutput)) {
+                    const normalizedList = ensureClonedList(mutationOutput);
+                    const committed = commitList(studentId, normalizedList);
+                    const committedIndex = findSandboxIndex(committed, subscriptionId);
+                    return {
+                        list: committed,
+                        snapshot: committedIndex >= 0 ? cloneEntity(committed[committedIndex]) : null,
+                        previous: cloneEntity(currentSnapshot),
+                        changed: true
+                    };
+                }
+
+                const candidate = mutationOutput && typeof mutationOutput === 'object'
+                    ? cloneEntity(mutationOutput)
+                    : cloneEntity(draft);
+
+                if (!hasSnapshotChanged(currentSnapshot, candidate)) {
+                    return {
+                        list: ensureClonedList(workingList),
+                        snapshot: cloneEntity(currentSnapshot),
+                        previous: cloneEntity(currentSnapshot),
+                        changed: false
+                    };
+                }
+
+                const nextList = ensureClonedList(workingList);
+                nextList[index] = candidate;
+
+                const committedList = commitList(studentId, nextList);
+                const committedIndex = findSandboxIndex(committedList, subscriptionId);
+                const committedSnapshot = committedIndex >= 0 ? cloneEntity(committedList[committedIndex]) : null;
+
+                return {
+                    list: committedList,
+                    snapshot: committedSnapshot,
+                    previous: cloneEntity(currentSnapshot),
+                    changed: true
+                };
+            },
+            clear(studentId) {
+                const key = toStudentKey(studentId);
+                if (!key) {
+                    return;
+                }
+                demoSandboxMemory.delete(key);
+                clearDemoSandboxPersistence(studentId);
+            }
+        };
+    })();
+
     const ensureStudentSubscriptionList = (student) => {
         if (!student || typeof student !== 'object') {
             return [];
@@ -619,6 +911,50 @@
             cloned.id = buildDemoSubscriptionId(student.id, entry, index);
             return cloned;
         });
+    };
+
+    const decorateDemoSnapshot = (snapshot, options = {}) => {
+        if (!snapshot || typeof snapshot !== 'object') {
+            return snapshot;
+        }
+        const decorated = {
+            ...snapshot,
+            __source: 'demo'
+        };
+        if (options.sandbox) {
+            decorated.__sandbox = true;
+        }
+        return decorated;
+    };
+
+    const findStudentById = (studentId) => getFollowUpCollection().find(item => String(item?.id) === String(studentId));
+
+    const getStudentForDemo = (studentId) => {
+        const student = findStudentById(studentId);
+        if (!student) {
+            throw new SubscriptionRepositoryError(
+                subscriptionErrorTypes.notFound,
+                `未找到学生 ${studentId}`,
+                { studentId }
+            );
+        }
+        return student;
+    };
+
+    const loadDemoSandboxList = (student) => {
+        if (!student || !student.id) {
+            return [];
+        }
+        return DemoSubscriptionSandbox.load(student.id, {
+            seedProvider: () => getDemoSubscriptionTemplates(student)
+        });
+    };
+
+    const saveDemoSandboxList = (student, list) => {
+        if (!student || !student.id) {
+            return [];
+        }
+        return DemoSubscriptionSandbox.save(student.id, list);
     };
 
     const normalizeSubscriptionSnapshot = (subscription, studentId) => {
@@ -809,6 +1145,86 @@
     };
 
     const eventBus = createEventBus();
+
+    const runDemoMutation = (student, subscriptionId, mutator) => {
+        if (!student || !student.id) {
+            throw new SubscriptionRepositoryError(
+                subscriptionErrorTypes.notFound,
+                `未找到学生 ${student ? student.id : ''}`,
+                { studentId: student ? student.id : undefined }
+            );
+        }
+
+        const sandboxResult = DemoSubscriptionSandbox.mutate(
+            student.id,
+            subscriptionId,
+            (draft, context) => {
+                const normalizedCurrent = normalizeSubscriptionSnapshot(context.current, student.id);
+
+                if (typeof mutator !== 'function') {
+                    return null;
+                }
+
+                const workingDraft = cloneEntity(normalizedCurrent);
+                const mutationResult = mutator(workingDraft, normalizedCurrent);
+
+                if (mutationResult === null) {
+                    return null;
+                }
+
+                const candidate = mutationResult && typeof mutationResult === 'object'
+                    ? mutationResult
+                    : workingDraft;
+
+                validateSubscriptionPayload(candidate);
+                return normalizeSubscriptionSnapshot(candidate, student.id);
+            },
+            {
+                seedProvider: () => getDemoSubscriptionTemplates(student)
+            }
+        );
+
+        const baseSnapshot = sandboxResult.snapshot
+            ? cloneEntity(sandboxResult.snapshot)
+            : null;
+        const finalSnapshot = baseSnapshot
+            ? normalizeSubscriptionSnapshot(baseSnapshot, student.id)
+            : null;
+
+        if (sandboxResult.changed) {
+            const listSnapshot = Array.isArray(sandboxResult.list)
+                ? cloneSubscriptionList(sandboxResult.list)
+                : [];
+            eventBus.emit('demoSubscriptions:changed', {
+                studentId: student.id,
+                subscriptionId,
+                snapshot: finalSnapshot,
+                list: listSnapshot
+            });
+        }
+
+        return {
+            snapshot: finalSnapshot,
+            changed: Boolean(sandboxResult.changed)
+        };
+    };
+
+    const performDemoAction = (studentId, subscriptionId, mutator) => {
+        const student = getStudentForDemo(studentId);
+        const result = runDemoMutation(student, subscriptionId, mutator);
+        const snapshot = result.snapshot
+            ? decorateDemoSnapshot(result.snapshot, { sandbox: true })
+            : null;
+
+        if (snapshot && typeof snapshot === 'object') {
+            snapshot.__sandboxChanged = result.changed;
+        }
+
+        return {
+            snapshot,
+            changed: result.changed
+        };
+    };
 
     const textFromCell = (cell) => (cell ? cell.textContent.trim() : '');
 
@@ -1688,6 +2104,7 @@
             const includeDemo = options.includeDemo !== false;
             const config = resolveSubscriptionConfig();
             const showDemo = includeDemo && config.enableDemoData;
+            const useSandbox = showDemo && config.demoActionsMode === 'sandbox';
             const student = getFollowUpCollection().find(item => String(item.id) === String(studentId));
             if (!student) {
                 return [];
@@ -1738,15 +2155,21 @@
             persistStudentSubscriptions(student);
 
             if (showDemo) {
-                const demoTemplates = getDemoSubscriptionTemplates(student);
-                demoTemplates.forEach((template, index) => {
-                    const seeded = {
-                        ...template,
-                        id: template.id || buildDemoSubscriptionId(student.id, template, index)
-                    };
-                    const normalizedDemo = normalizeSubscriptionSnapshot(seeded, studentId);
-                    normalizedList.push({ ...normalizedDemo, __source: 'demo' });
-                });
+                if (useSandbox) {
+                    const sandboxEntries = loadDemoSandboxList(student).map(entry =>
+                        normalizeSubscriptionSnapshot(entry, studentId)
+                    );
+                    saveDemoSandboxList(student, sandboxEntries);
+                    sandboxEntries.forEach(entry => {
+                        normalizedList.push(decorateDemoSnapshot(entry, { sandbox: true }));
+                    });
+                } else {
+                    const demoTemplates = getDemoSubscriptionTemplates(student);
+                    demoTemplates.forEach(entry => {
+                        const normalizedDemo = normalizeSubscriptionSnapshot(entry, studentId);
+                        normalizedList.push(decorateDemoSnapshot(normalizedDemo));
+                    });
+                }
             }
 
             return normalizedList;
@@ -1940,12 +2363,16 @@
 
             let resolvedSubscription = rawSubscription;
             let subscriptionSource = 'dynamic';
+            const sandboxMode = config.enableDemoData && config.demoActionsMode === 'sandbox';
+            let demoCollection = null;
 
             if (!resolvedSubscription && config.enableDemoData) {
-                const demoTemplates = getDemoSubscriptionTemplates(student);
-                resolvedSubscription = demoTemplates.find(item => String(item?.id) === String(subscriptionId)) || null;
+                demoCollection = sandboxMode
+                    ? loadDemoSandboxList(student)
+                    : getDemoSubscriptionTemplates(student);
+                resolvedSubscription = demoCollection.find(item => String(item?.id) === String(subscriptionId)) || null;
                 if (resolvedSubscription) {
-                    subscriptionSource = 'demo';
+                    subscriptionSource = sandboxMode ? 'demo-sandbox' : 'demo';
                 }
             }
 
@@ -1960,6 +2387,12 @@
                 if (index >= 0) {
                     subscriptions[index] = normalizedSubscription;
                     persistStudentSubscriptions(student);
+                }
+            } else if (subscriptionSource === 'demo-sandbox' && demoCollection) {
+                const sandboxIndex = findSubscriptionIndex(demoCollection, normalizedSubscription.id);
+                if (sandboxIndex >= 0) {
+                    demoCollection[sandboxIndex] = normalizedSubscription;
+                    saveDemoSandboxList(student, demoCollection);
                 }
             }
 
@@ -2024,11 +2457,15 @@
             let rawSubscription = subscriptions.find(item => String(item?.id) === String(subscriptionId));
             let subscriptionSource = 'dynamic';
             let subscriptionIndex = subscriptions.indexOf(rawSubscription);
+            const sandboxMode = config.enableDemoData && config.demoActionsMode === 'sandbox';
+            let demoCollection = null;
 
             if (!rawSubscription && config.enableDemoData) {
-                const demoTemplates = getDemoSubscriptionTemplates(student);
-                rawSubscription = demoTemplates.find(item => String(item?.id) === String(subscriptionId)) || null;
-                subscriptionSource = rawSubscription ? 'demo' : subscriptionSource;
+                demoCollection = sandboxMode
+                    ? loadDemoSandboxList(student)
+                    : getDemoSubscriptionTemplates(student);
+                rawSubscription = demoCollection.find(item => String(item?.id) === String(subscriptionId)) || null;
+                subscriptionSource = rawSubscription ? (sandboxMode ? 'demo-sandbox' : 'demo') : subscriptionSource;
                 subscriptionIndex = -1;
             }
 
@@ -2059,6 +2496,14 @@
                 }
 
                 persistStudentSubscriptions(student);
+            }
+
+            if (subscriptionSource === 'demo-sandbox' && demoCollection) {
+                const sandboxIndex = findSubscriptionIndex(demoCollection, normalizedSubscription.id);
+                if (sandboxIndex >= 0) {
+                    demoCollection[sandboxIndex] = normalizedSubscription;
+                    saveDemoSandboxList(student, demoCollection);
+                }
             }
 
             writeSubscriptionCache(subscriptionId, MATCHED_COURSE_CACHE_KEY, dataset);
@@ -2331,7 +2776,157 @@
             return subscriptionErrorTypes;
         },
 
-        SubscriptionRepositoryError
+        SubscriptionRepositoryError,
+
+        demoSandbox: DemoSubscriptionSandbox,
+
+        demoActions: {
+            updateConditions(studentId, subscriptionId, options = {}) {
+                const { snapshot } = performDemoAction(studentId, subscriptionId, (_draft, current) => {
+                    const actor = typeof options.actor === 'string' ? options.actor : '';
+                    const nowIso = new Date().toISOString();
+
+                    const updated = {
+                        ...current,
+                        term: options.term !== undefined ? options.term : current.term,
+                        modality: options.modality !== undefined ? options.modality : current.modality,
+                        duration: options.duration !== undefined ? options.duration : current.duration,
+                        price: options.price !== undefined ? options.price : current.price,
+                        deadline: options.deadline !== undefined ? options.deadline : current.deadline,
+                        summary: options.summary !== undefined ? options.summary : current.summary,
+                        submissionMode: options.submissionMode || current.submissionMode,
+                        formSnapshot: options.formSnapshot === undefined
+                            ? current.formSnapshot
+                            : normalizeFormSnapshot(options.formSnapshot),
+                        metadata: {
+                            ...toClonedObject(current.metadata),
+                            ...toClonedObject(options.metadata)
+                        }
+                    };
+
+                    const changedFields = Array.isArray(options.changedFields) ? options.changedFields.slice() : [];
+                    const historyEntry = normalizeHistoryEntry({
+                        action: 'edited',
+                        timestamp: nowIso,
+                        actor,
+                        details: {
+                            changedFields,
+                            submissionMode: updated.submissionMode,
+                            summary: updated.summary,
+                            deadline: updated.deadline
+                        }
+                    });
+
+                    updated.history = historyEntry
+                        ? current.history.concat(historyEntry)
+                        : current.history.slice();
+
+                    validateSubscriptionPayload(updated);
+                    return updated;
+                });
+
+                return snapshot;
+            },
+
+            renew(studentId, subscriptionId, options = {}) {
+                const { snapshot } = performDemoAction(studentId, subscriptionId, (_draft, current) => {
+                    const hasCustomDays = Number.isFinite(options.days);
+                    const days = hasCustomDays ? options.days : 180;
+                    const baseDeadlineDate = parseDateInput(current.deadline) || new Date();
+                    const nextDeadlineDate = addDays(baseDeadlineDate, days) || addDays(new Date(), days);
+                    const newDeadline = formatDateOutput(nextDeadlineDate);
+                    const nowIso = new Date().toISOString();
+                    const actor = typeof options.actor === 'string' ? options.actor : '';
+
+                    const metadata = {
+                        ...toClonedObject(current.metadata),
+                        lastRenewedAt: nowIso,
+                        lastRenewedBy: actor,
+                        renewCount: typeof current.metadata?.renewCount === 'number'
+                            ? current.metadata.renewCount + 1
+                            : 1,
+                        lastRenewDays: days,
+                        deadlineSource: hasCustomDays ? 'renew-custom' : 'renew-auto-180'
+                    };
+
+                    const updated = {
+                        ...current,
+                        deadline: newDeadline,
+                        status: current.status === 'expired' ? 'waiting' : current.status,
+                        lastRenewedAt: nowIso,
+                        lastRenewedBy: actor,
+                        warning: '',
+                        metadata
+                    };
+
+                    const historyEntry = normalizeHistoryEntry({
+                        action: 'renewed',
+                        timestamp: nowIso,
+                        actor,
+                        details: {
+                            previousDeadline: current.deadline || '',
+                            newDeadline,
+                            daysExtended: days,
+                            deadlineSource: metadata.deadlineSource
+                        }
+                    });
+
+                    updated.history = historyEntry
+                        ? current.history.concat(historyEntry)
+                        : current.history.slice();
+
+                    validateSubscriptionPayload(updated);
+                    return updated;
+                });
+
+                return snapshot;
+            },
+
+            cancel(studentId, subscriptionId, options = {}) {
+                const { snapshot } = performDemoAction(studentId, subscriptionId, (_draft, current) => {
+                    if (current.status === 'cancelled') {
+                        return null;
+                    }
+
+                    const nowIso = new Date().toISOString();
+                    const actor = typeof options.actor === 'string' ? options.actor : '';
+                    const reason = typeof options.reason === 'string' ? options.reason.trim() : '';
+
+                    const metadata = {
+                        ...toClonedObject(current.metadata),
+                        cancelledAt: nowIso,
+                        cancelledBy: actor,
+                        cancelledReason: reason
+                    };
+
+                    const updated = {
+                        ...current,
+                        status: 'cancelled',
+                        warning: '',
+                        metadata
+                    };
+
+                    const historyEntry = normalizeHistoryEntry({
+                        action: 'cancelled',
+                        timestamp: nowIso,
+                        actor,
+                        details: {
+                            previousStatus: current.status,
+                            reason
+                        }
+                    });
+
+                    updated.history = historyEntry
+                        ? current.history.concat(historyEntry)
+                        : current.history.slice();
+
+                    validateSubscriptionPayload(updated);
+                    return updated;
+                });
+
+                return snapshot;
+            }
+        }
     };
 
     global.StudentRepository = Object.freeze(repository);

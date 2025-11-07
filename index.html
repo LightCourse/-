@@ -2366,6 +2366,11 @@
             pointer-events: none;
         }
 
+        .subscription-card[data-source="demo"][data-sandbox="true"] .card-actions button {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
         .demo-action-note {
             font-size: 13px;
             color: #475569;
@@ -5808,11 +5813,20 @@
         window.AppConfig = window.AppConfig || {};
         const subscriptionDefaults = {
             enableDemoData: true,
-            persistence: 'localStorage'
+            persistence: 'localStorage',
+            demoActionsMode: 'sandbox',
+            demoPersistence: 'memory'
         };
         window.AppConfig.subscription = window.AppConfig.subscription
             ? { ...subscriptionDefaults, ...window.AppConfig.subscription }
             : subscriptionDefaults;
+        const subscriptionConfig = window.AppConfig.subscription;
+        subscriptionConfig.demoActionsMode = subscriptionConfig.demoActionsMode === 'sandbox' ? 'sandbox' : 'disabled';
+        subscriptionConfig.demoPersistence = subscriptionConfig.demoPersistence === 'localStorage' ? 'localStorage' : 'memory';
+        if (subscriptionConfig.demoPersistence === 'localStorage' && typeof window.localStorage === 'undefined') {
+            console.warn('AppConfig: localStorage unavailable, demoPersistence fallback to memory.');
+            subscriptionConfig.demoPersistence = 'memory';
+        }
     </script>
     <script src="scripts/studentRepository.js"></script>
     <script>
@@ -6758,16 +6772,25 @@
             }
 
             const repository = window.StudentRepository;
-            if (!repository || typeof repository.updateSubscriptionConditions !== 'function') {
+            const isSandbox = Boolean(editing.isSandbox);
+            const actionApi = isSandbox ? repository?.demoActions : repository;
+            const updateMethod = isSandbox
+                ? actionApi && actionApi.updateConditions
+                : actionApi && actionApi.updateSubscriptionConditions;
+
+            if (!actionApi || typeof updateMethod !== 'function') {
                 showActionToast({
                     title: '编辑暂不可用',
-                    description: '订阅服务未正确初始化，请稍后重试。',
+                    description: isSandbox
+                        ? '演示模式写操作未启用，请检查沙箱配置。'
+                        : '订阅服务未正确初始化，请稍后重试。',
                     type: 'error'
                 });
                 recordSubscriptionActionLog('edit', 'failed', {
                     studentId: editing.studentId,
                     subscriptionId: editing.subscriptionId,
-                    reason: 'repository-missing'
+                    reason: isSandbox ? 'sandbox-action-missing' : 'repository-missing',
+                    sandbox: isSandbox
                 });
                 return;
             }
@@ -6844,7 +6867,7 @@
             const nowIso = new Date().toISOString();
 
             try {
-                repository.updateSubscriptionConditions(editing.studentId, editing.subscriptionId, {
+                updateMethod.call(actionApi, editing.studentId, editing.subscriptionId, {
                     term: termText,
                     modality: modalityText,
                     duration: durationText || '不限',
@@ -6867,7 +6890,8 @@
                 }
                 handleSubscriptionActionSuccess('edit', {
                     studentId: editing.studentId,
-                    subscriptionId: editing.subscriptionId
+                    subscriptionId: editing.subscriptionId,
+                    isSandbox
                 });
                 closeSubscribeModal();
                 finishActionProcessing(editing.triggerButton);
@@ -6881,7 +6905,8 @@
                 recordSubscriptionActionLog('edit', 'failed', {
                     studentId: editing.studentId,
                     subscriptionId: editing.subscriptionId,
-                    error: message
+                    error: message,
+                    sandbox: isSandbox
                 });
                 setSubscribeModalProcessing(false);
             }
@@ -7561,6 +7586,9 @@
                 window.SubscriptionDeadlineHelper.invalidateDeadlineMeta(context.subscriptionId);
             }
 
+            const isSandbox = Boolean(context.isSandbox);
+            context.sandbox = isSandbox;
+
             recordSubscriptionActionLog(action, 'succeeded', context);
 
             const successMap = {
@@ -7578,10 +7606,27 @@
                 }
             };
 
-            if (successMap[action]) {
+            const sandboxSuccessMap = {
+                edit: {
+                    title: '演示订阅条件已更新',
+                    description: '更改仅作用于当前沙箱数据，真实订阅不会受到影响。'
+                },
+                renew: {
+                    title: '演示续期已完成',
+                    description: '演示截止日期已同步更新，仅供演示环境查看。'
+                },
+                cancel: {
+                    title: '演示订阅已取消',
+                    description: '已从沙箱数据中移除该订阅，真实数据保持不变。'
+                }
+            };
+
+            const toastCopy = isSandbox ? sandboxSuccessMap[action] : successMap[action];
+
+            if (toastCopy) {
                 showActionToast({
-                    title: successMap[action].title,
-                    description: successMap[action].description,
+                    title: toastCopy.title,
+                    description: toastCopy.description,
                     type: 'success'
                 });
             }
@@ -7760,6 +7805,7 @@
             }
 
             const { subscription = {}, course = {} } = context;
+            const sandboxMode = Boolean(context.isSandbox);
             const currentDeadlineDate = subscription.deadline ? parseDateValue(subscription.deadline) : null;
             const courseDisplay = course.code && course.name
                 ? `${course.code} (${course.name})`
@@ -7798,6 +7844,14 @@
                     } else {
                         metaText.textContent = '系统默认顺延 180 天，您也可以自定义日期。';
                     }
+                    if (sandboxMode) {
+                        metaText.textContent += '（演示模式：变更仅影响沙箱数据）';
+                    }
+                }
+            } else if (sandboxMode) {
+                const metaText = document.getElementById('renewHintText');
+                if (metaText) {
+                    metaText.textContent = '演示模式：更改仅作用于当前沙箱数据。';
                 }
             }
 
@@ -7811,6 +7865,7 @@
             }
 
             const { subscription = {}, course = {} } = context;
+            const sandboxMode = Boolean(context.isSandbox);
             const courseDisplay = course.code && course.name
                 ? `${course.code} (${course.name})`
                 : (course.code || course.name || '未命名课程');
@@ -7843,6 +7898,9 @@
                     warningText.textContent = '该订阅已过期，取消后会移除历史提醒记录，可在需要时重新创建。';
                 } else {
                     warningText.textContent = '取消后将停止课程匹配提醒，后续如需再次跟进，可重新创建订阅。';
+                }
+                if (sandboxMode) {
+                    warningText.textContent += '（演示模式：该操作仅影响沙箱数据）';
                 }
             }
 
@@ -8455,22 +8513,32 @@
                     type: 'error'
                 });
                 recordSubscriptionActionLog('renew', 'failed', {
-                    reason: 'missing-context'
+                    reason: 'missing-context',
+                    sandbox: Boolean(context?.isSandbox)
                 });
                 return;
             }
 
             const repository = window.StudentRepository;
-            if (!repository || typeof repository.renewSubscription !== 'function') {
+            const isSandbox = Boolean(context.isSandbox);
+            const actionApi = isSandbox ? repository?.demoActions : repository;
+            const renewMethod = isSandbox
+                ? actionApi && actionApi.renew
+                : actionApi && actionApi.renewSubscription;
+
+            if (!actionApi || typeof renewMethod !== 'function') {
                 showActionToast({
                     title: '续期暂不可用',
-                    description: '订阅服务未正确初始化，请稍后重试。',
+                    description: isSandbox
+                        ? '演示模式写操作未启用，请检查沙箱配置。'
+                        : '订阅服务未正确初始化，请稍后重试。',
                     type: 'error'
                 });
                 recordSubscriptionActionLog('renew', 'failed', {
                     studentId: context.studentId,
                     subscriptionId: context.subscriptionId,
-                    reason: 'repository-missing'
+                    reason: isSandbox ? 'sandbox-action-missing' : 'repository-missing',
+                    sandbox: isSandbox
                 });
                 return;
             }
@@ -8485,7 +8553,8 @@
                 recordSubscriptionActionLog('renew', 'failed', {
                     studentId: context.studentId,
                     subscriptionId: context.subscriptionId,
-                    reason: 'missing-deadline'
+                    reason: 'missing-deadline',
+                    sandbox: isSandbox
                 });
                 return;
             }
@@ -8500,7 +8569,8 @@
                 recordSubscriptionActionLog('renew', 'failed', {
                     studentId: context.studentId,
                     subscriptionId: context.subscriptionId,
-                    reason: 'invalid-date'
+                    reason: 'invalid-date',
+                    sandbox: isSandbox
                 });
                 return;
             }
@@ -8517,7 +8587,8 @@
                 recordSubscriptionActionLog('renew', 'failed', {
                     studentId: context.studentId,
                     subscriptionId: context.subscriptionId,
-                    reason: 'deadline-earlier'
+                    reason: 'deadline-earlier',
+                    sandbox: isSandbox
                 });
                 return;
             }
@@ -8534,7 +8605,7 @@
                     window.SubscriptionDeadlineHelper.invalidateDeadlineMeta(context.subscriptionId);
                 }
 
-                const updated = repository.renewSubscription(context.studentId, context.subscriptionId, {
+                const updated = renewMethod.call(actionApi, context.studentId, context.subscriptionId, {
                     days,
                     actor: resolveCurrentOperatorName()
                 });
@@ -8546,7 +8617,8 @@
                 }
                 handleSubscriptionActionSuccess('renew', {
                     studentId: context.studentId,
-                    subscriptionId: context.subscriptionId
+                    subscriptionId: context.subscriptionId,
+                    isSandbox
                 });
                 closeRenewSubscriptionModal();
                 finishActionProcessing(context.triggerButton);
@@ -8560,7 +8632,8 @@
                 recordSubscriptionActionLog('renew', 'failed', {
                     studentId: context.studentId,
                     subscriptionId: context.subscriptionId,
-                    error: message
+                    error: message,
+                    sandbox: isSandbox
                 });
                 setRenewModalProcessing(false);
                 finishActionProcessing(context.triggerButton);
@@ -8576,22 +8649,32 @@
                     type: 'error'
                 });
                 recordSubscriptionActionLog('cancel', 'failed', {
-                    reason: 'missing-context'
+                    reason: 'missing-context',
+                    sandbox: Boolean(context?.isSandbox)
                 });
                 return;
             }
 
             const repository = window.StudentRepository;
-            if (!repository || typeof repository.cancelSubscription !== 'function') {
+            const isSandbox = Boolean(context.isSandbox);
+            const actionApi = isSandbox ? repository?.demoActions : repository;
+            const cancelMethod = isSandbox
+                ? actionApi && actionApi.cancel
+                : actionApi && actionApi.cancelSubscription;
+
+            if (!actionApi || typeof cancelMethod !== 'function') {
                 showActionToast({
                     title: '取消暂不可用',
-                    description: '订阅服务未正确初始化，请稍后重试。',
+                    description: isSandbox
+                        ? '演示模式写操作未启用，请检查沙箱配置。'
+                        : '订阅服务未正确初始化，请稍后重试。',
                     type: 'error'
                 });
                 recordSubscriptionActionLog('cancel', 'failed', {
                     studentId: context.studentId,
                     subscriptionId: context.subscriptionId,
-                    reason: 'repository-missing'
+                    reason: isSandbox ? 'sandbox-action-missing' : 'repository-missing',
+                    sandbox: isSandbox
                 });
                 return;
             }
@@ -8602,7 +8685,7 @@
             setCancelModalProcessing(true, '取消中...');
 
             try {
-                const updated = repository.cancelSubscription(context.studentId, context.subscriptionId, {
+                const updated = cancelMethod.call(actionApi, context.studentId, context.subscriptionId, {
                     actor: resolveCurrentOperatorName(),
                     reason
                 });
@@ -8611,7 +8694,8 @@
                 }
                 handleSubscriptionActionSuccess('cancel', {
                     studentId: context.studentId,
-                    subscriptionId: context.subscriptionId
+                    subscriptionId: context.subscriptionId,
+                    isSandbox
                 });
                 const triggerButton = context.triggerButton;
                 closeCancelSubscriptionModal();
@@ -8626,7 +8710,8 @@
                 recordSubscriptionActionLog('cancel', 'failed', {
                     studentId: context.studentId,
                     subscriptionId: context.subscriptionId,
-                    error: message
+                    error: message,
+                    sandbox: isSandbox
                 });
                 setCancelModalProcessing(false);
                 finishActionProcessing(context.triggerButton);
@@ -10213,6 +10298,7 @@
                 const typeInfo = typeConfig[sub.type] || { text: '未分类', className: '' };
                 const source = sub.__source === 'demo' ? 'demo' : 'dynamic';
                 const isDemoSource = source === 'demo';
+                const isSandboxSource = Boolean(sub.__sandbox);
 
                 const card = document.createElement('div');
                 card.className = 'subscription-card';
@@ -10230,6 +10316,7 @@
                 card.dataset.createdAtIso = sub.createdAtIso || '';
                 card.dataset.historyLength = Array.isArray(sub.history) ? String(sub.history.length) : '0';
                 card.dataset.source = source;
+                card.dataset.sandbox = isSandboxSource ? 'true' : 'false';
 
                 const header = document.createElement('div');
                 header.className = 'card-header';
@@ -10381,24 +10468,22 @@
                 const actions = document.createElement('div');
                 actions.className = 'card-actions';
 
-                if (isDemoSource) {
-                    const demoNote = document.createElement('div');
-                    demoNote.className = 'demo-action-note';
-                    demoNote.textContent = '演示数据，仅供参考，无法执行动作';
-                    actions.appendChild(demoNote);
-                } else if (sub.status === 'converted' || sub.status === 'cancelled') {
-                    const completion = document.createElement('div');
-                    completion.className = 'completion-note';
-                    const icon = document.createElement('span');
-                    icon.className = 'completion-icon';
-                    icon.textContent = sub.status === 'cancelled' ? '🚫' : '✅';
-                    const text = document.createElement('span');
-                    text.className = 'completion-text';
-                    text.textContent = sub.status === 'cancelled' ? '订阅已取消' : '订阅已完成';
-                    completion.appendChild(icon);
-                    completion.appendChild(text);
-                    actions.appendChild(completion);
-                } else {
+                const appendStandardActions = () => {
+                    if (sub.status === 'converted' || sub.status === 'cancelled') {
+                        const completion = document.createElement('div');
+                        completion.className = 'completion-note';
+                        const icon = document.createElement('span');
+                        icon.className = 'completion-icon';
+                        icon.textContent = sub.status === 'cancelled' ? '🚫' : '✅';
+                        const text = document.createElement('span');
+                        text.className = 'completion-text';
+                        text.textContent = sub.status === 'cancelled' ? '订阅已取消' : '订阅已完成';
+                        completion.appendChild(icon);
+                        completion.appendChild(text);
+                        actions.appendChild(completion);
+                        return;
+                    }
+
                     const primaryBtn = document.createElement('button');
                     primaryBtn.className = 'btn-primary-action';
                     primaryBtn.type = 'button';
@@ -10453,6 +10538,21 @@
                         renewBtn.onclick = function() { handleAction('renew', sub.id, this); };
                         actions.appendChild(renewBtn);
                     }
+                };
+
+                if (isDemoSource && !isSandboxSource) {
+                    const demoNote = document.createElement('div');
+                    demoNote.className = 'demo-action-note';
+                    demoNote.textContent = '演示数据，仅供参考，暂不支持操作';
+                    actions.appendChild(demoNote);
+                } else {
+                    if (isSandboxSource) {
+                        const sandboxNotice = document.createElement('div');
+                        sandboxNotice.className = 'demo-action-note sandbox-live';
+                        sandboxNotice.textContent = '演示模式：操作仅作用于当前沙箱数据';
+                        actions.appendChild(sandboxNotice);
+                    }
+                    appendStandardActions();
                 }
 
                 card.appendChild(header);
@@ -11475,6 +11575,13 @@
                 return;
             }
 
+            const isSandboxSubscription = Boolean(target.__sandbox || context?.subscription?.__sandbox);
+
+            if (isSandboxSubscription && context && context.subscription && !context.subscription.__sandbox) {
+                context.subscription.__sandbox = true;
+                context.subscription.__source = 'demo';
+            }
+
             const effectiveContext = {
                 student: context?.student || {
                     id: student.id,
@@ -11487,7 +11594,8 @@
                 formSnapshot: context?.formSnapshot !== undefined ? context.formSnapshot : (target.formSnapshot || null),
                 submissionMode: context?.submissionMode || target.submissionMode || '',
                 history: Array.isArray(context?.history) ? context.history : (Array.isArray(target.history) ? target.history : []),
-                metadata: context?.metadata || target.metadata || {}
+                metadata: context?.metadata || target.metadata || {},
+                isSandbox: isSandboxSubscription
             };
 
             if (effectiveContext.subscription) {
@@ -11504,7 +11612,8 @@
                 studentId: student.id,
                 subscriptionId,
                 buttonLabel: triggerButton ? triggerButton.textContent.trim() : '',
-                status: effectiveContext.subscription?.status
+                status: effectiveContext.subscription?.status,
+                sandbox: effectiveContext.isSandbox
             });
 
             const actionHandlers = {
@@ -11519,7 +11628,8 @@
                         triggerButton,
                         subscription: effectiveContext.subscription,
                         course: effectiveContext.course,
-                        deadlineMeta: effectiveContext.deadlineMeta
+                        deadlineMeta: effectiveContext.deadlineMeta,
+                        isSandbox: effectiveContext.isSandbox
                     };
 
                     openRenewSubscriptionModal(renewContext);
@@ -11536,7 +11646,8 @@
                         recordSubscriptionActionLog('edit', 'blocked', {
                             studentId: student.id,
                             subscriptionId,
-                            status: target.status
+                            status: target.status,
+                            sandbox: effectiveContext.isSandbox
                         });
                         return;
                     }
@@ -11559,14 +11670,17 @@
                         subscriptionId,
                         triggerButton,
                         context: effectiveContext,
-                        courseDisplay: display
+                        courseDisplay: display,
+                        isSandbox: effectiveContext.isSandbox
                     };
 
                     openSingleCourseSubscribeModal(selectedCourse, '编辑订阅', null);
                     setSubscribeFormMode('edit', {
                         title: '编辑订阅条件',
                         confirmText: '保存修改',
-                        notice: '保存后将覆盖原订阅条件。'
+                        notice: effectiveContext.isSandbox
+                            ? '演示模式：更改只影响当前沙箱数据。'
+                            : '保存后将覆盖原订阅条件。'
                     });
 
                     applyFormSnapshotToSubscribeForm(effectiveContext?.formSnapshot, effectiveContext?.subscription);
@@ -11583,7 +11697,8 @@
                         triggerButton,
                         subscription: effectiveContext.subscription,
                         course: effectiveContext.course,
-                        deadlineMeta: effectiveContext.deadlineMeta
+                        deadlineMeta: effectiveContext.deadlineMeta,
+                        isSandbox: effectiveContext.isSandbox
                     };
                     openCancelSubscriptionModal(cancelContext);
                     finishActionProcessing(triggerButton);
@@ -11600,7 +11715,8 @@
                         });
                         finishActionProcessing(triggerButton);
                         recordSubscriptionActionLog('view', 'failed', {
-                            reason: 'repository-missing'
+                            reason: 'repository-missing',
+                            sandbox: effectiveContext.isSandbox
                         });
                         return;
                     }
@@ -11613,7 +11729,8 @@
                         });
                         finishActionProcessing(triggerButton);
                         recordSubscriptionActionLog('view', 'failed', {
-                            reason: 'modal-missing'
+                            reason: 'modal-missing',
+                            sandbox: effectiveContext.isSandbox
                         });
                         return;
                     }
@@ -11664,7 +11781,8 @@
                             studentId: student.id,
                             subscriptionId,
                             reason: 'repository-error',
-                            message
+                            message,
+                            sandbox: effectiveContext.isSandbox
                         });
                     };
 
@@ -11727,7 +11845,8 @@
                                     subscriptionId,
                                     source,
                                     courseCode: payload.courseCode,
-                                    productCourseCode: payload.productCourseCode
+                                    productCourseCode: payload.productCourseCode,
+                                    sandbox: effectiveContext.isSandbox
                                 });
                                 window.StudentRepository.getSelectedCourses(student.id, { forceRefresh: true });
                                 addStatus = 'success';
@@ -11745,7 +11864,8 @@
                                     subscriptionId,
                                     source,
                                     courseCode: payload.courseCode,
-                                    productCourseCode: payload.productCourseCode
+                                    productCourseCode: payload.productCourseCode,
+                                    sandbox: effectiveContext.isSandbox
                                 });
                                 addStatus = 'duplicate';
                             } else {
@@ -11760,7 +11880,8 @@
                                     source,
                                     courseCode: payload.courseCode,
                                     productCourseCode: payload.productCourseCode,
-                                    reason: 'unknown-response'
+                                    reason: 'unknown-response',
+                                    sandbox: effectiveContext.isSandbox
                                 });
                             }
                         } catch (error) {
@@ -11777,7 +11898,8 @@
                                 courseCode: payload.courseCode,
                                 productCourseCode: payload.productCourseCode,
                                 reason: 'exception',
-                                message
+                                message,
+                                sandbox: effectiveContext.isSandbox
                             });
                         } finally {
                             if (currentTrigger) {
@@ -11851,7 +11973,8 @@
                             studentId: student.id,
                             subscriptionId,
                             homeCount: dataset.homeCourses?.length || 0,
-                            productCount: dataset.productCourses?.length || 0
+                            productCount: dataset.productCourses?.length || 0,
+                            sandbox: effectiveContext.isSandbox
                         });
                     } catch (error) {
                         handleRepositoryError(error);
