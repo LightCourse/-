@@ -1211,7 +1211,19 @@
 
     const performDemoAction = (studentId, subscriptionId, mutator) => {
         const student = getStudentForDemo(studentId);
-        const result = runDemoMutation(student, subscriptionId, mutator);
+        let result;
+        try {
+            result = runDemoMutation(student, subscriptionId, mutator);
+        } catch (error) {
+            if (error instanceof SubscriptionRepositoryError && error.code === subscriptionErrorTypes.notFound) {
+                throw new SubscriptionRepositoryError(
+                    subscriptionErrorTypes.notFound,
+                    '演示订阅已刷新或不存在，请重新打开订阅卡片后再试。',
+                    { studentId, subscriptionId }
+                );
+            }
+            throw error;
+        }
         const snapshot = result.snapshot
             ? decorateDemoSnapshot(result.snapshot, { sandbox: true })
             : null;
@@ -2396,6 +2408,18 @@
                 }
             }
 
+            let decoratedSubscription;
+            if (subscriptionSource === 'demo-sandbox') {
+                decoratedSubscription = decorateDemoSnapshot(normalizedSubscription, { sandbox: true });
+            } else if (subscriptionSource === 'demo') {
+                decoratedSubscription = decorateDemoSnapshot(normalizedSubscription);
+            } else {
+                decoratedSubscription = {
+                    ...normalizedSubscription,
+                    __source: 'dynamic'
+                };
+            }
+
             return {
                 student: {
                     id: student.id,
@@ -2403,18 +2427,19 @@
                     school: student.school,
                     status: cloneEntity(student.status)
                 },
-                subscription: normalizedSubscription,
-                course: cloneEntity(normalizedSubscription.course),
-                formSnapshot: normalizedSubscription.formSnapshot,
-                submissionMode: normalizedSubscription.submissionMode,
-                history: normalizedSubscription.history,
-                metadata: cloneEntity(normalizedSubscription.metadata),
-                createdAt: normalizedSubscription.createdAt || '',
-                deadline: normalizedSubscription.deadline || '',
-                status: normalizedSubscription.status,
-                type: normalizedSubscription.type,
-                lastRenewedAt: normalizedSubscription.lastRenewedAt || '',
-                lastRenewedBy: normalizedSubscription.lastRenewedBy || ''
+                subscription: decoratedSubscription,
+                course: cloneEntity(decoratedSubscription.course),
+                formSnapshot: decoratedSubscription.formSnapshot,
+                submissionMode: decoratedSubscription.submissionMode,
+                history: decoratedSubscription.history,
+                metadata: cloneEntity(decoratedSubscription.metadata),
+                createdAt: decoratedSubscription.createdAt || '',
+                deadline: decoratedSubscription.deadline || '',
+                status: decoratedSubscription.status,
+                type: decoratedSubscription.type,
+                lastRenewedAt: decoratedSubscription.lastRenewedAt || '',
+                lastRenewedBy: decoratedSubscription.lastRenewedBy || '',
+                isSandbox: subscriptionSource === 'demo-sandbox'
             };
         },
 

@@ -7831,7 +7831,10 @@
                 deadlineInput.min = formatDateToInput(minDateSource);
             }
 
-            window.currentSubscriptionRenewal = context;
+            window.currentSubscriptionRenewal = {
+                ...context,
+                isSandbox: sandboxMode
+            };
 
             if (context.deadlineMeta) {
                 const metaText = document.getElementById('renewHintText');
@@ -7909,7 +7912,10 @@
                 reasonInput.value = '';
             }
 
-            window.currentSubscriptionCancellation = context;
+            window.currentSubscriptionCancellation = {
+                ...context,
+                isSandbox: sandboxMode
+            };
             modal.style.display = 'flex';
         }
 
@@ -10597,22 +10603,83 @@
                 return;
             }
 
-            const unsubscribe = repository.subscribe('subscriptions:changed', payload => {
+            const unsubscribeList = [];
+            const register = (eventName, handler) => {
+                if (typeof handler !== 'function') {
+                    return;
+                }
+                const off = repository.subscribe(eventName, handler);
+                if (typeof off === 'function') {
+                    unsubscribeList.push(off);
+                }
+            };
+
+            register('subscriptions:changed', payload => {
                 const targetId = payload && payload.studentId;
                 refreshSubscriptionCenter(targetId);
 
                 if (window.SubscriptionModule && typeof window.SubscriptionModule.syncButtonStates === 'function') {
                     window.SubscriptionModule.syncButtonStates(targetId);
                 }
+
+                const currentContext = window.currentSubscriptionContext;
+                if (
+                    currentContext
+                    && currentContext.subscription
+                    && currentContext.student
+                    && targetId
+                    && String(currentContext.student.id) === String(targetId)
+                ) {
+                    const subscriptionId = currentContext.subscription.id;
+                    if (subscriptionId && typeof repository.resolveSubscriptionContext === 'function') {
+                        window.currentSubscriptionContext = repository.resolveSubscriptionContext(targetId, subscriptionId) || null;
+                    }
+                }
+            });
+
+            register('demoSubscriptions:changed', payload => {
+                const targetId = payload && payload.studentId;
+                const subscriptionId = payload && payload.subscriptionId;
+
+                if (window.SubscriptionDeadlineHelper && typeof window.SubscriptionDeadlineHelper.invalidateDeadlineMeta === 'function') {
+                    window.SubscriptionDeadlineHelper.invalidateDeadlineMeta(subscriptionId || null);
+                }
+
+                refreshSubscriptionCenter(targetId);
+
+                if (window.SubscriptionModule && typeof window.SubscriptionModule.syncButtonStates === 'function') {
+                    window.SubscriptionModule.syncButtonStates(targetId);
+                }
+
+                const currentContext = window.currentSubscriptionContext;
+                if (currentContext && currentContext.subscription) {
+                    const studentId = currentContext.student && currentContext.student.id;
+                    const sameStudent = !targetId || (studentId && String(studentId) === String(targetId));
+                    const sameSubscription = subscriptionId && String(currentContext.subscription.id) === String(subscriptionId);
+                    if (sameStudent && sameSubscription && studentId && typeof repository.resolveSubscriptionContext === 'function') {
+                        window.currentSubscriptionContext = repository.resolveSubscriptionContext(studentId, subscriptionId) || null;
+                    }
+                }
             });
 
             initSubscriptionEventBridge._initialized = true;
-            initSubscriptionEventBridge._unsubscribe = unsubscribe;
+            initSubscriptionEventBridge._unsubscribeAll = () => {
+                while (unsubscribeList.length) {
+                    const off = unsubscribeList.pop();
+                    try {
+                        if (typeof off === 'function') {
+                            off();
+                        }
+                    } catch (error) {
+                        console.warn('Subscription bridge cleanup failed', error);
+                    }
+                }
+            };
 
             window.addEventListener('beforeunload', () => {
-                if (typeof initSubscriptionEventBridge._unsubscribe === 'function') {
-                    initSubscriptionEventBridge._unsubscribe();
-                    initSubscriptionEventBridge._unsubscribe = null;
+                if (typeof initSubscriptionEventBridge._unsubscribeAll === 'function') {
+                    initSubscriptionEventBridge._unsubscribeAll();
+                    initSubscriptionEventBridge._unsubscribeAll = null;
                 }
             });
         }
@@ -11575,7 +11642,11 @@
                 return;
             }
 
-            const isSandboxSubscription = Boolean(target.__sandbox || context?.subscription?.__sandbox);
+            const isSandboxSubscription = Boolean(
+                context?.isSandbox
+                || target.__sandbox
+                || context?.subscription?.__sandbox
+            );
 
             if (isSandboxSubscription && context && context.subscription && !context.subscription.__sandbox) {
                 context.subscription.__sandbox = true;
@@ -11604,7 +11675,7 @@
                     : null;
             }
 
-            window.currentSubscriptionContext = effectiveContext;
+            window.currentSubscriptionContext = { ...effectiveContext };
 
             const triggerButton = triggerElement || null;
 
