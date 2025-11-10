@@ -2782,18 +2782,6 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
         
-        /* 跳转选课 - 绿色 */
-        .btn-primary-action {
-            color: #059669 !important;
-            border-color: #d1fae5 !important;
-        }
-        
-        .btn-primary-action:hover {
-            color: #047857 !important;
-            border-color: #a7f3d0 !important;
-            background: #f0fdf4 !important;
-        }
-        
         /* 编辑条件 - 灰色 */
         .btn-edit {
             color: #6b7280 !important;
@@ -7457,11 +7445,6 @@
         }
 
         const actionRoutes = {
-            jump: {
-                path: '#/course-selection',
-                mode: 'hash',
-                processingLabel: '跳转中...'
-            },
             view: {
                 path: '#/matched-courses',
                 mode: 'hash',
@@ -10591,13 +10574,6 @@
                         return;
                     }
 
-                    const primaryBtn = document.createElement('button');
-                    primaryBtn.className = 'btn-primary-action';
-                    primaryBtn.type = 'button';
-                    primaryBtn.textContent = '跳转选课';
-                    primaryBtn.onclick = function() { handleAction('jump', sub.id, this); };
-                    actions.appendChild(primaryBtn);
-
                     const viewBtn = document.createElement('button');
                     viewBtn.className = 'btn-view';
                     viewBtn.type = 'button';
@@ -12196,61 +12172,6 @@
                     }
 
                     const result = navigateTo('notifyDetail', params, options);
-                    if (!result.success) {
-                        finishActionProcessing(triggerButton);
-                        return;
-                    }
-
-                    finishActionProcessing(triggerButton);
-                },
-                jump: () => {
-                    const course = effectiveContext.course || {};
-                    const metadata = effectiveContext.metadata || {};
-
-                    if (!course.code) {
-                        alert('缺少课程信息，无法跳转选课。');
-                        return;
-                    }
-
-                    if (triggerButton) {
-                        startActionProcessing(triggerButton, 'jump', '跳转中...');
-                    }
-
-                    const jumpUrl = metadata.jumpTargetUrl
-                        || metadata.enrollmentUrl
-                        || metadata.selectionUrl
-                        || metadata.courseUrl
-                        || '';
-
-                    const params = {
-                        studentId: student.id,
-                        subscriptionId,
-                        courseCode: course.code,
-                        courseName: course.name || '',
-                        type: target.type || 'product',
-                        submissionMode: effectiveContext.submissionMode || target.submissionMode || ''
-                    };
-
-                    if (metadata.unitId) {
-                        params.unitId = metadata.unitId;
-                    }
-                    if (metadata.productId) {
-                        params.productId = metadata.productId;
-                    }
-                    if (metadata.school) {
-                        params.school = metadata.school;
-                    }
-
-                    const options = {
-                        errorMessage: '跳转选课失败，请稍后再试。'
-                    };
-
-                    if (jumpUrl) {
-                        options.path = jumpUrl;
-                        options.mode = jumpUrl.startsWith('http') ? 'new-tab' : 'same-tab';
-                    }
-
-                    const result = navigateTo('jump', params, options);
                     if (!result.success) {
                         finishActionProcessing(triggerButton);
                         return;
