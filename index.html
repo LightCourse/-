@@ -2431,6 +2431,37 @@
             min-width: 160px;
         }
 
+        .deadline-renew-trigger {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 26px;
+            height: 26px;
+            padding: 0;
+            border-radius: 50%;
+            border: 1px solid #bae6fd;
+            background: #e0f2fe;
+            color: #1d4ed8;
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 1;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .deadline-renew-trigger:hover {
+            background: #cfe0ff;
+            border-color: #93c5fd;
+            color: #1e3a8a;
+            box-shadow: 0 2px 8px rgba(30, 58, 138, 0.18);
+            transform: translateY(-1px);
+        }
+
+        .deadline-renew-trigger[aria-busy="true"] {
+            cursor: wait;
+            opacity: 0.75;
+        }
+
         .course-title {
             font-size: 18px;
             font-weight: 600;
@@ -2595,7 +2626,7 @@
 
         .deadline-main {
             display: inline-flex;
-            align-items: baseline;
+            align-items: center;
             gap: 6px;
             flex-wrap: wrap;
         }
@@ -7445,6 +7476,9 @@
         }
 
         const actionRoutes = {
+            renew: {
+                processingLabel: '续期中...'
+            },
             view: {
                 path: '#/matched-courses',
                 mode: 'hash',
@@ -10401,7 +10435,7 @@
                 deadlineInfo.className = 'deadline-info';
                 const deadlineLabel = document.createElement('span');
                 deadlineLabel.className = 'deadline-label';
-                deadlineLabel.textContent = '截止时间';
+                deadlineLabel.textContent = '截止到';
                 const deadlineDate = document.createElement('span');
                 deadlineDate.className = 'deadline-date';
 
@@ -10421,6 +10455,26 @@
                 deadlineMain.className = 'deadline-main';
                 deadlineMain.appendChild(deadlineLabel);
                 deadlineMain.appendChild(deadlineDate);
+
+                const deadlineHasAlert = Boolean(
+                    (deadlineMeta && (deadlineMeta.isExpired || deadlineMeta.isExpiringSoon))
+                    || sub.warning
+                );
+                const statusEligibleForRenew = sub.status === 'waiting' || sub.status === 'expired';
+                const statusBlockedForRenew = sub.status === 'cancelled' || sub.status === 'converted';
+                const canTriggerRenew = !isDemoSource || isSandboxSource;
+
+                if (!statusBlockedForRenew && canTriggerRenew && (statusEligibleForRenew || deadlineHasAlert)) {
+                    const renewQuickButton = document.createElement('button');
+                    renewQuickButton.type = 'button';
+                    renewQuickButton.className = 'deadline-renew-trigger';
+                    renewQuickButton.textContent = '↻';
+                    renewQuickButton.setAttribute('aria-label', '续期订阅');
+                    renewQuickButton.title = '续期订阅';
+                    renewQuickButton.onclick = function() { handleAction('renew', sub.id, this); };
+                    deadlineMain.appendChild(renewQuickButton);
+                }
+
                 deadlineInfo.appendChild(deadlineMain);
 
                 if (deadlineMeta?.isExpiringSoon) {
@@ -10598,28 +10652,12 @@
                         editBtn.onclick = function() { handleAction('edit', sub.id, this); };
                         actions.appendChild(editBtn);
 
-                        const renewBtn = document.createElement('button');
-                        renewBtn.className = 'btn-renew';
-                        renewBtn.type = 'button';
-                        renewBtn.textContent = '续期';
-                        renewBtn.onclick = function() { handleAction('renew', sub.id, this); };
-                        actions.appendChild(renewBtn);
-
                         const cancelBtn = document.createElement('button');
                         cancelBtn.className = 'btn-destructive';
                         cancelBtn.type = 'button';
                         cancelBtn.textContent = '取消订阅';
                         cancelBtn.onclick = function() { handleAction('cancel', sub.id, this); };
                         actions.appendChild(cancelBtn);
-                    }
-
-                    if (sub.status === 'expired') {
-                        const renewBtn = document.createElement('button');
-                        renewBtn.className = 'btn-renew';
-                        renewBtn.type = 'button';
-                        renewBtn.textContent = '续期';
-                        renewBtn.onclick = function() { handleAction('renew', sub.id, this); };
-                        actions.appendChild(renewBtn);
                     }
                 };
 
@@ -11769,7 +11807,7 @@
             const actionHandlers = {
                 renew: () => {
                     if (triggerButton) {
-                        startActionProcessing(triggerButton, 'renew', '加载中...');
+                        startActionProcessing(triggerButton, 'renew', '续期中...');
                     }
 
                     const renewContext = {
