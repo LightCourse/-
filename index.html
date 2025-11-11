@@ -6073,7 +6073,7 @@
             });
         }
 
-        function createStudentServiceSubscribeButton(type) {
+        function createStudentServiceSubscribeButton(type, context = {}) {
             const button = document.createElement('button');
             button.className = type === 'home' ? 'course-subscribe-btn home-course' : 'course-subscribe-btn';
             button.setAttribute('onclick', type === 'home'
@@ -6081,6 +6081,36 @@
                 : "subscribeSingleCourse(this, 'product')");
             button.title = type === 'home' ? '订阅本校意向课程' : '订阅产品课程';
             button.textContent = '订阅';
+            button.dataset.subscribedLabel = '已订阅';
+
+            button.dataset.courseType = type;
+            if (context.courseCode) {
+                button.dataset.courseCode = context.courseCode;
+            }
+            if (context.courseName) {
+                button.dataset.courseName = context.courseName;
+            }
+            if (context.courseDisplay) {
+                button.dataset.courseDisplay = context.courseDisplay;
+            }
+            if (context.courseSchool) {
+                button.dataset.courseSchool = context.courseSchool;
+            }
+            if (context.homeCourseCode) {
+                button.dataset.homeCourseCode = context.homeCourseCode;
+            }
+            if (context.homeCourseName) {
+                button.dataset.homeCourseName = context.homeCourseName;
+            }
+            if (context.studentId) {
+                button.dataset.studentId = context.studentId;
+            }
+            if (context.studentName) {
+                button.dataset.studentName = context.studentName;
+            }
+            if (context.studentSchool) {
+                button.dataset.studentSchool = context.studentSchool;
+            }
             return button;
         }
 
@@ -6145,7 +6175,7 @@
             row.appendChild(schoolCell);
         }
 
-        function createStudentServiceHomeCell(course, rowSpan) {
+        function createStudentServiceHomeCell(course, rowSpan, studentInfo) {
             const cell = document.createElement('td');
             cell.className = 'course-cell';
             if (rowSpan > 1) {
@@ -6163,13 +6193,26 @@
 
             if (course) {
                 cell.appendChild(document.createTextNode(' '));
-                cell.appendChild(createStudentServiceSubscribeButton('home'));
+                const buttonContext = {
+                    studentId: studentInfo?.id,
+                    studentName: studentInfo?.name,
+                    studentSchool: studentInfo?.school,
+                    courseCode: course.homeCourse || '',
+                    courseName: course.homeCourseName || '',
+                    courseDisplay: course.homeCourseName
+                        ? `${course.homeCourse}(${course.homeCourseName})`
+                        : (course.homeCourse || ''),
+                    courseSchool: studentInfo?.school || '',
+                    homeCourseCode: course.homeCourse || '',
+                    homeCourseName: course.homeCourseName || ''
+                };
+                cell.appendChild(createStudentServiceSubscribeButton('home', buttonContext));
             }
 
             return cell;
         }
 
-        function createStudentServiceProductCell(product) {
+        function createStudentServiceProductCell(product, studentInfo, course) {
             const cell = document.createElement('td');
             cell.className = 'course-cell';
 
@@ -6188,7 +6231,18 @@
 
             if (product) {
                 cell.appendChild(document.createTextNode(' '));
-                cell.appendChild(createStudentServiceSubscribeButton('product'));
+                const buttonContext = {
+                    studentId: studentInfo?.id,
+                    studentName: studentInfo?.name,
+                    studentSchool: studentInfo?.school,
+                    courseCode: product.code || '',
+                    courseName: product.name || '',
+                    courseDisplay: product.name ? `${product.code}(${product.name})` : (product.code || ''),
+                    courseSchool: product.school || '',
+                    homeCourseCode: course?.homeCourse || '',
+                    homeCourseName: course?.homeCourseName || ''
+                };
+                cell.appendChild(createStudentServiceSubscribeButton('product', buttonContext));
             }
 
             return cell;
@@ -6248,6 +6302,7 @@
             }
 
             let snapshot = [];
+            const studentIdsForSync = new Set();
             if (typeof repository.getStudentServiceSnapshot === 'function') {
                 snapshot = repository.getStudentServiceSnapshot();
             } else {
@@ -6274,6 +6329,9 @@
 
             snapshot.forEach(entry => {
                 const studentInfo = entry.student || {};
+                if (studentInfo.id !== undefined && studentInfo.id !== null && studentInfo.id !== '') {
+                    studentIdsForSync.add(String(studentInfo.id));
+                }
                 const rawCourses = Array.isArray(entry.courses) ? entry.courses : [];
 
                 // Only render courses that have at least one on-sale product unit.
@@ -6314,10 +6372,10 @@
                         }
 
                         if (index === 0) {
-                            row.appendChild(createStudentServiceHomeCell(course, courseRowSpan));
+                            row.appendChild(createStudentServiceHomeCell(course, courseRowSpan, studentInfo));
                         }
 
-                        row.appendChild(createStudentServiceProductCell(product));
+                        row.appendChild(createStudentServiceProductCell(product, studentInfo, course));
                         row.appendChild(createStudentServiceModalityCell(product));
                         row.appendChild(createStudentServicePeriodCell(product));
                         row.appendChild(createStudentServiceClassCodeCell(product));
@@ -6339,6 +6397,16 @@
             tbody.appendChild(fragment);
             attachCourseCheckboxListeners();
             updateBatchSubscribeButton();
+
+            if (window.SubscriptionModule && typeof window.SubscriptionModule.syncButtonStates === 'function') {
+                if (studentIdsForSync.size) {
+                    studentIdsForSync.forEach(id => {
+                        window.SubscriptionModule.syncButtonStates(id);
+                    });
+                } else {
+                    window.SubscriptionModule.syncButtonStates();
+                }
+            }
         }
         
         // 为所有课程复选框添加事件监听器
@@ -6841,9 +6909,19 @@
             const courseDisplay = (window.currentSingleCourseSnapshot && window.currentSingleCourseSnapshot.course)
                 || document.getElementById('selectedCoursesField')?.textContent
                 || '';
+            const studentContext = window.currentSingleCourseSnapshot
+                ? {
+                    id: window.currentSingleCourseSnapshot.studentId || undefined,
+                    name: window.currentSingleCourseSnapshot.student || '',
+                    school: window.currentSingleCourseSnapshot.studentSchool || ''
+                }
+                : undefined;
 
             setButtonProcessingState(buttonElement, true);
-            const result = commitSingleCourseSubscription(buttonElement, formData, { courseDisplay });
+            const result = commitSingleCourseSubscription(buttonElement, formData, {
+                courseDisplay,
+                student: studentContext
+            });
 
             if (result.success) {
                 closeSubscribeModal();
@@ -8824,9 +8902,15 @@
                 return { success: false };
             }
 
-            const student = (window.StudentAnalysisController && typeof window.StudentAnalysisController.getCurrentStudent === 'function')
-                ? window.StudentAnalysisController.getCurrentStudent()
-                : (window.currentStudentInfo || null);
+            const providedStudent = options && options.student && typeof options.student === 'object'
+                ? options.student
+                : null;
+
+            let student = providedStudent && providedStudent.id
+                ? providedStudent
+                : ((window.StudentAnalysisController && typeof window.StudentAnalysisController.getCurrentStudent === 'function')
+                    ? window.StudentAnalysisController.getCurrentStudent()
+                    : (window.currentStudentInfo || null));
 
             if (!student || !student.id) {
                 alert('请选择学生后再设置订阅。');
@@ -8835,10 +8919,8 @@
 
             let payload;
             try {
-                payload = buildSingleSubscriptionPayload(buttonElement, formData, {
-                    ...options,
-                    student
-                });
+                const payloadOptions = { ...options, student };
+                payload = buildSingleSubscriptionPayload(buttonElement, formData, payloadOptions);
             } catch (payloadError) {
                 const message = payloadError && payloadError.message
                     ? payloadError.message
@@ -8976,6 +9058,8 @@
             // 获取学生信息
             const row = courseCell.closest('tr');
             let studentName = '';
+            let studentSchool = buttonElement.dataset.studentSchool || '';
+            const studentId = buttonElement.dataset.studentId || '';
             
             // 查找学生姓名 - 可能在当前行或者在前面的行（合并单元格情况）
             const studentNameCell = row.querySelector('.student-name');
@@ -8995,10 +9079,19 @@
                     }
                 }
             }
+
+            if (!studentSchool) {
+                const schoolCell = row.querySelector('td:nth-child(3)');
+                if (schoolCell && schoolCell.textContent) {
+                    studentSchool = schoolCell.textContent.trim();
+                }
+            }
             
             // 创建单门课程的选中数据
             const selectedCourse = [{
                 student: studentName,
+                studentId: studentId || '',
+                studentSchool,
                 course: formattedCourse,
                 type: courseType
             }];
@@ -9075,9 +9168,19 @@
                     const courseDisplay = data.selectedCourse && data.selectedCourse.length
                         ? data.selectedCourse[0].course
                         : '';
+                    const studentContext = data.selectedCourse && data.selectedCourse.length
+                        ? {
+                            id: data.selectedCourse[0].studentId || undefined,
+                            name: data.selectedCourse[0].student || '',
+                            school: data.selectedCourse[0].studentSchool || ''
+                        }
+                        : undefined;
 
                     setButtonProcessingState(targetButton, true);
-                    const result = commitSingleCourseSubscription(targetButton, {}, { courseDisplay });
+                    const result = commitSingleCourseSubscription(targetButton, {}, {
+                        courseDisplay,
+                        student: studentContext
+                    });
 
                     if (!result.success) {
                         setButtonProcessingState(targetButton, false);
@@ -12766,11 +12869,19 @@
                 }));
 
                 const buttons = document.querySelectorAll('.course-subscribe-btn');
+                const normalizedStudentId = studentId !== undefined && studentId !== null
+                    ? String(studentId)
+                    : '';
                 buttons.forEach(button => {
                     const type = (button.dataset.courseType || 'product').toLowerCase();
                     const codeAttr = button.dataset.courseCode || button.dataset.courseId || '';
                     const courseCode = codeAttr.toLowerCase();
                     if (!courseCode) {
+                        return;
+                    }
+
+                    const buttonStudentId = button.dataset.studentId ? String(button.dataset.studentId) : '';
+                    if (normalizedStudentId && buttonStudentId && buttonStudentId !== normalizedStudentId) {
                         return;
                     }
 
