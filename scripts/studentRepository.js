@@ -1799,10 +1799,70 @@
         };
     };
 
+    const normalizeSelectedStatus = (rawStatus, fallbackStatus) => {
+        const normalized = typeof rawStatus === 'string' ? rawStatus.trim().toLowerCase() : '';
+        if (!normalized) {
+            return fallbackStatus;
+        }
+        if (['serving', 'potential', 'completed'].includes(normalized)) {
+            return normalized;
+        }
+        if (['tracking', 'waiting', 'pending', 'planning'].includes(normalized)) {
+            return 'potential';
+        }
+        if (['active', 'ongoing', 'available', 'onsale'].includes(normalized)) {
+            return 'serving';
+        }
+        if (['done', 'finished', 'complete'].includes(normalized)) {
+            return 'completed';
+        }
+        return fallbackStatus;
+    };
+
+    const normalizeAuditState = (rawAudit) => {
+        const value = typeof rawAudit === 'string' ? rawAudit.trim() : '';
+        if (!value) {
+            return 'notSubmitted';
+        }
+        const normalized = value.toLowerCase();
+        if (['aipassed', 'ai_passed', 'ai-approved'].includes(normalized)) {
+            return 'aiPassed';
+        }
+        if (['airejected', 'ai_rejected', 'ai-denied'].includes(normalized)) {
+            return 'aiRejected';
+        }
+        if (['notsubmitted', 'pending'].includes(normalized)) {
+            return 'notSubmitted';
+        }
+        return value;
+    };
+
+    const buildProductCourseSnapshot = (payload = {}) => {
+        const alignmentStatus = payload.alignmentStatus || payload.productAlignmentStatus || '';
+        const verificationOutcome = payload.verificationOutcome || payload.productVerificationOutcome || '';
+        return {
+            code: payload.productCourseCode || payload.courseCode || '',
+            name: payload.productCourseName || payload.courseName || '',
+            school: payload.schoolName || payload.productSchool || '',
+            isOnSale: payload.isOnSale === true || payload.onsaleStatus === 'onSale',
+            price: payload.price || '',
+            startDate: payload.nextStartDate || payload.startDate || '',
+            endDate: payload.endDate || '',
+            duration: payload.duration || '',
+            modality: payload.modality || '',
+            credit: normalizeCreditValue(payload.credit),
+            mappingId: payload.mappingId || '',
+            alignmentStatus,
+            verificationOutcome
+        };
+    };
+
     const buildSelectedCourseEntry = (payload, context = {}) => {
         const { studentId } = context;
         const source = typeof payload.source === 'string' ? payload.source.trim() : '';
         const nowIso = new Date().toISOString();
+        const allowDuplicate = payload && payload.allowDuplicate === true;
+
         const baseEntry = {
             id: ensureSelectedCourseId(studentId),
             source,
@@ -1814,52 +1874,237 @@
             }
         };
 
+        if (allowDuplicate) {
+            baseEntry.metadata.demoDuplicate = true;
+        }
+
         if (source === 'home') {
+            const productSnapshots = Array.isArray(payload.productCourses)
+                ? payload.productCourses.map(item => buildProductCourseSnapshot({
+                    ...item,
+                    productCourseCode: item.code || item.productCourseCode,
+                    productCourseName: item.name || item.productCourseName,
+                    schoolName: item.school || item.productSchool,
+                    isOnSale: item.isOnSale,
+                    price: item.price,
+                    startDate: item.startDate,
+                    endDate: item.endDate,
+                    duration: item.duration,
+                    modality: item.modality,
+                    credit: item.credit,
+                    mappingId: item.mappingId,
+                    alignmentStatus: item.alignmentStatus,
+                    verificationOutcome: item.verificationOutcome
+                }))
+                : (payload.productCourseCode || payload.productCourseName || payload.schoolName
+                    ? [buildProductCourseSnapshot(payload)]
+                    : []);
+
+            const availability = normalizeAvailability(payload.availability || 'available');
+            const status = normalizeSelectedStatus(payload.status, availability === 'available' ? 'serving' : 'potential');
+            const audit = normalizeAuditState(payload.audit);
+            const homeCode = payload.homeCourseCode || payload.courseCode || '';
+            const homeName = payload.homeCourseName || payload.courseName || payload.courseDisplayName || '';
+            const category = payload.category || payload.homeCategory || '';
+
             return {
                 ...baseEntry,
-                courseCode: payload.courseCode || '',
-                courseName: payload.courseName || payload.courseDisplayName || '',
-                category: payload.category || '',
+                homeCourse: homeCode,
+                homeCourseCode: homeCode,
+                homeCourseName: homeName,
+                courseCode: homeCode,
+                courseName: homeName || homeCode,
+                category,
                 credit: normalizeCreditValue(payload.credit),
-                availability: normalizeAvailability(payload.availability || 'available'),
-                status: payload.status || 'tracking',
+                availability,
+                status,
+                audit,
                 term: payload.term || '',
                 year: payload.year || '',
-                productCourses: Array.isArray(payload.productCourses)
-                    ? payload.productCourses.map(product => cloneEntity(product))
-                    : []
+                productCourses: productSnapshots
             };
         }
 
-        const productCourse = {
-            code: payload.productCourseCode || payload.courseCode || '',
-            name: payload.productCourseName || payload.courseName || '',
-            school: payload.schoolName || payload.productSchool || '',
-            isOnSale: payload.isOnSale === true || payload.onsaleStatus === 'onSale',
-            price: payload.price || '',
-            startDate: payload.nextStartDate || payload.startDate || '',
-            endDate: payload.endDate || '',
-            duration: payload.duration || '',
-            modality: payload.modality || '',
-            credit: normalizeCreditValue(payload.credit),
-            mappingId: payload.mappingId || ''
-        };
+        const productSnapshot = buildProductCourseSnapshot(payload);
+        const availability = productSnapshot.isOnSale ? 'available' : 'full';
+        const status = normalizeSelectedStatus(payload.status, productSnapshot.isOnSale ? 'serving' : 'potential');
+        const audit = normalizeAuditState(payload.audit);
+        const homeCode = payload.homeCourseCode || '';
+        const homeName = payload.homeCourseName || '';
+        const category = payload.category || payload.homeCategory || '';
 
         return {
             ...baseEntry,
-            productCourseCode: productCourse.code,
-            productCourseName: productCourse.name,
-            schoolName: productCourse.school,
-            onsaleStatus: productCourse.isOnSale ? 'onSale' : 'soldOut',
-            price: productCourse.price,
-            nextStartDate: productCourse.startDate,
-            duration: productCourse.duration,
-            modality: productCourse.modality,
-            courseCode: payload.homeCourseCode || payload.courseCode || '',
-            courseName: payload.homeCourseName || '',
-            credit: productCourse.credit,
-            productCourses: [productCourse]
+            homeCourse: homeCode,
+            homeCourseCode: homeCode,
+            homeCourseName: homeName,
+            productCourseCode: productSnapshot.code,
+            productCourseName: productSnapshot.name,
+            schoolName: productSnapshot.school,
+            onsaleStatus: productSnapshot.isOnSale ? 'onSale' : 'soldOut',
+            price: productSnapshot.price,
+            nextStartDate: productSnapshot.startDate,
+            duration: productSnapshot.duration,
+            modality: productSnapshot.modality,
+            courseCode: homeCode || productSnapshot.code,
+            courseName: homeName || productSnapshot.name,
+            category,
+            credit: productSnapshot.credit,
+            availability,
+            status,
+            audit,
+            productCourses: [productSnapshot]
         };
+    };
+
+    const buildSelectedCourseKey = (entry = {}) => {
+        // Preserve duplicate demo entries as distinct rows by short-circuiting key generation.
+        if (entry && entry.metadata && entry.metadata.demoDuplicate) {
+            return entry.id ? `unique::${entry.id}` : '';
+        }
+
+        const normalizedSource = (() => {
+            if (typeof entry.source === 'string' && entry.source.trim()) {
+                return entry.source.trim().toLowerCase();
+            }
+            if (entry.productCourseCode || (Array.isArray(entry.productCourses) && entry.productCourses.some(item => item && (item.code || item.productCourseCode)))) {
+                return 'product';
+            }
+            return 'home';
+        })();
+
+        const normalizeValue = (value) => (value ? String(value).trim().toLowerCase() : '');
+        const resolveHomeCode = () => normalizeValue(
+            entry.homeCourse
+            || entry.homeCourseCode
+            || (normalizedSource === 'home' ? entry.courseCode : '')
+        );
+        const resolveProductCode = () => {
+            if (entry.productCourseCode) {
+                return normalizeValue(entry.productCourseCode);
+            }
+            if (!Array.isArray(entry.productCourses)) {
+                return '';
+            }
+            const direct = entry.productCourses.find(item => item && (item.code || item.productCourseCode));
+            return direct ? normalizeValue(direct.code || direct.productCourseCode) : '';
+        };
+
+        if (normalizedSource === 'home') {
+            const homeCode = resolveHomeCode();
+            return homeCode ? `home::${homeCode}` : '';
+        }
+
+        const productCode = resolveProductCode();
+        if (productCode) {
+            return `product::${productCode}`;
+        }
+
+        const fallbackHome = resolveHomeCode();
+        return fallbackHome ? `mixed::${fallbackHome}` : '';
+    };
+
+    const mergeProductCourseCollections = (baseline = [], incoming = []) => {
+        const result = [];
+        const seen = new Set();
+
+        const normalizeKey = (item) => {
+            if (!item || typeof item !== 'object') {
+                return '';
+            }
+            const code = item.code || item.productCourseCode || '';
+            const school = item.school || item.productSchool || '';
+            return `${code.toLowerCase()}::${school.toLowerCase()}`;
+        };
+
+        const pushSnapshot = (item) => {
+            if (!item || typeof item !== 'object') {
+                return;
+            }
+            const key = normalizeKey(item);
+            if (key && seen.has(key)) {
+                return;
+            }
+            if (key) {
+                seen.add(key);
+            }
+            result.push(cloneEntity(item));
+        };
+
+        baseline.forEach(pushSnapshot);
+        incoming.forEach(pushSnapshot);
+
+        return result;
+    };
+
+    const mergeSelectedCourseEntries = (primaryList = [], secondaryList = []) => {
+        const merged = [];
+        const indexByKey = new Map();
+
+        const fillMissingFields = (target, source) => {
+            if (!source || typeof source !== 'object') {
+                return;
+            }
+
+            const fields = [
+                'homeCourse',
+                'homeCourseCode',
+                'homeCourseName',
+                'courseCode',
+                'courseName',
+                'category',
+                'status',
+                'audit',
+                'availability',
+                'term',
+                'year',
+                'price',
+                'duration',
+                'modality',
+                'schoolName',
+                'onsaleStatus',
+                'nextStartDate'
+            ];
+
+            fields.forEach(field => {
+                if ((target[field] === undefined || target[field] === null || target[field] === '') && source[field]) {
+                    target[field] = source[field];
+                }
+            });
+        };
+
+        const pushEntry = (entry) => {
+            if (!entry || typeof entry !== 'object') {
+                return;
+            }
+            const snapshot = cloneEntity(entry) || {};
+            const key = buildSelectedCourseKey(snapshot);
+
+            if (!key) {
+                merged.push(snapshot);
+                return;
+            }
+
+            if (!indexByKey.has(key)) {
+                indexByKey.set(key, merged.length);
+                if (!Array.isArray(snapshot.productCourses)) {
+                    snapshot.productCourses = [];
+                }
+                merged.push(snapshot);
+                return;
+            }
+
+            const existingIndex = indexByKey.get(key);
+            const existing = merged[existingIndex];
+            const combinedProducts = mergeProductCourseCollections(existing.productCourses, snapshot.productCourses);
+            existing.productCourses = combinedProducts;
+            fillMissingFields(existing, snapshot);
+        };
+
+        primaryList.forEach(pushEntry);
+        secondaryList.forEach(pushEntry);
+
+        return merged;
     };
 
     const isDuplicateSelectedCourse = (existingList, candidate) => {
@@ -1984,18 +2229,15 @@
                 return [];
             }
 
-            const runtimeSelected = buildSelectedCoursesFromRuntime(student);
-            if (runtimeSelected.length) {
-                writeSelectedCoursesCache(studentId, runtimeSelected);
-                return runtimeSelected.map(cloneEntity);
-            }
-
             const details = getStudentDetails(student);
-            const selected = Array.isArray(details.selectedCourses)
-                ? details.selectedCourses
+            const storedSelected = Array.isArray(details.selectedCourses)
+                ? details.selectedCourses.map(cloneEntity)
                 : [];
-            writeSelectedCoursesCache(studentId, selected);
-            return selected.map(cloneEntity);
+            const runtimeSelected = buildSelectedCoursesFromRuntime(student);
+            const mergedSelected = mergeSelectedCourseEntries(storedSelected, runtimeSelected);
+
+            writeSelectedCoursesCache(studentId, mergedSelected);
+            return mergedSelected.map(cloneEntity);
         },
 
         getStudentServiceSnapshot() {
@@ -2648,8 +2890,9 @@
             const details = ensureStudentDetailsContainer(student);
             const candidate = buildSelectedCourseEntry({ ...payload, source }, { studentId: student.id });
 
+            const allowDuplicate = payload && payload.allowDuplicate === true;
             const duplicate = isDuplicateSelectedCourse(details.selectedCourses, candidate);
-            if (duplicate) {
+            if (duplicate && !allowDuplicate) {
                 return {
                     success: false,
                     reason: 'duplicate',

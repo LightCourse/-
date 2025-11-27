@@ -9445,6 +9445,8 @@
             };
         })();
 
+        window.StudentAnalysisController = StudentAnalysisController;
+
         function renderStudentProfileSection() {
             const profileForm = document.getElementById('studentProfileForm');
             if (!profileForm) {
@@ -9905,7 +9907,7 @@
             const checkboxCourseCode = product && product.code ? product.code : (course.homeCourse || '');
             const checkboxCourseName = product && product.name
                 ? product.name
-                : (course.homeCourseName || course.homeCourse || '');
+                : (course.homeCourseName || course.homeCourse || '未关联本校课程');
             checkbox.dataset.courseType = product && product.code ? 'product' : 'home';
             checkbox.dataset.homeCourseCode = course.homeCourse || '';
             checkbox.dataset.homeCourseName = course.homeCourseName || '';
@@ -9925,23 +9927,26 @@
                 homeCourseCell.classList.add('course-cell');
                 homeCourseCell.rowSpan = rowSpan;
                 homeCourseCell.dataset.courseType = 'home';
-                homeCourseCell.dataset.courseId = course.homeCourse || '';
-                homeCourseCell.dataset.courseCode = course.homeCourse || '';
-                homeCourseCell.dataset.courseName = course.homeCourseName || course.homeCourse || '';
-                homeCourseCell.dataset.homeCourseCode = course.homeCourse || '';
-                homeCourseCell.dataset.homeCourseName = course.homeCourseName || '';
+                const homeCourseCodeValue = course.homeCourse || '';
+                const homeCourseNameValue = course.homeCourseName || '';
+                const hasHomeCourse = Boolean(homeCourseCodeValue || homeCourseNameValue);
+                homeCourseCell.dataset.courseId = homeCourseCodeValue;
+                homeCourseCell.dataset.courseCode = homeCourseCodeValue;
+                homeCourseCell.dataset.courseName = homeCourseNameValue || homeCourseCodeValue || '';
+                homeCourseCell.dataset.homeCourseCode = homeCourseCodeValue;
+                homeCourseCell.dataset.homeCourseName = homeCourseNameValue;
                 homeCourseCell.dataset.courseSchool = studentSchool;
                 homeCourseCell.dataset.studentName = studentName;
                 homeCourseCell.dataset.studentSchool = studentSchool;
                 const homeCourseCode = document.createElement('div');
                 homeCourseCode.className = 'home-course-code';
-                homeCourseCode.textContent = course.homeCourse || '未知课程';
+                homeCourseCode.textContent = hasHomeCourse ? homeCourseCodeValue : '未关联本校课程';
                 homeCourseCell.appendChild(homeCourseCode);
 
-                if (course.homeCourseName) {
+                if (homeCourseNameValue) {
                     const homeCourseName = document.createElement('div');
                     homeCourseName.className = 'home-course-name';
-                    homeCourseName.textContent = course.homeCourseName;
+                    homeCourseName.textContent = homeCourseNameValue;
                     homeCourseCell.appendChild(homeCourseName);
                 }
 
@@ -10813,6 +10818,76 @@
             renderSubscriptionSection();
         }
 
+        function initSelectedCoursesEventBridge() {
+            if (initSelectedCoursesEventBridge._initialized) {
+                return;
+            }
+
+            const repository = window.StudentRepository;
+            if (!repository || typeof repository.subscribe !== 'function') {
+                return;
+            }
+
+            const unsubscribeList = [];
+            const register = (eventName, handler) => {
+                if (typeof handler !== 'function') {
+                    return;
+                }
+                const off = repository.subscribe(eventName, handler);
+                if (typeof off === 'function') {
+                    unsubscribeList.push(off);
+                }
+            };
+
+            register('selectedCourses:changed', payload => {
+                const studentId = payload && payload.studentId;
+                if (!studentId) {
+                    return;
+                }
+
+                const studentController = window.StudentAnalysisController;
+                const currentStudent = studentController && typeof studentController.getCurrentStudent === 'function'
+                    ? studentController.getCurrentStudent()
+                    : null;
+
+                if (!currentStudent || String(currentStudent.id) !== String(studentId)) {
+                    return;
+                }
+
+                if (typeof studentController.scheduleRefresh === 'function') {
+                    studentController.scheduleRefresh();
+                }
+
+                if (window.SubscriptionModule && typeof window.SubscriptionModule.syncButtonStates === 'function') {
+                    window.SubscriptionModule.syncButtonStates(studentId);
+                }
+            });
+
+            initSelectedCoursesEventBridge._initialized = true;
+            initSelectedCoursesEventBridge._unsubscribeAll = () => {
+                while (unsubscribeList.length) {
+                    const off = unsubscribeList.pop();
+                    try {
+                        if (typeof off === 'function') {
+                            off();
+                        }
+                    } catch (error) {
+                        console.warn('Selected courses bridge cleanup failed', error);
+                    }
+                }
+            };
+
+            if (!initSelectedCoursesEventBridge._boundUnload) {
+                window.addEventListener('beforeunload', () => {
+                    if (typeof initSelectedCoursesEventBridge._unsubscribeAll === 'function') {
+                        initSelectedCoursesEventBridge._unsubscribeAll();
+                        initSelectedCoursesEventBridge._unsubscribeAll = null;
+                    }
+                });
+                initSelectedCoursesEventBridge._boundUnload = true;
+            }
+        }
+
         function initSubscriptionEventBridge() {
             if (initSubscriptionEventBridge._initialized) {
                 return;
@@ -10906,6 +10981,7 @@
 
         function setupSubscriptionCenterLifecycle() {
             initSubscriptionEventBridge();
+            initSelectedCoursesEventBridge();
 
             const student = StudentAnalysisController.getCurrentStudent();
             if (student && window.SubscriptionModule && typeof window.SubscriptionModule.syncButtonStates === 'function') {
@@ -12077,7 +12153,7 @@
                         });
                     };
 
-                    const mergedOnAddCourse = ({ source, course, trigger, courseKey, context }) => {
+                        const mergedOnAddCourse = ({ source, course, trigger, courseKey, context }) => {
                         if (!repository || typeof repository.addCourseToSelected !== 'function') {
                             showActionToast({
                                 title: '添加失败',
@@ -12116,16 +12192,23 @@
                             nextStartDate: course.nextStartDate,
                             duration: course.duration,
                             modality: course.modality,
-                            onsaleStatus: course.onsaleStatus
+                            onsaleStatus: course.onsaleStatus,
+                            allowDuplicate: true
                         };
 
                         let addStatus = 'error';
                         try {
                             const result = repository.addCourseToSelected(student.id, payload);
                             if (result && result.success) {
+                                let description = '课程已同步到学生已选列表，稍后可在右侧面板查看。';
+                                const hasHomeCourse = Boolean(payload.courseCode && payload.courseName);
+                                if (!hasHomeCourse) {
+                                    description += ' 当前记录仅包含产品课程信息，可在后续手动补充本校课程。';
+                                }
+
                                 showActionToast({
                                     title: '已加入已选课程',
-                                    description: '课程已同步到学生已选列表，稍后可在右侧面板查看。',
+                                    description,
                                     type: 'success'
                                 });
                                 if (courseKey) {
@@ -12140,6 +12223,9 @@
                                     sandbox: effectiveContext.isSandbox
                                 });
                                 window.StudentRepository.getSelectedCourses(student.id, { forceRefresh: true });
+                                if (window.StudentAnalysisController && typeof window.StudentAnalysisController.scheduleRefresh === 'function') {
+                                    window.StudentAnalysisController.scheduleRefresh();
+                                }
                                 addStatus = 'success';
                             } else if (result && result.reason === 'duplicate') {
                                 showActionToast({
