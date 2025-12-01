@@ -901,6 +901,118 @@
             gap: 12px;
         }
 
+        .matched-courses-table-wrapper {
+            overflow-x: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            background: white;
+        }
+
+        .matched-courses-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 13px;
+            color: #1f2937;
+        }
+
+        .matched-courses-table thead {
+            background: #f8fafc;
+        }
+
+        .matched-courses-table th {
+            text-align: left;
+            font-weight: 600;
+            padding: 10px 12px;
+            color: #475569;
+            border-bottom: 1px solid #e2e8f0;
+            white-space: nowrap;
+        }
+
+        .matched-courses-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+        }
+
+        .matched-courses-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .matched-course-row {
+            transition: background 0.2s ease;
+        }
+
+        .matched-course-row:hover {
+            background: #f8fafc;
+        }
+
+        .matched-course-row.matched-course-added {
+            background: #f0fdf4;
+        }
+
+        .matched-course-row .course-code {
+            font-weight: 600;
+            color: #2563eb;
+        }
+
+        .matched-course-row .onsale {
+            color: #047857;
+            font-weight: 600;
+        }
+
+        .matched-course-row .soldout {
+            color: #b91c1c;
+            font-weight: 600;
+        }
+
+        .matched-course-row-action {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .matched-course-row-action .matched-course-add-btn {
+            border: 1px solid #2563eb;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .matched-course-row-action .matched-course-add-btn:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+        }
+
+        .matched-course-row-action .matched-course-add-btn:disabled {
+            background: #e2e8f0;
+            border-color: #cbd5e1;
+            color: #64748b;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .matched-course-row-action .matched-course-add-btn.added {
+            background: #bbf7d0;
+            border-color: #34d399;
+            color: #047857;
+        }
+
+        .matched-courses-empty-row td {
+            text-align: center;
+            padding: 18px 12px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
         .matched-course-card {
             border: 1px solid #e2e8f0;
             border-radius: 12px;
@@ -8239,7 +8351,25 @@
                                     <h4>在售产品课程</h4>
                                     <span class="matched-courses-count" id="matchedCoursesProductCount">0</span>
                                 </div>
-                                <div class="matched-courses-list" id="matchedCoursesProductList"></div>
+                                <div class="matched-courses-table-wrapper">
+                                    <table class="matched-courses-table">
+                                        <thead>
+                                            <tr>
+                                                <th>课程代码</th>
+                                                <th>课程名称</th>
+                                                <th>开课学校</th>
+                                                <th>价格</th>
+                                                <th>开课时间</th>
+                                                <th>结课时间</th>
+                                                <th>授课方式</th>
+                                                <th>课时/时长</th>
+                                                <th>上架状态</th>
+                                                <th>操作</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="matchedCoursesProductList"></tbody>
+                                    </table>
+                                </div>
                             </section>
                         </div>
                         <div class="modal-footer">
@@ -8480,11 +8610,35 @@
             }
             listElement.innerHTML = '';
 
+            const isProductTable = source === 'product' && listElement.tagName === 'TBODY';
+
             if (!Array.isArray(courses) || !courses.length) {
-                const empty = document.createElement('div');
-                empty.className = 'matched-courses-empty';
-                empty.textContent = source === 'product' ? '暂无在售产品课程' : '暂无匹配课程';
-                listElement.appendChild(empty);
+                if (isProductTable) {
+                    const emptyRow = document.createElement('tr');
+                    emptyRow.className = 'matched-courses-empty-row';
+                    const emptyCell = document.createElement('td');
+                    const columnCount = listElement.parentElement?.querySelectorAll('thead th').length || 1;
+                    emptyCell.colSpan = columnCount;
+                    emptyCell.textContent = '暂无在售产品课程';
+                    emptyRow.appendChild(emptyCell);
+                    listElement.appendChild(emptyRow);
+                } else {
+                    const empty = document.createElement('div');
+                    empty.className = 'matched-courses-empty';
+                    empty.textContent = source === 'product' ? '暂无在售产品课程' : '暂无匹配课程';
+                    listElement.appendChild(empty);
+                }
+                return;
+            }
+
+            if (isProductTable) {
+                courses.forEach(course => {
+                    if (!course || typeof course !== 'object') {
+                        return;
+                    }
+                    const row = createMatchedCourseRow(course, onAddCourse);
+                    listElement.appendChild(row);
+                });
                 return;
             }
 
@@ -8508,6 +8662,101 @@
 
             row.appendChild(labelEl);
             row.appendChild(valueEl);
+            return row;
+        }
+
+        function createMatchedCourseRow(course, onAddCourse) {
+            const row = document.createElement('tr');
+            row.className = 'matched-course-row';
+            row.dataset.source = 'product';
+
+            const courseKey = getMatchedCourseKey(course, 'product');
+            if (courseKey) {
+                row.dataset.courseKey = courseKey;
+            }
+
+            const safeCourse = course || {};
+
+            const resolveValue = (value, fallback) => {
+                if (value === null || value === undefined) {
+                    return fallback;
+                }
+                if (typeof value === 'string') {
+                    const trimmed = value.trim();
+                    return trimmed ? trimmed : fallback;
+                }
+                if (typeof value === 'number') {
+                    return Number.isFinite(value) ? String(value) : fallback;
+                }
+                return String(value);
+            };
+
+            const courseCode = resolveValue(safeCourse.productCourseCode || safeCourse.courseCode, '未提供');
+            const courseName = resolveValue(safeCourse.productCourseName || safeCourse.courseName, '未命名课程');
+            const schoolName = resolveValue(safeCourse.schoolName || safeCourse.productSchool, '未提供');
+            const price = resolveValue(safeCourse.price, '待确认');
+            const startDate = resolveValue(safeCourse.nextStartDate || safeCourse.startDate, '待公布');
+            const endDate = resolveValue(safeCourse.endDate || safeCourse.completionDate, '待公布');
+            const modality = resolveValue(safeCourse.modality, '未提供');
+            const duration = resolveValue(safeCourse.duration, '未提供');
+            const onsale = safeCourse.onsaleStatus === 'onSale' ? '可售' : '已售罄';
+            const onsaleClass = safeCourse.onsaleStatus === 'onSale' ? 'onsale' : 'soldout';
+
+            const appendCell = (text, className) => {
+                const cell = document.createElement('td');
+                if (className) {
+                    cell.className = className;
+                }
+                cell.textContent = text;
+                row.appendChild(cell);
+            };
+
+            appendCell(courseCode, 'course-code');
+            appendCell(courseName);
+            appendCell(schoolName);
+            appendCell(price);
+            appendCell(startDate);
+            appendCell(endDate);
+            appendCell(modality);
+            appendCell(duration);
+
+            const statusCell = document.createElement('td');
+            const statusSpan = document.createElement('span');
+            statusSpan.className = onsaleClass;
+            statusSpan.textContent = onsale;
+            statusCell.appendChild(statusSpan);
+            row.appendChild(statusCell);
+
+            const actionCell = document.createElement('td');
+            actionCell.className = 'matched-course-row-action';
+
+            const actionButton = document.createElement('button');
+            actionButton.type = 'button';
+            actionButton.className = 'matched-course-add-btn';
+            actionButton.textContent = '加入已选课程';
+
+            if (!onAddCourse) {
+                actionButton.disabled = true;
+                actionButton.title = '暂不支持直接加入';
+            } else {
+                if (courseKey) {
+                    actionButton.dataset.courseKey = courseKey;
+                }
+                actionButton.dataset.source = 'product';
+                actionButton.addEventListener('click', () => {
+                    onAddCourse({
+                        source: 'product',
+                        course,
+                        trigger: actionButton,
+                        courseKey,
+                        context: matchedCoursesModalState.context
+                    });
+                });
+            }
+
+            actionCell.appendChild(actionButton);
+            row.appendChild(actionCell);
+
             return row;
         }
 
@@ -8616,9 +8865,13 @@
             }
             const normalizedKey = courseKey.toLowerCase();
             const card = document.querySelector(`#matchedCoursesModal .matched-course-card[data-course-key="${normalizedKey}"]`);
+            const row = document.querySelector(`#matchedCoursesModal .matched-course-row[data-course-key="${normalizedKey}"]`);
             const button = document.querySelector(`#matchedCoursesModal .matched-course-add-btn[data-course-key="${normalizedKey}"]`);
             if (card) {
                 card.classList.add('matched-course-added');
+            }
+            if (row) {
+                row.classList.add('matched-course-added');
             }
             if (button) {
                 button.classList.add('added');
@@ -12224,6 +12477,7 @@
                             year: course.year,
                             price: course.price,
                             nextStartDate: course.nextStartDate,
+                            endDate: course.endDate,
                             duration: course.duration,
                             modality: course.modality,
                             onsaleStatus: course.onsaleStatus,
