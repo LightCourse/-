@@ -766,31 +766,45 @@
 
         .matched-courses-info {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 16px;
-            background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
+            grid-template-columns: repeat(2, minmax(180px, 1fr));
+            gap: 10px 20px;
+            background: #f8fafc;
             border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 16px;
+            border-radius: 10px;
+            padding: 12px 16px;
+        }
+
+        @media (max-width: 640px) {
+            .matched-courses-info {
+                grid-template-columns: 1fr;
+            }
         }
 
         .matched-courses-info .info-block {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 2px;
         }
 
         .matched-courses-info .info-label {
             font-size: 12px;
-            letter-spacing: 0.4px;
+            font-weight: 500;
+            letter-spacing: 0;
             color: #64748b;
-            text-transform: uppercase;
+            text-transform: none;
         }
 
         .matched-courses-info .info-value {
             font-size: 14px;
-            font-weight: 600;
+            font-weight: 500;
             color: #1f2937;
+            padding: 0;
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            margin: 0;
+            min-height: unset;
+            line-height: 1.45;
         }
 
         .matched-courses-info .info-hint {
@@ -8193,19 +8207,20 @@
                         <div class="modal-body matched-courses-body">
                             <div class="matched-courses-info">
                                 <div class="info-block">
+                                    <span class="info-label">学生姓名</span>
+                                    <span class="info-value" id="matchedCoursesStudentName">-</span>
+                                </div>
+                                <div class="info-block">
+                                    <span class="info-label">学生学校</span>
+                                    <span class="info-value" id="matchedCoursesStudentSchool">-</span>
+                                </div>
+                                <div class="info-block">
                                     <span class="info-label">订阅课程</span>
                                     <span class="info-value" id="matchedCoursesCourseLabel">-</span>
                                 </div>
                                 <div class="info-block">
-                                    <span class="info-label">所属学校</span>
-                                    <span class="info-value" id="matchedCoursesSchoolLabel">-</span>
-                                </div>
-                                <div class="info-block">
-                                    <span class="info-label">截止日期</span>
-                                    <span class="info-value">
-                                        <span id="matchedCoursesDeadlineLabel">-</span>
-                                        <span class="info-hint" id="matchedCoursesDeadlineHint"></span>
-                                    </span>
+                                    <span class="info-label">订阅课程学校</span>
+                                    <span class="info-value" id="matchedCoursesCourseSchool">-</span>
                                 </div>
                             </div>
 
@@ -8252,19 +8267,6 @@
             }
 
             return modal;
-        }
-
-        function describeDeadlineSource(value) {
-            const mapping = {
-                'auto-180': '系统自动补足(+180天)',
-                manual: '人工录入',
-                'renew-auto-180': '续期自动(+180天)',
-                'renew-custom': '续期自定义'
-            };
-            if (!value) {
-                return '未知';
-            }
-            return mapping[value] || value;
         }
 
         function describeAvailability(value) {
@@ -8346,10 +8348,10 @@
                 return;
             }
 
+            const studentNameLabel = document.getElementById('matchedCoursesStudentName');
+            const studentSchoolLabel = document.getElementById('matchedCoursesStudentSchool');
             const courseLabel = document.getElementById('matchedCoursesCourseLabel');
-            const schoolLabel = document.getElementById('matchedCoursesSchoolLabel');
-            const deadlineLabel = document.getElementById('matchedCoursesDeadlineLabel');
-            const deadlineHint = document.getElementById('matchedCoursesDeadlineHint');
+            const courseSchoolLabel = document.getElementById('matchedCoursesCourseSchool');
             const summaryLabel = document.getElementById('matchedCoursesSummaryLabel');
             const feedbackEl = document.getElementById('matchedCoursesFeedback');
             const loaderEl = document.getElementById('matchedCoursesLoadingState');
@@ -8362,32 +8364,34 @@
             const subscription = context.subscription || {};
             const student = context.student || {};
 
+            if (studentNameLabel) {
+                const studentName = student.name || '未提供';
+                studentNameLabel.textContent = studentName;
+            }
+
+            if (studentSchoolLabel) {
+                const studentSchool = student.school || '未提供';
+                studentSchoolLabel.textContent = studentSchool;
+            }
+
+            const subscriptionCourse = subscription.course || {};
+            const resolvedCourseCode = course.code || subscriptionCourse.code || '';
+            const resolvedCourseName = course.name || subscriptionCourse.name || '';
+            const resolvedCourseSchool = course.school || subscriptionCourse.school || matchedCoursesModalState.dataset?.metadata?.schoolName || student.school || '未提供';
+
             if (courseLabel) {
                 const parts = [];
-                if (course.code) {
-                    parts.push(course.code);
+                if (resolvedCourseCode) {
+                    parts.push(resolvedCourseCode);
                 }
-                if (course.name) {
-                    parts.push(course.name);
+                if (resolvedCourseName) {
+                    parts.push(resolvedCourseName);
                 }
-                courseLabel.textContent = parts.length ? parts.join(' · ') : (course.name || course.code || '未命名课程');
+                courseLabel.textContent = parts.length ? parts.join(' · ') : (resolvedCourseName || resolvedCourseCode || '未命名课程');
             }
 
-            if (schoolLabel) {
-                const fromDataset = matchedCoursesModalState.dataset?.metadata?.schoolName;
-                schoolLabel.textContent = fromDataset || student.school || course.school || '未提供';
-            }
-
-            if (deadlineLabel) {
-                deadlineLabel.textContent = subscription.deadline || '未设置';
-            }
-
-            if (deadlineHint) {
-                const source = matchedCoursesModalState.dataset?.metadata?.deadlineSource
-                    || subscription.metadata?.deadlineSource
-                    || '';
-                const text = source ? `来源：${describeDeadlineSource(source)}` : '';
-                deadlineHint.textContent = text;
+            if (courseSchoolLabel) {
+                courseSchoolLabel.textContent = resolvedCourseSchool || '未提供';
             }
 
             if (loaderEl) {
@@ -8634,6 +8638,26 @@
             matchedCoursesModalState.onAddCourse = null;
             matchedCoursesModalState.isLoading = false;
             matchedCoursesModalState.error = null;
+
+            const studentNameLabel = document.getElementById('matchedCoursesStudentName');
+            if (studentNameLabel) {
+                studentNameLabel.textContent = '-';
+            }
+
+            const studentSchoolLabel = document.getElementById('matchedCoursesStudentSchool');
+            if (studentSchoolLabel) {
+                studentSchoolLabel.textContent = '-';
+            }
+
+            const courseLabel = document.getElementById('matchedCoursesCourseLabel');
+            if (courseLabel) {
+                courseLabel.textContent = '-';
+            }
+
+            const courseSchoolLabel = document.getElementById('matchedCoursesCourseSchool');
+            if (courseSchoolLabel) {
+                courseSchoolLabel.textContent = '-';
+            }
 
             const summaryLabel = document.getElementById('matchedCoursesSummaryLabel');
             if (summaryLabel) {
