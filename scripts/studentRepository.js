@@ -370,6 +370,15 @@
         };
     };
 
+    const resolveSelectedCoursesConfig = () => {
+        const config = global.AppConfig && typeof global.AppConfig === 'object'
+            ? global.AppConfig.selectedCourses || {}
+            : {};
+        return {
+            prefillProductCourses: config.prefillProductCourses === true
+        };
+    };
+
     const hasLocalStorageSupport = (() => {
         try {
             return typeof global.localStorage !== 'undefined';
@@ -1347,7 +1356,7 @@
         return records;
     };
 
-    const buildSelectedCoursesFromRuntime = (student, sharedCaches = {}) => {
+    const buildSelectedCoursesFromRuntime = (student, sharedCaches = {}, options = {}) => {
         if (!student) {
             return [];
         }
@@ -1358,50 +1367,64 @@
             return [];
         }
 
-        const unitMap = sharedCaches.unitMap instanceof Map ? sharedCaches.unitMap : collectProductUnits();
+        const config = resolveSelectedCoursesConfig();
+        const effectiveOptions = options && typeof options === 'object' ? options : {};
+        const prefillProductCourses = effectiveOptions.prefillProductCourses !== undefined
+            ? Boolean(effectiveOptions.prefillProductCourses)
+            : config.prefillProductCourses;
+        let unitMap = null;
         let mappingRecords = [];
 
-        if (sharedCaches.mappingBySchool instanceof Map) {
-            mappingRecords = sharedCaches.mappingBySchool.get(student.school) || [];
-        } else if (Array.isArray(sharedCaches.allMappings)) {
-            mappingRecords = sharedCaches.allMappings.filter(record => record.schoolName === student.school);
-        } else {
-            mappingRecords = collectCourseMappings().filter(record => record.schoolName === student.school);
+        if (prefillProductCourses) {
+            unitMap = sharedCaches.unitMap instanceof Map ? sharedCaches.unitMap : collectProductUnits();
+            if (sharedCaches.mappingBySchool instanceof Map) {
+                mappingRecords = sharedCaches.mappingBySchool.get(student.school) || [];
+            } else if (Array.isArray(sharedCaches.allMappings)) {
+                mappingRecords = sharedCaches.allMappings.filter(record => record.schoolName === student.school);
+            } else {
+                mappingRecords = collectCourseMappings().filter(record => record.schoolName === student.school);
+            }
         }
 
         return plan.map(planCourse => {
-            const relevantRecords = mappingRecords.filter(record => record.courseCode === (planCourse.code || ''));
-            const seenProducts = new Set();
-            const productCourses = relevantRecords
-                .filter(record => record.alignmentStatus === '对应')
-                .reduce((acc, record) => {
-                    const unitKey = makeUnitKey(record.productSchool, record.productCourseCode);
-                    if (seenProducts.has(unitKey)) {
+            let productCourses = [];
+
+            if (prefillProductCourses) {
+                const relevantRecords = mappingRecords.filter(record => record.courseCode === (planCourse.code || ''));
+                const seenProducts = new Set();
+                productCourses = relevantRecords
+                    .filter(record => record.alignmentStatus === '对应')
+                    .reduce((acc, record) => {
+                        const unitKey = makeUnitKey(record.productSchool, record.productCourseCode);
+                        if (seenProducts.has(unitKey)) {
+                            return acc;
+                        }
+                        seenProducts.add(unitKey);
+
+                        const unit = unitMap ? unitMap.get(unitKey) : null;
+                        const productEntry = {
+                            code: record.productCourseCode,
+                            name: unit?.courseName || record.productCourseName || '',
+                            school: unit?.schoolName || record.productSchool || '',
+                            startDate: unit?.startDate || '',
+                            endDate: unit?.endDate || '',
+                            price: unit?.coursePrice || '',
+                            classCode: unit?.academicTerm || '',
+                            duration: unit?.courseDuration || '',
+                            modality: unit?.courseModality || '',
+                            isOnSale: Boolean(unit?.isOnSale),
+                            alignmentStatus: record.alignmentStatus || '',
+                            verificationOutcome: record.verificationOutcome || ''
+                        };
+
+                        acc.push(productEntry);
                         return acc;
-                    }
-                    seenProducts.add(unitKey);
+                    }, []);
+            }
 
-                    const unit = unitMap.get(unitKey) || null;
-                    const productEntry = {
-                        code: record.productCourseCode,
-                        name: unit?.courseName || record.productCourseName || '',
-                        school: unit?.schoolName || record.productSchool || '',
-                        startDate: unit?.startDate || '',
-                        endDate: unit?.endDate || '',
-                        price: unit?.coursePrice || '',
-                        classCode: unit?.academicTerm || '',
-                        duration: unit?.courseDuration || '',
-                        modality: unit?.courseModality || '',
-                        isOnSale: Boolean(unit?.isOnSale),
-                        alignmentStatus: record.alignmentStatus || '',
-                        verificationOutcome: record.verificationOutcome || ''
-                    };
-
-                    acc.push(productEntry);
-                    return acc;
-                }, []);
-
-            const status = productCourses.some(product => product.isOnSale) ? 'serving' : 'potential';
+            const status = prefillProductCourses && productCourses.some(product => product.isOnSale)
+                ? 'serving'
+                : 'potential';
 
             return {
                 homeCourse: planCourse.code || '未命名课程',
@@ -2233,7 +2256,7 @@
             const storedSelected = Array.isArray(details.selectedCourses)
                 ? details.selectedCourses.map(cloneEntity)
                 : [];
-            const runtimeSelected = buildSelectedCoursesFromRuntime(student);
+            const runtimeSelected = buildSelectedCoursesFromRuntime(student, undefined, { prefillProductCourses: false });
             const mergedSelected = mergeSelectedCourseEntries(storedSelected, runtimeSelected);
 
             writeSelectedCoursesCache(studentId, mergedSelected);
@@ -2267,7 +2290,7 @@
                 const runtimeSelected = buildSelectedCoursesFromRuntime(student, {
                     unitMap,
                     mappingBySchool
-                });
+                }, { prefillProductCourses: true });
 
                 const selectedCourses = runtimeSelected.length
                     ? runtimeSelected

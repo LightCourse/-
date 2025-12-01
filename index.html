@@ -5922,6 +5922,10 @@
             console.warn('AppConfig: localStorage unavailable, demoPersistence fallback to memory.');
             subscriptionConfig.demoPersistence = 'memory';
         }
+        window.AppConfig.selectedCourses = {
+            prefillProductCourses: true,
+            ...(window.AppConfig.selectedCourses || {})
+        };
     </script>
     <script src="scripts/studentRepository.js"></script>
     <script>
@@ -12129,6 +12133,40 @@
                         });
                     };
 
+                    const buildSelectedCoursePayload = (source, course, modalContext) => {
+                        const normalizedSource = source === 'product' ? 'product' : 'home';
+                        const fallbackHomeCode = course.homeCourseCode || course.courseCode || '';
+                        const payload = {
+                            source: normalizedSource,
+                            courseCode: normalizedSource === 'home'
+                                ? (course.courseCode || course.code || '')
+                                : (fallbackHomeCode || modalContext?.course?.code || ''),
+                            courseName: course.courseName || course.courseDisplayName || course.homeCourseName || '',
+                            productCourseName: course.productCourseName || course.courseName || '',
+                            homeCourseCode: fallbackHomeCode,
+                            homeCourseName: course.homeCourseName || course.courseName || '',
+                            schoolName: course.schoolName || course.productSchool || '',
+                            credit: course.credit,
+                            mappingId: course.metadata?.mappingId || course.productId || '',
+                            availability: course.availability,
+                            status: course.status,
+                            term: course.term,
+                            year: course.year,
+                            price: course.price,
+                            nextStartDate: course.nextStartDate,
+                            duration: course.duration,
+                            modality: course.modality,
+                            onsaleStatus: course.onsaleStatus,
+                            allowDuplicate: true
+                        };
+
+                        if (normalizedSource === 'product') {
+                            payload.productCourseCode = course.productCourseCode || course.courseCode || '';
+                        }
+
+                        return payload;
+                    };
+
                     const handleRepositoryError = (error) => {
                         const message = error && error.message
                             ? error.message
@@ -12171,30 +12209,7 @@
                             currentTrigger.textContent = '添加中...';
                         }
 
-                        const payload = {
-                            source,
-                            courseCode: source === 'home'
-                                ? (course.courseCode || course.code || '')
-                                : (course.homeCourseCode || context?.course?.code || ''),
-                            productCourseCode: source === 'product'
-                                ? (course.productCourseCode || course.courseCode || '')
-                                : undefined,
-                            courseName: course.courseName || course.courseDisplayName || '',
-                            productCourseName: course.productCourseName || course.courseName || '',
-                            schoolName: course.schoolName || course.productSchool || '',
-                            credit: course.credit,
-                            mappingId: course.metadata?.mappingId || course.productId || '',
-                            availability: course.availability,
-                            status: course.status,
-                            term: course.term,
-                            year: course.year,
-                            price: course.price,
-                            nextStartDate: course.nextStartDate,
-                            duration: course.duration,
-                            modality: course.modality,
-                            onsaleStatus: course.onsaleStatus,
-                            allowDuplicate: true
-                        };
+                        const payload = buildSelectedCoursePayload(source, course, context);
 
                         let addStatus = 'error';
                         try {
