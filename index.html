@@ -12135,17 +12135,63 @@
 
                     const buildSelectedCoursePayload = (source, course, modalContext) => {
                         const normalizedSource = source === 'product' ? 'product' : 'home';
-                        const fallbackHomeCode = course.homeCourseCode || course.courseCode || '';
+                        const subscriptionCourse = modalContext?.course || modalContext?.subscription?.course || {};
+                        const pickFirstNonEmpty = (...values) => {
+                            for (let index = 0; index < values.length; index += 1) {
+                                const value = values[index];
+                                if (typeof value === 'string') {
+                                    const trimmed = value.trim();
+                                    if (trimmed) {
+                                        return trimmed;
+                                    }
+                                }
+                            }
+                            return '';
+                        };
+
+                        const resolvedHomeCourseCode = pickFirstNonEmpty(
+                            course.homeCourseCode,
+                            course.courseCode,
+                            course.code,
+                            subscriptionCourse.homeCourseCode,
+                            subscriptionCourse.code
+                        );
+                        const resolvedHomeCourseName = pickFirstNonEmpty(
+                            course.homeCourseName,
+                            course.courseName,
+                            course.courseDisplayName,
+                            subscriptionCourse.homeCourseName,
+                            subscriptionCourse.name
+                        );
+                        const resolvedProductCourseCode = pickFirstNonEmpty(
+                            course.productCourseCode,
+                            course.courseCode,
+                            course.code
+                        );
+                        const resolvedProductCourseName = pickFirstNonEmpty(
+                            course.productCourseName,
+                            course.courseName,
+                            course.courseDisplayName
+                        );
+                        const resolvedSchoolName = pickFirstNonEmpty(
+                            course.schoolName,
+                            course.productSchool,
+                            subscriptionCourse.school,
+                            modalContext?.student?.school
+                        );
+
                         const payload = {
                             source: normalizedSource,
                             courseCode: normalizedSource === 'home'
-                                ? (course.courseCode || course.code || '')
-                                : (fallbackHomeCode || modalContext?.course?.code || ''),
-                            courseName: course.courseName || course.courseDisplayName || course.homeCourseName || '',
-                            productCourseName: course.productCourseName || course.courseName || '',
-                            homeCourseCode: fallbackHomeCode,
-                            homeCourseName: course.homeCourseName || course.courseName || '',
-                            schoolName: course.schoolName || course.productSchool || '',
+                                ? resolvedHomeCourseCode
+                                : (resolvedHomeCourseCode || resolvedProductCourseCode),
+                            courseName: normalizedSource === 'home'
+                                ? resolvedHomeCourseName
+                                : (resolvedHomeCourseName || resolvedProductCourseName),
+                            productCourseName: resolvedProductCourseName,
+                            homeCourseCode: resolvedHomeCourseCode,
+                            homeCourseName: resolvedHomeCourseName,
+                            schoolName: resolvedSchoolName,
                             credit: course.credit,
                             mappingId: course.metadata?.mappingId || course.productId || '',
                             availability: course.availability,
@@ -12161,7 +12207,7 @@
                         };
 
                         if (normalizedSource === 'product') {
-                            payload.productCourseCode = course.productCourseCode || course.courseCode || '';
+                            payload.productCourseCode = resolvedProductCourseCode;
                         }
 
                         return payload;
@@ -12216,7 +12262,7 @@
                             const result = repository.addCourseToSelected(student.id, payload);
                             if (result && result.success) {
                                 let description = '课程已同步到学生已选列表，稍后可在右侧面板查看。';
-                                const hasHomeCourse = Boolean(payload.courseCode && payload.courseName);
+                                const hasHomeCourse = Boolean(payload.homeCourseCode && payload.homeCourseName);
                                 if (!hasHomeCourse) {
                                     description += ' 当前记录仅包含产品课程信息，可在后续手动补充本校课程。';
                                 }
